@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:soundflow/common/widgets/appbar/app_bar.dart';
+import 'package:soundflow/common/widgets/button/back_btn_to_start.dart';
 import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/common/widgets/button/google_btn.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
+import 'package:soundflow/presentation/auth/pages/forgot_password.dart';
 import 'package:soundflow/presentation/auth/pages/signup.dart';
 
 class LoginPage extends StatelessWidget{
@@ -12,7 +13,7 @@ class LoginPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BasicAppBar(),
+      appBar: BackToStartPage(),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 50,
@@ -42,13 +43,23 @@ class LoginPage extends StatelessWidget{
             SizedBox(height: 10),
             Align(
               alignment: Alignment.centerRight,
-              child: Text(
-                'Forgot password',
-                style: TextStyle(
+              child: TextButton(
+                onPressed: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (BuildContext context) => const ForgotPassPage()
+                      )
+                    );
+                },
+                child: Text(
+                  'Forgot password',
+                  style: TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 16,
                   color: Colors.blueAccent,
-                ),
+                  ),
+                ),               
               ),
             ),
             SizedBox(height: 20),
@@ -110,16 +121,16 @@ class LoginPage extends StatelessWidget{
       ),
     );
   }
-  Widget _loginText(){
-    return const Text(
-      'Log in to SoundFlow',
-      style: TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 32
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
+    Widget _loginText(){
+      return const Text(
+        'Log in to SoundFlow',
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 32
+        ),
+        textAlign: TextAlign.center,
+      );
+    }
   
   Widget _phoneNumberField(){
     return TextField(

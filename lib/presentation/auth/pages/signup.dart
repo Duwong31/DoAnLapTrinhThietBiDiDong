@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:soundflow/common/widgets/appbar/app_bar.dart';
+import 'package:soundflow/common/widgets/button/back_btn_to_start.dart';
 import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/common/widgets/button/google_btn.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
@@ -12,7 +12,7 @@ class SignupPage extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: BasicAppBar(),
+      appBar: BackToStartPage(),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 50,
@@ -160,4 +160,4 @@ class SignupPage extends StatelessWidget{
               ),
             );
   }
-}
+}   

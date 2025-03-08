@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:soundflow/presentation/auth/pages/signup_or_login.dart';
 
-class BasicAppBar extends StatelessWidget implements PreferredSizeWidget{
-  final Widget ? title;
-  const BasicAppBar({
-    this.title,
+class BasicBackButton extends StatelessWidget implements PreferredSizeWidget{
+  const BasicBackButton({
     super.key});
 
   @override
@@ -12,15 +9,9 @@ class BasicAppBar extends StatelessWidget implements PreferredSizeWidget{
     return AppBar(
       backgroundColor:  Colors.transparent,
       elevation: 0,
-      title: title ?? const Text(''),
       leading: IconButton(
         onPressed: (){
-          Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) => const StartPage()
-                      )
-                    );
+          Navigator.pop(context);
         }, 
         icon: Container(
           height: 50,
