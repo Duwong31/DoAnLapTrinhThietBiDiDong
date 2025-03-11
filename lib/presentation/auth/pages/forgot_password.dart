@@ -49,20 +49,20 @@ class ForgotPassPage extends StatelessWidget{
   }
   Widget _phoneNumberOrEmailField(){
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: AppColors.lightBackground, 
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.grey,),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.black),
-          borderRadius: BorderRadius.circular(30),
-        ),  
+    keyboardType: TextInputType.number, // Shows numeric keyboard
+    decoration: InputDecoration(
+      filled: true,
+      fillColor: AppColors.lightBackground, 
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.grey),
+        borderRadius: BorderRadius.circular(30),
       ),
-    );
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: Colors.black),
+        borderRadius: BorderRadius.circular(30),
+      ),  
+    ),
+  );
   }
   Widget _loginText(){
     return const Text(

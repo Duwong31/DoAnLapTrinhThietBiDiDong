@@ -10,4 +10,5 @@ class AppVectors {
   static const String formatPath = '.svg';
 
   static const String google = '${path}google$formatPath';
+  static const String soundflow = '${path}soundflow$formatPath';
 }
