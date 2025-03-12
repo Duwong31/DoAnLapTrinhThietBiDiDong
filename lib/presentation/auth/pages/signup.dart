@@ -11,7 +11,7 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get screen size
+    // Get screen size for responsive design
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -25,7 +25,7 @@ class SignupPage extends StatelessWidget {
               horizontal: size.width * 0.075,
             ),
             child: Center(
-              // Constrain max width for larger screens (optional)
+              // Constrain max width for larger screens
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
@@ -61,7 +61,7 @@ class SignupPage extends StatelessWidget {
                       },
                       title: 'Sign up',
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 15),
                     Row(
                       children: const [
                         Expanded(child: Divider(color: Colors.grey)),
@@ -72,14 +72,14 @@ class SignupPage extends StatelessWidget {
                         Expanded(child: Divider(color: Colors.grey)),
                       ],
                     ),
-const SizedBox(height: 5),
+                    const SizedBox(height: 15),
                     GoogleButton(onPressed: () {}),
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Already have an account",
+                          "Already have an account?",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black87,
@@ -91,8 +91,8 @@ const SizedBox(height: 5),
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  const LoginPage()),
+                                builder: (BuildContext context) => const LoginPage(),
+                              ),
                             );
                           },
                           child: const Text(
@@ -100,7 +100,7 @@ const SizedBox(height: 5),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: AppColors.primary,
                             ),
                           ),
                         ),
@@ -119,25 +119,47 @@ const SizedBox(height: 5),
   Widget _signupText() {
     return const Text(
       'Sign up to SoundFlow',
-      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
       textAlign: TextAlign.center,
+    );
+  }
+
+  // Helper function to build unified input decorations
+  InputDecoration _inputDecoration({required String hint, IconData? icon}) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: icon != null
+          ? Icon(icon, color: AppColors.primary)
+          : null,
+      filled: true,
+      fillColor: const Color(0xffE6E6E6),
+      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: AppColors.primary),
+        borderRadius: BorderRadius.circular(30),
+      ),
     );
   }
 
   Widget _usernameField() {
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      decoration: _inputDecoration(
+        hint: 'Enter your username',
+        icon: Icons.person,
       ),
     );
   }
 
   Widget _phoneNumberField() {
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      keyboardType: TextInputType.phone,
+      decoration: _inputDecoration(
+        hint: 'Enter your phone number',
+        icon: Icons.phone,
       ),
     );
   }
@@ -145,9 +167,9 @@ const SizedBox(height: 5),
   Widget _passwordField() {
     return TextField(
       obscureText: true,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      decoration: _inputDecoration(
+        hint: 'Enter your password',
+        icon: Icons.lock,
       ),
     );
   }
@@ -155,9 +177,9 @@ const SizedBox(height: 5),
   Widget _cfmPassField() {
     return TextField(
       obscureText: true,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      decoration: _inputDecoration(
+        hint: 'Confirm your password',
+        icon: Icons.lock_outline,
       ),
     );
   }
@@ -165,10 +187,17 @@ const SizedBox(height: 5),
   Widget myTitle(String title) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+          ),
+        ),
       ),
     );
   }
 }
+  
