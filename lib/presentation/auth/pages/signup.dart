@@ -6,12 +6,28 @@ import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
 import 'package:soundflow/presentation/auth/pages/login.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  // ValueNotifiers để quản lý trạng thái hiển thị mật khẩu
+  final ValueNotifier<bool> _isPasswordVisible = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isConfirmPasswordVisible = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isPasswordVisible.dispose();
+    _isConfirmPasswordVisible.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Get screen size for responsive design
+    // Lấy kích thước màn hình để responsive
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -19,18 +35,19 @@ class SignupPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            // Use relative padding based on screen size
+            // Sử dụng padding dựa theo kích thước màn hình
             padding: EdgeInsets.symmetric(
               vertical: size.height * 0.05,
               horizontal: size.width * 0.075,
             ),
             child: Center(
-              // Constrain max width for larger screens
+              // Giới hạn chiều rộng tối đa trên màn hình lớn
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Logo của bạn
                     Image.asset(
                       AppVectors.logo,
                       width: 80,
@@ -40,11 +57,9 @@ class SignupPage extends StatelessWidget {
                     _signupText(),
                     const SizedBox(height: 20),
                     myTitle('Username'),
-                    const SizedBox(height: 5),
                     _usernameField(),
                     const SizedBox(height: 15),
                     myTitle('Phone Number'),
-                    const SizedBox(height: 5),
                     _phoneNumberField(),
                     const SizedBox(height: 15),
                     myTitle('Password'),
@@ -57,7 +72,7 @@ class SignupPage extends StatelessWidget {
                     const SizedBox(height: 40),
                     BasicButton(
                       onPressed: () {
-                        // Sign up action
+                        // Xử lý logic đăng ký ở đây
                       },
                       title: 'Sign up',
                     ),
@@ -73,6 +88,7 @@ class SignupPage extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 15),
+                    // Nút Google
                     GoogleButton(onPressed: () {}),
                     const SizedBox(height: 30),
                     Row(
@@ -116,6 +132,7 @@ class SignupPage extends StatelessWidget {
     );
   }
 
+  // Text header cho trang Signup
   Widget _signupText() {
     return const Text(
       'Sign up to SoundFlow',
@@ -124,15 +141,14 @@ class SignupPage extends StatelessWidget {
     );
   }
 
-  // Helper function to build unified input decorations
-  InputDecoration _inputDecoration({required String hint, IconData? icon}) {
+  // Hàm tạo InputDecoration dùng chung
+  InputDecoration _inputDecoration({required String hint, IconData? icon, Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hint,
-      prefixIcon: icon != null
-          ? Icon(icon, color: AppColors.primary)
-          : null,
+      prefixIcon: icon != null ? Icon(icon, color: const Color(0xff787878)) : null,
+      suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xffE6E6E6),
+      fillColor: const Color(0xffffffff),
       contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.grey.shade400),
@@ -145,6 +161,7 @@ class SignupPage extends StatelessWidget {
     );
   }
 
+  // Username field
   Widget _usernameField() {
     return TextField(
       decoration: _inputDecoration(
@@ -154,6 +171,7 @@ class SignupPage extends StatelessWidget {
     );
   }
 
+  // Phone number field
   Widget _phoneNumberField() {
     return TextField(
       keyboardType: TextInputType.phone,
@@ -164,26 +182,53 @@ class SignupPage extends StatelessWidget {
     );
   }
 
+  // Password field với ẩn/hiện mật khẩu
   Widget _passwordField() {
-    return TextField(
-      obscureText: true,
-      decoration: _inputDecoration(
-        hint: 'Enter your password',
-        icon: Icons.lock,
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isPasswordVisible,
+      builder: (context, isVisible, child) {
+        return TextField(
+          obscureText: !isVisible,
+          decoration: _inputDecoration(
+            hint: 'Enter your password',
+            icon: Icons.lock,
+            suffixIcon: IconButton(
+              icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: const Color(0xff787878)),
+              onPressed: () {
+                _isPasswordVisible.value = !isVisible;
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
+  // Confirm Password field với ẩn/hiện mật khẩu
   Widget _cfmPassField() {
-    return TextField(
-      obscureText: true,
-      decoration: _inputDecoration(
-        hint: 'Confirm your password',
-        icon: Icons.lock_outline,
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isConfirmPasswordVisible,
+      builder: (context, isVisible, child) {
+        return TextField(
+          obscureText: !isVisible,
+          decoration: _inputDecoration(
+            hint: 'Confirm your password',
+            icon: Icons.lock_outline,
+            suffixIcon: IconButton(
+              icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: const Color(0xff787878)),
+              onPressed: () {
+                _isConfirmPasswordVisible.value = !isVisible;
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
+  // Title cho từng trường nhập liệu
   Widget myTitle(String title) {
     return Align(
       alignment: Alignment.centerLeft,
@@ -191,13 +236,9 @@ class SignupPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
         ),
       ),
     );
   }
 }
-  

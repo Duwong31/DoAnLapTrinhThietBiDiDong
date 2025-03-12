@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:soundflow/common/widgets/button/back_button.dart';
-import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
 import 'package:soundflow/presentation/auth/pages/otp.dart';
 
@@ -13,7 +12,7 @@ class ForgotPassPage extends StatelessWidget {
       appBar: BasicBackButton(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -29,8 +28,8 @@ class ForgotPassPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               _phoneNumberField(),
-              const SizedBox(height: 30),
-              BasicButton(
+              const SizedBox(height: 20),
+              ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -39,7 +38,11 @@ class ForgotPassPage extends StatelessWidget {
                     ),
                   );
                 },
-                title: 'Next',
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black,
+                  minimumSize: Size.fromHeight(48),
+                ),
+                child: Text('Next', style: TextStyle(color: Colors.white),),
               ),
               const SizedBox(height: 20),
               const Text(
@@ -62,16 +65,16 @@ class ForgotPassPage extends StatelessWidget {
       keyboardType: TextInputType.phone,
       decoration: InputDecoration(
         hintText: 'Enter your phone number',
-        prefixIcon: const Icon(Icons.phone, color: AppColors.primary),
+        prefixIcon: const Icon(Icons.phone, color: Color(0xff787878)),
         filled: true,
         fillColor: AppColors.lightBackground,
         contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
         enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.grey),
+          borderSide: const BorderSide(color: AppColors.primary),
           borderRadius: BorderRadius.circular(30),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.black),
+          borderSide: const BorderSide(color: Colors.deepOrange),
           borderRadius: BorderRadius.circular(30),
         ),
       ),

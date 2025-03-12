@@ -7,12 +7,20 @@ import 'package:soundflow/core/configs/theme/app_colors.dart';
 import 'package:soundflow/presentation/auth/pages/forgot_password.dart';
 import 'package:soundflow/presentation/auth/pages/signup.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isObscure = true; // Biến để theo dõi trạng thái hiển thị mật khẩu
+
+  @override
   Widget build(BuildContext context) {
-    // Retrieve screen dimensions for responsive design
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -20,13 +28,11 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            // Dynamic padding based on screen size
             padding: EdgeInsets.symmetric(
               vertical: size.height * 0.05,
               horizontal: size.width * 0.075,
             ),
             child: Center(
-              // Constrain maximum width for larger screens
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
@@ -64,15 +70,15 @@ class LoginPage extends StatelessWidget {
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
-                            color: Colors.blueAccent,
+                            color: Colors.black,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 15),
+                    const SizedBox(height: 10),
                     BasicButton(
                       onPressed: () {
-                        // Handle login action
+                        // Xử lý đăng nhập
                       },
                       title: 'Log in',
                     ),
@@ -131,7 +137,6 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Header text for the page
   Widget _loginText() {
     return const Text(
       'Log in to SoundFlow',
@@ -143,16 +148,17 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Unified input decoration for a consistent look across fields
   InputDecoration _inputDecoration({
     required String hintText,
     IconData? icon,
+    Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hintText,
-      prefixIcon: icon != null ? Icon(icon, color: AppColors.primary) : null,
+      prefixIcon: icon != null ? Icon(icon, color: Color(0xff787878)) : null,
+      suffixIcon: suffixIcon,
       filled: true,
-      fillColor: const Color(0xffE6E6E6),
+      fillColor: const Color(0xffffffff),
       contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
       enabledBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Colors.grey.shade400),
@@ -165,9 +171,9 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Phone number text field with phone icon and proper keyboard type
   Widget _phoneNumberField() {
     return TextField(
+      controller: _phoneController,
       keyboardType: TextInputType.phone,
       decoration: _inputDecoration(
         hintText: 'Enter your phone number',
@@ -176,18 +182,25 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  // Password text field with lock icon and obscured text
   Widget _passwordField() {
     return TextField(
-      obscureText: true,
+      controller: _passwordController,
+      obscureText: _isObscure,
       decoration: _inputDecoration(
         hintText: 'Enter your password',
         icon: Icons.lock,
+        suffixIcon: IconButton(
+          icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _isObscure = !_isObscure;
+            });
+          },
+        ),
       ),
     );
   }
 
-  // Helper method to display a title for each field
   Widget myTitle(String title) {
     return Align(
       alignment: Alignment.centerLeft,
