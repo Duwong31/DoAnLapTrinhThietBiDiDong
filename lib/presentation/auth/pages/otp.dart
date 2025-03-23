@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:soundflow/common/widgets/button/back_button.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
-import 'package:soundflow/presentation/auth/pages/reset_password.dart';
+import 'package:soundflow/presentation/auth/pages/verify_success.dart';
 
 class OTPPage extends StatefulWidget {
   const OTPPage({super.key});
@@ -18,12 +18,13 @@ class _OTPPageState extends State<OTPPage> {
       List.generate(6, (index) => FocusNode());
 
   void _onNextPressed() {
+    //Nếu xác thực thành công, chuyển sang VerifySuccessPage
     Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => const ResetPasswordPage(),
-                    ),
-                  );
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const VerifySuccessPage(),
+      ),
+    );
     // ignore: unused_local_variable
     String otp = _otpControllers.map((e) => e.text).join(); // User OTP
     

@@ -1,23 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:soundflow/common/widgets/button/back_button.dart';
+import 'package:soundflow/core/configs/theme/app_colors.dart';
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
   @override
-  State<ResetPasswordPage> createState() => _ChangePasswordPageState();
+  State<ResetPasswordPage> createState() => _ResetPasswordPageState();
 }
 
-class _ChangePasswordPageState extends State<ResetPasswordPage> {
+class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
   bool _isObscureNew = true;
   bool _isObscureConfirm = true;
 
   @override
+  void initState() {
+    super.initState();
+    _newPasswordController.addListener(_updateState);
+    _confirmPasswordController.addListener(_updateState);
+  }
+
+  void _updateState() {
+    setState(() {});
+  }
+
+  // Kiểm tra xem cả hai field đã có ký tự hay chưa
+  bool get _isValid =>
+      _newPasswordController.text.isNotEmpty &&
+      _confirmPasswordController.text.isNotEmpty;
+
+  @override
+  void dispose() {
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width; // Lấy chiều rộng màn hình
-    double screenHeight = MediaQuery.of(context).size.height; // Lấy chiều cao màn hình
+    double screenWidth = MediaQuery.of(context).size.width; 
+    double screenHeight = MediaQuery.of(context).size.height; 
 
     return Scaffold(
       appBar: BasicBackButton(),
@@ -25,7 +49,7 @@ class _ChangePasswordPageState extends State<ResetPasswordPage> {
         child: Align(
           alignment: Alignment.topCenter,
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05, vertical: 20),
+            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
@@ -60,11 +84,13 @@ class _ChangePasswordPageState extends State<ResetPasswordPage> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Xử lý logic đổi mật khẩu ở đây
-                    },
+                    onPressed: _isValid 
+                        ? () {
+                            // Xử lý logic đổi mật khẩu ở đây
+                          }
+                        : null, // Nếu chưa đủ điều kiện, nút sẽ bị vô hiệu hóa
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
+                      backgroundColor: _isValid ? AppColors.primary : Colors.black,
                       padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -111,3 +137,4 @@ class _ChangePasswordPageState extends State<ResetPasswordPage> {
     );
   }
 }
+  
