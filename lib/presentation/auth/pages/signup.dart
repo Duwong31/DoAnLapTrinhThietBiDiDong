@@ -6,12 +6,28 @@ import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
 import 'package:soundflow/presentation/auth/pages/login.dart';
 
-class SignupPage extends StatelessWidget {
+class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
+  _SignupPageState createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  // ValueNotifiers để quản lý trạng thái hiển thị mật khẩu
+  final ValueNotifier<bool> _isPasswordVisible = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> _isConfirmPasswordVisible = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isPasswordVisible.dispose();
+    _isConfirmPasswordVisible.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Get screen size
+    // Lấy kích thước màn hình để responsive
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -19,18 +35,19 @@ class SignupPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            // Use relative padding based on screen size
+            // Sử dụng padding dựa theo kích thước màn hình
             padding: EdgeInsets.symmetric(
               vertical: size.height * 0.05,
               horizontal: size.width * 0.075,
             ),
             child: Center(
-              // Constrain max width for larger screens (optional)
+              // Giới hạn chiều rộng tối đa trên màn hình lớn
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Logo của bạn
                     Image.asset(
                       AppVectors.logo,
                       width: 80,
@@ -40,11 +57,9 @@ class SignupPage extends StatelessWidget {
                     _signupText(),
                     const SizedBox(height: 20),
                     myTitle('Username'),
-                    const SizedBox(height: 5),
                     _usernameField(),
                     const SizedBox(height: 15),
                     myTitle('Phone Number'),
-                    const SizedBox(height: 5),
                     _phoneNumberField(),
                     const SizedBox(height: 15),
                     myTitle('Password'),
@@ -57,11 +72,11 @@ class SignupPage extends StatelessWidget {
                     const SizedBox(height: 40),
                     BasicButton(
                       onPressed: () {
-                        // Sign up action
+                        // Xử lý logic đăng ký ở đây
                       },
                       title: 'Sign up',
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 15),
                     Row(
                       children: const [
                         Expanded(child: Divider(color: Colors.grey)),
@@ -72,14 +87,15 @@ class SignupPage extends StatelessWidget {
                         Expanded(child: Divider(color: Colors.grey)),
                       ],
                     ),
-const SizedBox(height: 5),
+                    const SizedBox(height: 15),
+                    // Nút Google
                     GoogleButton(onPressed: () {}),
                     const SizedBox(height: 30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Already have an account",
+                          "Already have an account?",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black87,
@@ -91,8 +107,8 @@ const SizedBox(height: 5),
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                  const LoginPage()),
+                                builder: (BuildContext context) => const LoginPage(),
+                              ),
                             );
                           },
                           child: const Text(
@@ -100,7 +116,7 @@ const SizedBox(height: 5),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: AppColors.primary,
                             ),
                           ),
                         ),
@@ -116,58 +132,112 @@ const SizedBox(height: 5),
     );
   }
 
+  // Text header cho trang Signup
   Widget _signupText() {
     return const Text(
       'Sign up to SoundFlow',
-      style: TextStyle(fontWeight: FontWeight.w500, fontSize: 30),
+      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
       textAlign: TextAlign.center,
     );
   }
 
+  // Hàm tạo InputDecoration dùng chung
+  InputDecoration _inputDecoration({required String hint, IconData? icon, Widget? suffixIcon}) {
+    return InputDecoration(
+      hintText: hint,
+      prefixIcon: icon != null ? Icon(icon, color: const Color(0xff787878)) : null,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: const Color(0xffffffff),
+      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: AppColors.primary),
+        borderRadius: BorderRadius.circular(30),
+      ),
+    );
+  }
+
+  // Username field
   Widget _usernameField() {
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      decoration: _inputDecoration(
+        hint: 'Enter your username',
+        icon: Icons.person,
       ),
     );
   }
 
+  // Phone number field
   Widget _phoneNumberField() {
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      keyboardType: TextInputType.phone,
+      decoration: _inputDecoration(
+        hint: 'Enter your phone number',
+        icon: Icons.phone,
       ),
     );
   }
 
+  // Password field với ẩn/hiện mật khẩu
   Widget _passwordField() {
-    return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isPasswordVisible,
+      builder: (context, isVisible, child) {
+        return TextField(
+          obscureText: !isVisible,
+          decoration: _inputDecoration(
+            hint: 'Enter your password',
+            icon: Icons.lock,
+            suffixIcon: IconButton(
+              icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: const Color(0xff787878)),
+              onPressed: () {
+                _isPasswordVisible.value = !isVisible;
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
+  // Confirm Password field với ẩn/hiện mật khẩu
   Widget _cfmPassField() {
-    return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
-      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isConfirmPasswordVisible,
+      builder: (context, isVisible, child) {
+        return TextField(
+          obscureText: !isVisible,
+          decoration: _inputDecoration(
+            hint: 'Confirm your password',
+            icon: Icons.lock_outline,
+            suffixIcon: IconButton(
+              icon: Icon(isVisible ? Icons.visibility : Icons.visibility_off,
+                  color: const Color(0xff787878)),
+              onPressed: () {
+                _isConfirmPasswordVisible.value = !isVisible;
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 
+  // Title cho từng trường nhập liệu
   Widget myTitle(String title) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Text(
-        title,
-        style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+        ),
       ),
     );
   }
