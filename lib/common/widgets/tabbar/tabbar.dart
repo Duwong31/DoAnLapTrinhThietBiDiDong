@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../views/home_view.dart';
-import '../views/library_view.dart';
-import '../views/personal_view.dart';
-import '../views/search_view.dart';
+import '../../../presentation/views/home_view.dart';
+import '../../../presentation/views/library_view.dart';
+import '../../../presentation/views/personal_view.dart';
+import '../../../presentation/views/search_view.dart';
 
 class Tabbar extends StatefulWidget {
   const Tabbar({super.key});
@@ -49,7 +49,6 @@ class _TabbarState extends State<Tabbar> {
 
     );
   }
-
   // Tabbar Widget
   Widget _buildTabButton(IconData icon, String label, int index, Widget screen) {
     return MaterialButton(
@@ -77,4 +76,5 @@ class _TabbarState extends State<Tabbar> {
       ),
     );
   }
+  
 }

@@ -1,16 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:soundflow/common/widgets/tabbar/tabbar.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
+import 'package:soundflow/data/sources/auth/auth_firebase_service.dart';
 
 class GoogleButton extends StatelessWidget {
   final VoidCallback onPressed;
-
-  const GoogleButton({super.key, required this.onPressed});
+  final AuthFirebaseServiceImpl _auth = AuthFirebaseServiceImpl();
+  GoogleButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onPressed,
+    return TextButton(
+      onPressed: () async{
+        final userCredential = await _auth.loginWithGoogle();
+        if (userCredential != null && userCredential.user != null) {
+          // Đăng nhập thành công, chuyển đến trang Home (Tabbar)
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Tabbar()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Google Sign-in failed. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        },
       child: Container(
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
