@@ -12,13 +12,14 @@ class SearchView extends StatefulWidget {
 
 class _SearchViewState extends State<SearchView> {
   final TextEditingController _searchController = TextEditingController();
-  List<String> suggestions = ["Pop", "Rock", "Hip-hop", "Jazz", "EDM"];
+  List<String> suggestions = [];
   List<String> recentSearches = [];
 
   @override
   void initState() {
     super.initState();
     _loadRecentSearches();
+    _fetchSuggestions();
   }
 
   // 🔹 Lấy danh sách tìm kiếm gần đây từ SharedPreferences
@@ -26,6 +27,15 @@ class _SearchViewState extends State<SearchView> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       recentSearches = prefs.getStringList('recentSearches') ?? [];
+    });
+  }
+
+  // 🔹 Gọi API để lấy danh sách gợi ý tìm kiếm
+  Future<void> _fetchSuggestions() async {
+    // Giả lập API call
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      suggestions = ["Pop", "Rock", "Hip-hop", "Jazz", "EDM"]; // Dữ liệu giả lập từ API
     });
   }
 
