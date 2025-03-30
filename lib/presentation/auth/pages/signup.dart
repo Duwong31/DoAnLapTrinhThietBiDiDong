@@ -4,7 +4,10 @@ import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/common/widgets/button/google_btn.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
+import 'package:soundflow/data/models/auth/create_user_req.dart';
+import 'package:soundflow/domain/usecases/auth/signup.dart';
 import 'package:soundflow/presentation/auth/pages/login.dart';
+import 'package:soundflow/service_locator.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -17,7 +20,10 @@ class _SignupPageState extends State<SignupPage> {
   // ValueNotifiers để quản lý trạng thái hiển thị mật khẩu
   final ValueNotifier<bool> _isPasswordVisible = ValueNotifier<bool>(false);
   final ValueNotifier<bool> _isConfirmPasswordVisible = ValueNotifier<bool>(false);
-
+  final TextEditingController _fullname = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  final TextEditingController _confirmPassword = TextEditingController();
   @override
   void dispose() {
     _isPasswordVisible.dispose();
@@ -59,8 +65,8 @@ class _SignupPageState extends State<SignupPage> {
                     myTitle('Username'),
                     _usernameField(),
                     const SizedBox(height: 15),
-                    myTitle('Phone Number'),
-                    _phoneNumberField(),
+                    myTitle('Email'),
+                    _emailField(),
                     const SizedBox(height: 15),
                     myTitle('Password'),
                     const SizedBox(height: 5),
@@ -71,8 +77,35 @@ class _SignupPageState extends State<SignupPage> {
                     _cfmPassField(),
                     const SizedBox(height: 40),
                     BasicButton(
-                      onPressed: () {
-                        // Xử lý logic đăng ký ở đây
+                      onPressed: () async {
+                        // Kiểm tra mật khẩu khớp
+                        if (_password.text != _confirmPassword.text) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Password and Confirm Password do not match!"))
+                          );
+                          return;
+                        }
+                        var result = await sl<SignupUseCase>().call(
+                          params: CreateUserReq(
+                            fullname: _fullname.text.toString(),  
+                            email: _email.text.toString(), 
+                            password: _password.text.toString(),
+                            confirmPassword: _confirmPassword.text.toString(),  
+                          )
+                        );
+                        result.fold(
+                          (l){
+                            var snackBar = SnackBar(content: Text(l));
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          },
+                          (r){
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
+                              (route) => false,
+                            );
+                          }
+                          );
                       },
                       title: 'Sign up',
                     ),
@@ -164,6 +197,7 @@ class _SignupPageState extends State<SignupPage> {
   // Username field
   Widget _usernameField() {
     return TextField(
+      controller: _fullname,
       decoration: _inputDecoration(
         hint: 'Enter your username',
         icon: Icons.person,
@@ -171,23 +205,23 @@ class _SignupPageState extends State<SignupPage> {
     );
   }
 
-  // Phone number field
-  Widget _phoneNumberField() {
+  // Email field
+  Widget _emailField() {
     return TextField(
-      keyboardType: TextInputType.phone,
+      controller: _email,
       decoration: _inputDecoration(
-        hint: 'Enter your phone number',
-        icon: Icons.phone,
+        hint: 'Enter your email',
+        icon: Icons.email_rounded,
       ),
     );
   }
 
-  // Password field với ẩn/hiện mật khẩu
   Widget _passwordField() {
     return ValueListenableBuilder<bool>(
       valueListenable: _isPasswordVisible,
       builder: (context, isVisible, child) {
         return TextField(
+          controller: _password,
           obscureText: !isVisible,
           decoration: _inputDecoration(
             hint: 'Enter your password',
@@ -211,6 +245,7 @@ class _SignupPageState extends State<SignupPage> {
       valueListenable: _isConfirmPasswordVisible,
       builder: (context, isVisible, child) {
         return TextField(
+          controller: _confirmPassword,
           obscureText: !isVisible,
           decoration: _inputDecoration(
             hint: 'Confirm your password',
