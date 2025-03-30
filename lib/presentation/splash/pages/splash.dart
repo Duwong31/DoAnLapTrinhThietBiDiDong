@@ -2,8 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
-
-import '../../navigations/tabbar.dart';
+import 'package:soundflow/presentation/auth/pages/signup_or_login.dart';
 
 class SplashPage extends StatefulWidget{
   const SplashPage({super.key});
@@ -55,7 +54,7 @@ class _SplashPageState extends State<SplashPage> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (BuildContext context) => const Tabbar()));
+        builder: (BuildContext context) => const StartPage()));
   }
   
 

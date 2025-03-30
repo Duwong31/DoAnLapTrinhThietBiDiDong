@@ -62,7 +62,7 @@ class StartPage extends StatelessWidget{
                 child: OutlinedButton(
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(
-                      color: AppColors.primary, 
+                      color: Colors.deepOrange, 
                       width: 2,
                     ),
                     shape: RoundedRectangleBorder(

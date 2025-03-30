@@ -2,17 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:soundflow/common/widgets/button/back_btn_to_start.dart';
 import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/common/widgets/button/google_btn.dart';
+import 'package:soundflow/common/widgets/tabbar/tabbar.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
+import 'package:soundflow/data/models/auth/login_user_req.dart';
+import 'package:soundflow/domain/usecases/auth/login.dart';
 import 'package:soundflow/presentation/auth/pages/forgot_password.dart';
 import 'package:soundflow/presentation/auth/pages/signup.dart';
+import 'package:soundflow/service_locator.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
+  bool _isObscure = true; // Biến để theo dõi trạng thái hiển thị mật khẩu
+
+  @override
   Widget build(BuildContext context) {
-    // Retrieve screen dimensions
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -20,13 +32,11 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            // Use dynamic padding based on screen size
             padding: EdgeInsets.symmetric(
               vertical: size.height * 0.05,
               horizontal: size.width * 0.075,
             ),
             child: Center(
-              // Constrain max width on larger screens (e.g., tablets or web)
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 500),
                 child: Column(
@@ -40,9 +50,9 @@ class LoginPage extends StatelessWidget {
                     const SizedBox(height: 20),
                     _loginText(),
                     const SizedBox(height: 20),
-                    myTitle('Phone Number'),
+                    myTitle('Email'),
                     const SizedBox(height: 5),
-                    _phoneNumberField(),
+                    _emailField(),
                     const SizedBox(height: 15),
                     myTitle('Password'),
                     const SizedBox(height: 5),
@@ -51,43 +61,38 @@ class LoginPage extends StatelessWidget {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: (){
+                        onPressed: () {
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (BuildContext context) => const ForgotPassPage()
-                              )
-                            );
+                            context,
+                            MaterialPageRoute(
+                              builder: (BuildContext context) => const ForgotPassPage(),
+                            ),
+                          );
                         },
-                        child: Text(
-                          'Forgot password',
+                        child: const Text(
+                          'Forgot password?',
                           style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: Colors.blueAccent,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.black,
                           ),
-                        ),               
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 5),
-                    BasicButton(
-                      onPressed: () {
-                        // Handle login action
-                      },
-                      title: 'Log in',
-                    ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 10),
+                    _loginButton(),
+                    const SizedBox(height: 15),
                     Row(
                       children: const [
                         Expanded(child: Divider(color: Colors.grey)),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text('or'),
-),
+                        ),
                         Expanded(child: Divider(color: Colors.grey)),
                       ],
                     ),
-                    const SizedBox(height: 5),
+                    const SizedBox(height: 15),
                     GoogleButton(onPressed: () {}),
                     const SizedBox(height: 30),
                     Row(
@@ -115,7 +120,7 @@ class LoginPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: AppColors.primary,
                             ),
                           ),
                         ),
@@ -130,33 +135,91 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
-
+  Widget _loginButton(){
+    return BasicButton(
+      onPressed: () async{
+        var result = await sl<LoginUseCase>().call(
+          params: LoginUserReq(
+            email: _email.text.toString(), 
+            password: _password.text.toString()
+          )
+        );
+        result.fold(
+          (l){
+            var snackBar = SnackBar(content: Text(l));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          },
+          (r){
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (BuildContext context) => const Tabbar()),
+              (route) => false,
+            );
+          }
+          );
+      },
+      title: 'Log in',
+    );
+  }
   Widget _loginText() {
     return const Text(
       'Log in to SoundFlow',
       style: TextStyle(
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
         fontSize: 32,
       ),
       textAlign: TextAlign.center,
     );
   }
 
-  Widget _phoneNumberField() {
+  InputDecoration _inputDecoration({
+    required String hintText,
+    IconData? icon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      hintText: hintText,
+      prefixIcon: icon != null ? Icon(icon, color: Color(0xff787878)) : null,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: const Color(0xffffffff),
+      contentPadding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      enabledBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: AppColors.primary),
+        borderRadius: BorderRadius.circular(30),
+      ),
+    );
+  }
+
+  Widget _emailField() {
     return TextField(
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      controller: _email,
+      decoration: _inputDecoration(
+        hintText: 'Enter your email',
+        icon: Icons.email_rounded,
       ),
     );
   }
 
   Widget _passwordField() {
     return TextField(
-      obscureText: true,
-      decoration: InputDecoration(
-        filled: true,
-        fillColor: const Color(0xffE6E6E6),
+      controller: _password,
+      obscureText: _isObscure,
+      decoration: _inputDecoration(
+        hintText: 'Enter your password',
+        icon: Icons.lock,
+        suffixIcon: IconButton(
+          icon: Icon(_isObscure ? Icons.visibility_off : Icons.visibility),
+          onPressed: () {
+            setState(() {
+              _isObscure = !_isObscure;
+            });
+          },
+        ),
       ),
     );
   }
