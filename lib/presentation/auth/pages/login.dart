@@ -2,10 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:soundflow/common/widgets/button/back_btn_to_start.dart';
 import 'package:soundflow/common/widgets/button/basic_btn.dart';
 import 'package:soundflow/common/widgets/button/google_btn.dart';
+import 'package:soundflow/common/widgets/tabbar/tabbar.dart';
 import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
+import 'package:soundflow/data/models/auth/login_user_req.dart';
+import 'package:soundflow/domain/usecases/auth/login.dart';
 import 'package:soundflow/presentation/auth/pages/forgot_password.dart';
 import 'package:soundflow/presentation/auth/pages/signup.dart';
+import 'package:soundflow/service_locator.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,8 +19,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _password = TextEditingController();
   bool _isObscure = true; // Biến để theo dõi trạng thái hiển thị mật khẩu
 
   @override
@@ -46,9 +50,9 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     _loginText(),
                     const SizedBox(height: 20),
-                    myTitle('Phone Number'),
+                    myTitle('Email'),
                     const SizedBox(height: 5),
-                    _phoneNumberField(),
+                    _emailField(),
                     const SizedBox(height: 15),
                     myTitle('Password'),
                     const SizedBox(height: 5),
@@ -76,12 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    BasicButton(
-                      onPressed: () {
-                        // Xử lý đăng nhập
-                      },
-                      title: 'Log in',
-                    ),
+                    _loginButton(),
                     const SizedBox(height: 15),
                     Row(
                       children: const [
@@ -136,7 +135,32 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
+  Widget _loginButton(){
+    return BasicButton(
+      onPressed: () async{
+        var result = await sl<LoginUseCase>().call(
+          params: LoginUserReq(
+            email: _email.text.toString(), 
+            password: _password.text.toString()
+          )
+        );
+        result.fold(
+          (l){
+            var snackBar = SnackBar(content: Text(l));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          },
+          (r){
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (BuildContext context) => const Tabbar()),
+              (route) => false,
+            );
+          }
+          );
+      },
+      title: 'Log in',
+    );
+  }
   Widget _loginText() {
     return const Text(
       'Log in to SoundFlow',
@@ -171,20 +195,19 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _phoneNumberField() {
+  Widget _emailField() {
     return TextField(
-      controller: _phoneController,
-      keyboardType: TextInputType.phone,
+      controller: _email,
       decoration: _inputDecoration(
-        hintText: 'Enter your phone number',
-        icon: Icons.phone,
+        hintText: 'Enter your email',
+        icon: Icons.email_rounded,
       ),
     );
   }
 
   Widget _passwordField() {
     return TextField(
-      controller: _passwordController,
+      controller: _password,
       obscureText: _isObscure,
       decoration: _inputDecoration(
         hintText: 'Enter your password',
