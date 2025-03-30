@@ -15,10 +15,10 @@ class GoogleButton extends StatelessWidget {
       onPressed: () async{
         final userCredential = await _auth.loginWithGoogle();
         if (userCredential != null && userCredential.user != null) {
-          // Đăng nhập thành công, chuyển đến trang Home (Tabbar)
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => Tabbar()),
+            (route) => false,
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(

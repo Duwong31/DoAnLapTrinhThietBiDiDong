@@ -4,8 +4,6 @@ import 'package:soundflow/core/configs/assets/app_vectors.dart';
 import 'package:soundflow/core/configs/theme/app_colors.dart';
 import 'package:soundflow/presentation/auth/pages/signup_or_login.dart';
 
-import '../../../common/widgets/tabbar/tabbar.dart';
-
 class SplashPage extends StatefulWidget{
   const SplashPage({super.key});
 
