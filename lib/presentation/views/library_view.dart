@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../common/widgets/appbar/appbar.dart';
+import '../../core/configs/theme/app_colors.dart';
 import '../library_catalog/artists_view.dart';
 import '../library_catalog/download_view.dart';
 import '../library_catalog/liked_view.dart';
@@ -85,13 +86,24 @@ class _LibraryViewState extends State<LibraryView> {
     );
   }
 
+  // // option 1
+  // final List<Map<String, dynamic>> gridItems = [
+  //   {"icon": Icons.favorite_border, "title": "Liked", "count": "39", "color": Colors.cyanAccent, "page": LikeView()},
+  //   {"icon": Icons.file_download_outlined, "title": "Download", "count": "24", "color": Colors.deepPurpleAccent, "page": DownloadView()},
+  //   {"icon": Icons.cloud_upload_outlined, "title": "Upload", "count": "2", "color": Colors.amberAccent, "page": UploadView()},
+  //   {"icon": Icons.ondemand_video_sharp, "title": "MV", "count": "5", "color": Colors.blue, "page": MVView()},
+  //   {"icon": Icons.personal_injury_outlined, "title": "Artists", "count": "8", "color": Colors.orange, "page": ArtistsView()},
+  //   {"icon": Icons.book_outlined, "title": "Save", "count": "43", "color": Colors.pink, "page": SaveView()},
+  // ];
+
+  // option 2
   final List<Map<String, dynamic>> gridItems = [
-    {"icon": Icons.favorite_border, "title": "Liked", "count": "39", "color": Colors.cyanAccent, "page": LikeView()},
-    {"icon": Icons.file_download_outlined, "title": "Download", "count": "24", "color": Colors.deepPurpleAccent, "page": DownloadView()},
-    {"icon": Icons.cloud_upload_outlined, "title": "Upload", "count": "2", "color": Colors.amberAccent, "page": UploadView()},
-    {"icon": Icons.ondemand_video_sharp, "title": "MV", "count": "5", "color": Colors.blue, "page": MVView()},
-    {"icon": Icons.personal_injury_outlined, "title": "Artists", "count": "8", "color": Colors.orange, "page": ArtistsView()},
-    {"icon": Icons.book_outlined, "title": "Save", "count": "43", "color": Colors.pink, "page": SaveView()},
+    {"icon": Icons.favorite_border, "title": "Liked", "count": "39", "color": AppColors.primary, "page": LikeView()},
+    {"icon": Icons.file_download_outlined, "title": "Download", "count": "24", "color": AppColors.primary, "page": DownloadView()},
+    {"icon": Icons.cloud_upload_outlined, "title": "Upload", "count": "2", "color": AppColors.primary, "page": UploadView()},
+    {"icon": Icons.ondemand_video_sharp, "title": "MV", "count": "5", "color": AppColors.primary, "page": MVView()},
+    {"icon": Icons.personal_injury_outlined, "title": "Artists", "count": "8", "color": AppColors.primary, "page": ArtistsView()},
+    {"icon": Icons.book_outlined, "title": "Save", "count": "43", "color": AppColors.primary, "page": SaveView()},
   ];
 
   Widget _buildGridItem(IconData icon, String title, String count, Color color) {

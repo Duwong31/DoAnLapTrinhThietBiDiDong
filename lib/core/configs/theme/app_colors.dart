@@ -7,5 +7,4 @@ class AppColors{
   static const darkBackground = Color(0xff0D0C0C);
   static const grey = Color(0xffBEBEBE);//MAU XAM, CHUA SU SUNG
   static const songColor = Color(0xffEEEEEE);
-  
 }

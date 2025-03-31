@@ -3,7 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:soundflow/core/configs/theme/app_theme.dart';
+import 'package:soundflow/presentation/setting/pages/notification_provider.dart';
 import 'package:soundflow/presentation/splash/pages/splash.dart';
 import 'package:soundflow/service_locator.dart';
 
@@ -18,7 +20,14 @@ void main() async{
     // options: DefaultFirebaseOptions.currentPlatform,
   ); 
   await initializeDependencies();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget{

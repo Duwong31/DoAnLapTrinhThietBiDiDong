@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soundflow/presentation/views/personal_edit.dart';
 import '../../common/widgets/appbar/appbar.dart';
+import '../../core/configs/theme/app_colors.dart';
 
 class PersonalView extends StatefulWidget {
   const PersonalView({super.key});
@@ -24,7 +25,7 @@ class _PersonalViewState extends State<PersonalView> {
               children: [
                 CircleAvatar(
                   radius: 60,
-                  backgroundImage: AssetImage('assets/profile.png'),
+                  backgroundImage: AssetImage('assets/images/userclone.png'),
                 ),
                 const SizedBox(width: 16),
                 Column(
@@ -50,7 +51,11 @@ class _PersonalViewState extends State<PersonalView> {
                       MaterialPageRoute(builder: (context) => PersonalEdit()),
                     );
                   },
-                  child: const Text('Edit'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+
+                  ),
+                  child: const Text('Edit', style: TextStyle(color: Colors.white),),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
@@ -92,7 +97,12 @@ class _PersonalViewState extends State<PersonalView> {
                 onPressed: () {},
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  child: Text('See all playlists', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                      'See all playlists',
+                      style: TextStyle(
+                          fontSize: 16,
+                        color: AppColors.primary,
+                      )),
                 ),
               ),
             ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../core/configs/theme/app_colors.dart';
 import '../../../presentation/views/home_view.dart';
 import '../../../presentation/views/library_view.dart';
 import '../../../presentation/views/personal_view.dart';
@@ -64,12 +65,12 @@ class _TabbarState extends State<Tabbar> {
         children: [
           Icon(
             icon,
-            color: currentTab == index ? Colors.blue : Colors.grey,
+            color: currentTab == index ? AppColors.primary : Colors.grey,
           ),
           Text(
             label,
             style: TextStyle(
-              color: currentTab == index ? Colors.blue : Colors.grey,
+              color: currentTab == index ? AppColors.primary : Colors.grey,
             ),
           )
         ],
