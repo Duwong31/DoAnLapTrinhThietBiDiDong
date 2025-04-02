@@ -41,7 +41,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
         });
       }
     } catch (e) {
-      print("Lỗi tải ảnh: $e");
+      print("Error download image: $e");
     }
   }
 

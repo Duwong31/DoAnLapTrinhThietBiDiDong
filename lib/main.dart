@@ -9,6 +9,8 @@ import 'package:soundflow/presentation/setting/pages/notification_provider.dart'
 import 'package:soundflow/presentation/splash/pages/splash.dart';
 import 'package:soundflow/service_locator.dart';
 
+import 'data/repository/songs/repository_songs.dart';
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized(); 
   // HydratedBloc.storage = await HydratedStorage.build(
@@ -28,6 +30,15 @@ void main() async{
       child: MyApp(),
     ),
   );
+  //songs
+  var repository = DefaultRepository();
+  var songs = await repository.loadData();
+
+  if (songs != null) {
+    for (var song in songs) {
+      debugPrint(song.toString());
+    }
+  }
 }
 
 class MyApp extends StatelessWidget{

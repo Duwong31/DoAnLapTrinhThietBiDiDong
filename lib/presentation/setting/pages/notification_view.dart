@@ -34,7 +34,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(
-          "Thông báo",
+          "Notifications",
         style: TextStyle(
           color: AppColors.primary,
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:soundflow/presentation/songs/songs_view.dart';
 
 import '../../common/widgets/appbar/appbar.dart';
+import '../../core/configs/theme/app_colors.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -49,7 +51,7 @@ class _HomeViewState extends State<HomeView> {
                 ),
               ),
               const SizedBox(height: 20),
-              _buildRankingSection(),
+              _buildAllMusicSection(),
               const SizedBox(height: 20),
               _buildSuggestionsSection(),
             ],
@@ -72,11 +74,31 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Widget _buildRankingSection() {
+  Widget _buildAllMusicSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text("Ranking", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.purple)),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              "Songs",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SongsView()),
+                );
+              },
+              child: const Text(
+                "More",
+                style: TextStyle(color: Colors.black),
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
         Container(
           decoration: BoxDecoration(
@@ -94,6 +116,7 @@ class _HomeViewState extends State<HomeView> {
       ],
     );
   }
+
 
   Widget _buildRankingItem(int rank, String title, String artist, String imageUrl) {
     return ListTile(
