@@ -9,6 +9,7 @@ import 'package:soundflow/presentation/setting/pages/notification_provider.dart'
 import 'package:soundflow/presentation/splash/pages/splash.dart';
 import 'package:soundflow/service_locator.dart';
 
+import 'common/widgets/tabbar/tabbar.dart';
 import 'data/repository/songs/repository_songs.dart';
 
 void main() async{
@@ -48,7 +49,8 @@ class MyApp extends StatelessWidget{
     return MaterialApp(
       theme: AppTheme.lightTheme,
       debugShowCheckedModeBanner: false,
-      home: const SplashPage()
+      // home: const SplashPage()
+      home: const Tabbar()
     );
   }
 }
