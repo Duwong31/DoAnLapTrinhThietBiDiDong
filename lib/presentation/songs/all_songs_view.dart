@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:soundflow/data/models/songs/all_songs.dart';
 import 'package:soundflow/data/sources/songs/source_songs.dart';
+import '../../core/configs/theme/app_colors.dart';
 import 'now_playing/playing.dart';
 
 class AllSongsView extends StatefulWidget {
@@ -99,6 +100,12 @@ class _AllSongsViewState extends State<AllSongsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text(
+        "Songs",
+        style: TextStyle(
+          color: AppColors.primary,
+        ),
+      )),
       body: RefreshIndicator(
         onRefresh: () async => _refreshSongs(),
         child: FutureBuilder<List<Song>>(

@@ -23,7 +23,7 @@ class _PersonalViewState extends State<PersonalView> {
           children: [
             Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 60,
                   backgroundImage: AssetImage('assets/images/userclone.png'),
                 ),
@@ -53,22 +53,17 @@ class _PersonalViewState extends State<PersonalView> {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-
                   ),
-                  child: const Text('Edit', style: TextStyle(color: Colors.white),),
+                  child: const Text('Edit', style: TextStyle(color: Colors.white)),
                 ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: const Icon(Icons.ios_share),
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                 ),
                 IconButton(
                   icon: const Icon(Icons.more_horiz),
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                 ),
               ],
             ),
@@ -98,11 +93,12 @@ class _PersonalViewState extends State<PersonalView> {
                 child: const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   child: Text(
-                      'See all playlists',
-                      style: TextStyle(
-                          fontSize: 16,
-                        color: AppColors.primary,
-                      )),
+                    'See all playlists',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.primary,
+                    ),
+                  ),
                 ),
               ),
             ),

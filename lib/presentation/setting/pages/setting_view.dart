@@ -52,15 +52,12 @@ class SettingsBottomSheet extends StatelessWidget {
               child: ListView(
                 shrinkWrap: true,
                 children: [
-                  _buildMenuItem(context, 'Account'),
                   _buildMenuItem(context, 'Themes'),
                   _buildMenuItem(context, 'Storages'),
                   _buildMenuItem(context, 'Audio Quality'),
                   _buildMenuItem(context, 'Video Quality'),
                   _buildMenuItem(context, 'Apps and Devices'),
-                  _buildMenuItem(context, 'Notification'),
                   _buildMenuItem(context, 'Language'),
-                  _buildMenuItem(context, 'Advertisements'),
                   _buildMenuItem(context, 'About'),
                 ],
               ),

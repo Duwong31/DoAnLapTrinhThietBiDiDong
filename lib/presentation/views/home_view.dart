@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:soundflow/presentation/songs/songs_view.dart';
 
 import '../../common/widgets/appbar/appbar.dart';
 import '../../core/configs/theme/app_colors.dart';
+import '../songs/all_songs_view.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -89,7 +89,7 @@ class _HomeViewState extends State<HomeView> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SongsView()),
+                  MaterialPageRoute(builder: (context) => AllSongsView()),
                 );
               },
               child: const Text(
