@@ -1,5 +1,5 @@
-class SongList {
-  SongList({
+class Song {
+  Song({
     required this.id,
     required this.title,
     required this.album,
@@ -9,15 +9,16 @@ class SongList {
     required this.duration,
   });
 
-  factory SongList.fromJson(Map<String, dynamic> map) {
-    return SongList(
-      id: map['id'],
-      title: map['title'],
-      album: map['album'],
-      artist: map['artist'],
-      source: map['source'],
-      image: map['image'],
-      duration: map['id'],
+  factory Song.fromJson(Map<String, dynamic> json) {
+    return Song(
+      id: json['id'].toString(),               // Đảm bảo id luôn là String
+      title: json['title'],
+      album: json['album'] ,
+      artist: json['artist'] ,
+      source: json['source'] ,
+      image: json['image'] ,
+      duration: int.tryParse(json['duration'].toString()) ?? 0,       // Tránh lỗi parse
+
     );
   }
 
@@ -27,18 +28,18 @@ class SongList {
   String artist;
   String source;
   String image;
-  String duration;
+  int duration;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SongList && runtimeType == other.runtimeType && id == other.id;
+          other is Song && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
 
   @override
   String toString() {
-    return 'SongList{id: $id, title: $title, album: $album, artist: $artist, source: $source, image: $image, duration: $duration}';
+    return 'Song{id: $id, title: $title, album: $album, artist: $artist, source: $source, image: $image, duration: $duration}';
   }
 }

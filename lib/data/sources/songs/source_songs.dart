@@ -1,40 +1,43 @@
-import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
-
-import 'package:soundflow/data/models/songs/all_songs.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-abstract interface class DataSource {
-  Future<List<SongList>?> loadData();
+import '../../models/songs/all_songs.dart';
+
+abstract interface class DataSource{
+  Future<List<Song>?> loadData();
 }
 
-class RemoteDataSource implements DataSource {
+class RemoteDataSource implements DataSource{
   @override
-  Future<List<SongList>?> loadData() async {
-    final url = 'https://thantrieu.com/resources/braniumapis/songs.json';
+  Future<List<Song>?> loadData() async {
+    const url = ('https://thantrieu.com/resources/braniumapis/songs.json');
     final uri = Uri.parse(url);
+
     final response = await http.get(uri);
-    if(response.statusCode == 200) {
+
+    if(response.statusCode == 200){
       final bodyContent = utf8.decode(response.bodyBytes);
-      var songWrapper = jsonDecode(bodyContent) as Map;
-      var songList = songWrapper['songs'] as List;
-      List<SongList> songs = songList.map((song) => SongList.fromJson(song)).toList();
+
+      var SongWrapper = jsonDecode(bodyContent) as Map;
+
+      var songList = SongWrapper['songs'] as List;
+      List<Song> songs = songList.map((song) => Song.fromJson(song)).toList();
       return songs;
-    } else {
+    }else{
       return null;
     }
   }
-
 }
 
-class LocalDataSource implements DataSource {
+class LocalDataSource implements DataSource{
   @override
-  Future<List<SongList>?> loadData() async {
-    final String response = await rootBundle.loadString('assets/json/all_song.json');
+  Future<List<Song>?> loadData() async{
+    final String response = await rootBundle.loadString('assets/songs.json');
+
     final jsonBody = jsonDecode(response) as Map;
     final songList = jsonBody['songs'] as List;
-    List<SongList> songs = songList.map((song) => SongList.fromJson(song)).toList();
+    List<Song> songs = songList.map((song) => Song.fromJson(song)).toList();
     return songs;
   }
-
 }

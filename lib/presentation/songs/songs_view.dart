@@ -80,7 +80,8 @@ class _SongsViewState extends State<SongsView> with SingleTickerProviderStateMix
                   const AlbumsView(),
                   const ArtistsView(),
                 ],
-              ))
+              )
+          )
         ],
       ),
     );
