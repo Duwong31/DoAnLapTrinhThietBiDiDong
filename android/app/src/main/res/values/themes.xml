@@ -1,0 +1,31 @@
+<resources>
+    <style name="AppTheme" parent="Theme.AppCompat">
+        <item name="buttonStyle">@style/CustomButton</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="editTextStyle">@style/CustomEditText</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <!-- Set the splash screen background, animated icon, and animation duration. -->
+        <item name="windowSplashScreenBackground">@drawable/background</item>
+        <item name="android:windowBackground">@drawable/background</item>
+
+        <!-- Use windowSplashScreenAnimatedIcon to add either a drawable or an
+                animated drawable. One of these is required. -->
+        <!-- <item name="windowSplashScreenAnimatedIcon">@drawable/splash</item> -->
+        <!-- Required for animated icons -->
+        <!-- <item name="windowSplashScreenAnimationDuration">200</item> -->
+
+        <!-- Set the theme of the Activity that directly follows your splash screen. -->
+        <!-- Required -->
+        <item name="postSplashScreenTheme">@style/LaunchTheme</item>
+    <item name="android:windowActionBar">false</item>
+         <item name="android:windowNoTitle">true</item>
+    </style>
+</resources>

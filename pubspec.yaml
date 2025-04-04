@@ -1,0 +1,70 @@
+name: org_soundflow
+version: 3.0.13+93
+publish_to: none
+description: A new Flutter project.
+environment:
+  sdk: ">=2.18.4 <3.0.0"
+
+dependencies:
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.0.9
+  dio: ^5.4.1
+  image_picker: ^1.0.7
+  rxdart: ^0.28.0
+  get: ^4.6.1
+  flutter:
+    sdk: flutter
+  extended_image: ^9.1.0
+  fluttertoast: ^8.0.8
+  flutter_badged: ^2.0.2
+  device_info_plus: ^11.2.0
+  pin_code_fields: ^8.0.1
+  cached_network_image: ^3.2.0
+  flutter_slidable: ^3.0.1
+  flutter_application_id: ^2.0.0-dev
+  firebase_crashlytics: ^4.3.0
+  firebase_core: ^3.10.0
+  photo_view: ^0.15.0
+  emoji_picker_flutter: ^4.2.0
+  barcode_widget: ^2.0.2
+  intl: ^0.19.0
+  shimmer: ^3.0.0
+  flutter_local_notifications: ^18.0.1
+  firebase_messaging: ^15.2.0
+  path_drawing: ^1.0.1
+  timeago: ^3.6.1
+  permission_handler: ^11.3.0
+  firebase_analytics: ^11.4.0
+  encrypt: ^5.0.1
+  image_cropper: ^8.1.0
+  google_fonts: ^6.2.1
+  url_launcher: ^6.1.5
+  fl_chart: ^0.70.1
+  percent_indicator: ^4.2.3
+  velocity_x:
+    git:
+      url: https://github.com/Lyhotuanan/VelocityX.git
+      ref: stable
+
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/ic_launcher.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  adaptive_icon_background: "#FFFFFF"  # Màu nền hoặc image path cho background
+  adaptive_icon_foreground: "assets/ic_launcher.png"  # Icon foreground
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: ^0.14.3
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/flags/
+    - assets/images/
+    - assets/drawer/
+    - assets/navigator/
+
+#flutter 3.27.1
