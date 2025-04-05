@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // Import service (chỉ dùng cho Google) và models
-import '../../../data/services/auth_firebase_service.dart'; // Chỉ dùng cho Google
-import '../../../data/models/auth/create_user_req.dart'; // Có thể không cần nếu dùng biến trực tiếp
+import '../../../data/services/auth_firebase_service.dart'; 
 
 // Import Repository (dùng cho signup thường)
 import '../../../data/repositories/repositories.dart'; // <<< THÊM IMPORT REPO
