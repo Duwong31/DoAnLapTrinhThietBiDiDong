@@ -25,7 +25,7 @@ class ContainerButton extends StatelessWidget {
       decoration: BoxDecoration(
         border: Border.all(width: 0),
         gradient: gradient,
-        borderRadius: const BorderRadius.all(Radius.circular(5)),
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
         boxShadow: const [
           BoxShadow(
               color: AppTheme.shadowBoxColor,

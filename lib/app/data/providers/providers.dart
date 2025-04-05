@@ -37,7 +37,32 @@ class ApiProvider {
       rethrow;
     }
   }
+  static Future<String> sendSignupRequest(String fullname, String email, String password) async {
+    try {
+      final res = await ApiClient.connect(
+        ApiUrl.signup, 
+        method: ApiMethod.post,
+        data: {"fullname": fullname, "email": email, "password": password},
+      );
 
+      if (res.statusCode == 200 || res.statusCode == 201) { 
+        // Trả về thông báo thành công từ API nếu có
+        return res.data['message'] ?? 'Signup was successful!';
+      } else {
+        String errorMessage = 'Signup failed.';
+        if (res.data != null && res.data['errors'] != null) {
+          errorMessage = (res.data['errors'] as List).isNotEmpty
+              ? res.data['errors'][0]['message'] ?? errorMessage
+              : errorMessage;
+        } else if (res.data != null && res.data['message'] != null) {
+          errorMessage = res.data['message'];
+        }
+        throw Exception(errorMessage); 
+      }
+    } catch (e) {
+      throw Exception('An unexpected error occurred: ${e.toString()}');
+    }
+  }
   static Future<bool> sendOtp(String phone, String countryCode) async {
     try {
       final res = await ApiClient.connect(

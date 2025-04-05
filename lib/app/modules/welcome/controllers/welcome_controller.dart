@@ -9,23 +9,6 @@ class WelcomeController extends GetxController {
   final RxInt indexPage = 0.obs;
   Timer? _timer;
   PageController pageController = PageController(initialPage: 0);
-  List<SlideModel> slides = [
-    SlideModel(
-      AppImage.welcome_1,
-      'Delivery Scheduled',
-      'Your pharmacy schedules your medication delivery',
-    ),
-    SlideModel(
-      AppImage.welcome_2,
-      'Get Notified',
-      'You get notified when your medication is en route',
-    ),
-    SlideModel(
-      AppImage.welcome_3,
-      'Tracking',
-      'Track your order and view order history',
-    ),
-  ];
 
   @override
   void onInit() {
@@ -44,15 +27,14 @@ class WelcomeController extends GetxController {
     super.onInit();
   }
 
-  void changePage() {
+  void toLoginPage() {
     Get.offAllNamed(Routes.login);
+  }
+  void toSignUpPage() {
+    Get.offAllNamed(Routes.register);
   }
 
   @override
   void onClose() => _timer?.cancel();
 }
 
-class SlideModel {
-  final String image, title, subtitle;
-  SlideModel(this.image, this.title, this.subtitle);
-}

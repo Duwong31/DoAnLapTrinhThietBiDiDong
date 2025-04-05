@@ -52,6 +52,7 @@ class AppImage {
   static const String replyIcon = 'assets/images/reply_icon.png';
   static const String orderEmpty = 'assets/images/order.png';
   static const String relationShip = 'assets/images/relationship.png';
+  static const String google = 'assets/images/google.png';
   static const String secondaryBackground =
       'assets/images/secondary_background.png';
   static const String primaryBackground =

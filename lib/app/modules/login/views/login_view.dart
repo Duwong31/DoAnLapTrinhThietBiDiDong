@@ -1,9 +1,10 @@
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
-import '../../../core/styles/text_style.dart';
+import '../../../core/styles/text_style.dart' as custom_text_style;
 import '../../../core/utilities/utilities.dart';
 import '../../../core/widgets/background_widget.dart';
+import '../../../routes/app_pages.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/container_button.dart';
 import '../../../widgets/input_custom.dart';
@@ -20,7 +21,7 @@ class LoginView extends GetView<LoginController> {
     }
     final bool showKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
     return Scaffold(
-      body: BackgroundWidget(
+      body: SafeArea(
         child: Column(
           children: [
             AnimatedContainer(
@@ -29,24 +30,23 @@ class LoginView extends GetView<LoginController> {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(30),
-                  child: Image.asset(AppImage.logo),
+                  child: Image.asset(
+                    AppImage.logo,
+                    width: 80),
                 ),
               ),
             ),
             Container(
-              child: 'Welcome Back'.text.style(TGTextStyle.header).make(),
-            ),
-            Container(
-              child: 'Login to access your account'
+              child: 'Log in to SoundFlow'
                   .text
-                  .style(TGTextStyle.body2)
+                  .style(custom_text_style.TGTextStyle.header)
                   .make(),
             ),
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
-                  vertical: 40,
+                  vertical: 30,
                 ),
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -56,14 +56,14 @@ class LoginView extends GetView<LoginController> {
                       children: [
                         Container(
                           alignment: Alignment.centerLeft,
-                          child: 'Enter Your Email'
+                          child: 'Email'
                               .text
-                              .style(TGTextStyle.body3)
+                              .style(custom_text_style.TGTextStyle.body3)
                               .make(),
                         ),
                         Dimes.height10,
                         InputCustom(
-                            fillColor: AppTheme.inputBoxColor,
+                            fillColor: AppTheme.inputBoxColor,  
                             contentPadding: const EdgeInsets.all(Dimes.size15),
                             onChanged: (String email) {
                               controller.email = email;
@@ -73,9 +73,9 @@ class LoginView extends GetView<LoginController> {
                         Dimes.height30,
                         Container(
                           alignment: Alignment.centerLeft,
-                          child: 'Enter Your Password'
+                          child: 'Password'
                               .text
-                              .style(TGTextStyle.body3)
+                              .style(custom_text_style.TGTextStyle.body3)
                               .make(),
                         ),
                         Dimes.height10,
@@ -101,33 +101,46 @@ class LoginView extends GetView<LoginController> {
                                 onPressed: controller.goToRecoveryAccountView,
                               )),
                         ),
-                        Dimes.height15,
+                        Dimes.height10,
                         ContainerButton(
                           child: Obx(() => AppButton(
                                 'Login',
                                 color: Colors.transparent,
-                                loading: controller.isLoading,
+                                loading: controller.isLoading,                               
                                 onPressed: () {
-                                  keyform.currentState!.validate();
-                                  controller.onPressLoginButton();
+                                  // keyform.currentState!.validate();
+                                  // controller.onPressLoginButton();
+                                  Get.toNamed(Routes.dashboard);
                                 },
                               )),
                         ),
                         Dimes.height15,
+                        const Row(
+                          children: [
+                            Expanded(child: Divider(color: Colors.grey)),
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text('or'),
+                            ),
+                            Expanded(child: Divider(color: Colors.grey)),
+                          ],
+                        ),
+                        _continueWithPhone(onPressed: (){}),
+                        _continueWithGoogle(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             'Don\'t have an account?'
                                 .text
-                                .color(AppTheme.appBarTintColor)
-                                .size(12)
+                                .color(AppTheme.subtitleColor)
+                                .size(16)
                                 .medium
                                 .make(),
                             Obx(() => AppButton(
                                   'Sign up',
                                   type: ButtonType.text,
-                                  fontSize: 12,
+                                  fontSize: 16,
                                   axisSize: MainAxisSize.min,
                                   textColor: AppTheme.primary,
                                   loading: controller.isLoading,
@@ -141,6 +154,71 @@ class LoginView extends GetView<LoginController> {
                 ),
               ),
             )
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _continueWithPhone({required VoidCallback onPressed}) {
+    return TextButton(
+      onPressed: () async{
+      
+        },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200], 
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              AppImage.phone,
+              width: 24,
+            ),
+            const SizedBox(width: 8),
+            // Text
+            const Text(
+              "Continue with phone",
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  Widget _continueWithGoogle() {
+    return TextButton(
+      onPressed: () async{
+        controller.signInWithGoogle();
+      },
+      child: Container(
+        height: 48,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200], 
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              AppImage.google,
+              width: 24,
+            ),
+            const SizedBox(width: 8),
+            const Text(
+              "Continue with Google",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.black87,
+              ),
+            ),
           ],
         ),
       ),

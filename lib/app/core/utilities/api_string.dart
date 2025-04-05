@@ -6,6 +6,7 @@ class ApiUrl {
   static const String sendOpt = '$receipt/send_otp';
   static const String login = '$receipt/login';
   static const String logout = '$receipt/logout';
+  static const String signup = '$receipt/signup';
 
   static String detailRecipient(id) => '$receipt/recipients/$id';
   static String notifications = '$receipt/notifications';

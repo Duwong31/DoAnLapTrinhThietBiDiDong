@@ -89,7 +89,7 @@ class CustomTextFieldState extends State<InputCustom> {
   @override
   Widget build(BuildContext context) {
     final style = (widget.hintStyle ?? context.subtitle1).copyWith(
-      color: Colors.white,
+      color: Colors.black,
       fontSize: widget.hintSize,
       fontWeight: FontWeight.normal,
     );
@@ -144,7 +144,7 @@ class CustomTextFieldState extends State<InputCustom> {
                 ? IconButton(
                     icon: Icon(
                         _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.appBarTintColor.withOpacity(0.6)),
+                        color: AppTheme.passVisibility.withOpacity(0.6)),
                     onPressed: _toggle,
                   )
                 : widget.isSearch && _text.isNotEmpty

@@ -18,8 +18,8 @@ class AppGradient {
     Color.fromRGBO(248, 130, 95, 1),
   ], begin: Alignment.centerLeft, end: Alignment.centerRight);
   static const buttonPrimary = LinearGradient(colors: [
-    Color.fromRGBO(245, 76, 101, 1),
-    Color.fromRGBO(248, 130, 95, 1),
+    Color.fromRGBO(255, 127, 0, 1),
+    Color.fromRGBO(255, 87, 34, 1),
   ], begin: Alignment.centerLeft, end: Alignment.centerRight);
   static const buttonSecondary = LinearGradient(colors: [
     Color.fromRGBO(86, 86, 86, 1),
@@ -37,11 +37,12 @@ class AppTheme {
   static const Color titleColor = Color(0xff3B3B3B);
   static const Color subtitleColor = Color(0xff848484);
   static const Color hintColor = Color(0xff9B9B9B);
+  static const Color passVisibility = Color(0xff787878);
   static const Color appBar = Color(0xFF1e1818);
   static const Color appBarTintColor = Colors.white;
   static const Color deactivate = Color(0xff8C8C8C);
   static const Color textColor = Colors.white;
-  static const Color inputBoxColor = Color.fromRGBO(44, 47, 51, 0.5);
+  static const Color inputBoxColor = Color(0xffFFFFFF);
   static const Color inputBoxBorderColor = Color.fromRGBO(84, 84, 84, 1);
   static const Color shadowBoxColor = Color.fromRGBO(0, 0, 0, 0.5);
 

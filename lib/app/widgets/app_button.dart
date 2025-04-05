@@ -117,6 +117,7 @@ class AppButton extends StatelessWidget {
         Widget button = OutlinedButton(
           onPressed: disabled ? null : onPressed,
           child: label,
+          
         );
         if (icon != null) {
           button = OutlinedButton.icon(

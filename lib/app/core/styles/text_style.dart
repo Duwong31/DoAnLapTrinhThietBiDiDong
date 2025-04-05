@@ -4,10 +4,10 @@ enum TGTextStyle { header, title, title2, body, body2, body3 }
 
 extension TextStyle on VxTextBuilder {
   VxTextBuilder style(TGTextStyle style) {
-    color(AppTheme.textColor);
+    color(AppTheme.labelColor);
     switch (style) {
       case TGTextStyle.header:
-        bold.size(20);
+        bold.size(32);
         break;
       case TGTextStyle.title:
         bold.size(16);

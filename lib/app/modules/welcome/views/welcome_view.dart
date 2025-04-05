@@ -22,9 +22,7 @@ class WelcomeView extends GetView<WelcomeController> {
                 width: 80,
                 color: AppTheme.primary, 
               ),
-
               const SizedBox(height: 20),
-
               const Text(
                 "Sound your life.",
                 style: TextStyle(
@@ -40,21 +38,31 @@ class WelcomeView extends GetView<WelcomeController> {
               //SIGN UP BUTTON
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: SizedBox(
+                width: double.infinity,
+                height: 48,
                 child: ElevatedButton(
-                  onPressed: (){
-                    controller.changePage();
-                  }, 
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  onPressed: () {
+                    controller.toSignUpPage();
+                  },
                   child: const Text(
-                    'Sign up free',
+                    "Sign up free",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppTheme.textColor,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
               //LOG IN BUTTON
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -72,7 +80,7 @@ class WelcomeView extends GetView<WelcomeController> {
                     ),
                   ),
                   onPressed: () {
-                    controller.changePage();
+                    controller.toLoginPage();
                   },
                   child: const Text(
                     "Log in",
@@ -84,40 +92,11 @@ class WelcomeView extends GetView<WelcomeController> {
                   ),
                 ),
               ),
-              ),
-              
+            ),
             ],
           ),          
         ),
       ),
-    );
-  }
-}
-
-class ItemPage extends StatelessWidget {
-  const ItemPage({
-    super.key,
-    required this.slider,
-  });
-  final SlideModel slider;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Image.asset(slider.image),
-        ),
-        Dimes.height40,
-        slider.title.text
-            .size(20)
-            .color(const Color(0xff00AB97))
-            .medium
-            .center
-            .make(),
-        Dimes.height10,
-        slider.subtitle.text.center.make().pSymmetric(h: context.height * .02),
-      ],
     );
   }
 }
