@@ -9,6 +9,7 @@ class AppImage {
   static const String chat = 'assets/navigator/chat.png';
   static const String shop = 'assets/navigator/shop.png';
   static const String user = 'assets/navigator/user.png';
+  static const String library = 'assets/navigator/library.png';
   static const String notification = 'assets/navigator/notification.png';
   static const String welcome_1 = 'assets/images/welcome_1.png';
   static const String welcome_2 = 'assets/images/welcome_2.png';
@@ -16,7 +17,7 @@ class AppImage {
   static const String logo = 'assets/images/logo.png';
   static const String email = 'assets/images/email.png';
   static const String password = 'assets/images/password.png';
-  static const String search = 'assets/images/search.png';
+  static const String search = 'assets/navigator/search.png';
   static const String close = 'assets/images/close.png';
   static const String closeButtonDark = 'assets/images/close_button_dark.png';
   static const String phone = 'assets/images/phone.png';

@@ -39,12 +39,10 @@ class DashboardController extends GetxController
   @override
   void onInit() {
     items = [
-      BottomBarModel(AppImage.home, 'Trang chủ', 0),
-      BottomBarModel(AppImage.list, 'Danh sách', 0),
-      BottomBarModel(AppImage.outstanding, 'Nổi bật', 0),
-      // BottomBarModel(AppImage.order, 'Orders', 0), //messages
-      // BottomBarModel(AppImage.chat, 'Messages', 0, appBarTitle: 'MESSAGES'), //notifications
-      BottomBarModel(AppImage.user, 'Tài khoản', 0),
+      BottomBarModel(AppImage.home, 'Home', 0),
+      BottomBarModel(AppImage.search, 'Search', 0),
+      BottomBarModel(AppImage.library, 'Library', 0),
+      BottomBarModel(AppImage.user, 'Personal', 0),
     ];
 
     change(items, status: RxStatus.success());

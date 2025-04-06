@@ -9,7 +9,25 @@ import '../delete_account/delete_account_view.dart';
 
 class ProfileController extends GetxController with ScrollMixin {
   final user = Rxn<UserModel>();
-
+  @override
+  void onInit() {
+    super.onInit();
+    // Khởi tạo mock data ở đây thay vì trong initState của View
+    _initializeMockData();
+    // Hoặc gọi hàm fetch dữ liệu thật nếu bạn muốn
+    // getUserDetail();
+  }
+   // Hàm helper để khởi tạo mock data (hoặc dữ liệu thật)
+  void _initializeMockData() {
+     user.value = UserModel(
+        fullName: "John Doe",
+        dateOfBirth: DateTime.parse("1990-01-01"),
+        email: "johndoe@example.com",
+        phone: "123456789",
+        gender: "Male");
+     // Có thể gọi update() nếu cần thiết, nhưng gán trực tiếp thường đủ
+     // update();
+  }
   void changeAvatar() {
     FirebaseAnalyticService.logEvent('Profile_Edit_Avatar');
     AppUtils.pickerImage(onTap: (bytes) async {
@@ -22,7 +40,7 @@ class ProfileController extends GetxController with ScrollMixin {
   Future<ProfileController> getUserDetail({bool isLogin = false}) async {
     try {
       user.value = await Repo.user.getDetail();
-
+      
       if (isLogin) {
         FirebaseAnalyticService.logEvent('Login');
       }

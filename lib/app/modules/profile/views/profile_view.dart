@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
+import '../../../data/models/models.dart';
 import '../../../data/services/firebase_analytics_service.dart';
 
 import '../../../widgets/widgets.dart';

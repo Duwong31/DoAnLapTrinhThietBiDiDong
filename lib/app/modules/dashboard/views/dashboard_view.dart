@@ -126,7 +126,7 @@ class _BottomBarItem extends StatelessWidget {
                   ? Icon(
                       Icons.store_outlined,
                       color: index == currentIndex
-                          ? AppTheme.secondary
+                          ? AppTheme.primary
                           : AppTheme.deactivate,
                     )
                   : Image.asset(
@@ -135,7 +135,7 @@ class _BottomBarItem extends StatelessWidget {
                       height: 24,
                       fit: BoxFit.cover,
                       color: index == currentIndex
-                          ? AppTheme.secondary
+                          ? AppTheme.primary
                           : AppTheme.deactivate,
                     ),
             ),
@@ -143,7 +143,7 @@ class _BottomBarItem extends StatelessWidget {
                 .size(12)
                 .color(
                   index == currentIndex
-                      ? AppTheme.secondary
+                      ? AppTheme.primary
                       : AppTheme.deactivate,
                 )
                 .make(),
