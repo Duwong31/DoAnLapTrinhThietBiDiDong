@@ -20,7 +20,8 @@ class SearchView extends GetView<SearchPageController> {
             Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Theme.of(context).inputDecorationTheme.fillColor ??
+                    Theme.of(context).colorScheme.surfaceVariant,
                 borderRadius: BorderRadius.circular(30),
               ),
               child: TextField(
@@ -29,21 +30,26 @@ class SearchView extends GetView<SearchPageController> {
                   controller.saveSearch(value);
                   textController.clear();
                 },
-                decoration: const InputDecoration(
+                style: Theme.of(context).textTheme.bodyMedium, // 👈 màu chữ theo theme
+                decoration: InputDecoration(
                   hintText: "Search for songs, artists...",
-                  hintStyle: TextStyle(color: AppTheme.labelColor),
-                  prefixIcon: Icon(Icons.search, color: AppTheme.labelColor),
+                  hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                  prefixIcon: Icon(Icons.search,
+                      color: Theme.of(context).iconTheme.color),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(vertical: 13),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 13),
                 ),
               ),
             ),
 
             Dimes.height20,
 
-            const Text(
+            Text(
               "Suggestions for you",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.bold),
             ),
 
             Dimes.height10,
@@ -61,12 +67,21 @@ class SearchView extends GetView<SearchPageController> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: Theme.of(context)
+                        .inputDecorationTheme
+                        .fillColor ??
+                        Theme.of(context).colorScheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(item,
-                      style: const TextStyle(
-                          fontSize: 14, color: AppTheme.labelColor)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.color)),
                 ),
               ))
                   .toList(),
@@ -74,14 +89,15 @@ class SearchView extends GetView<SearchPageController> {
 
             Dimes.height20,
 
-            // Recent searches
             Obx(() => Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   "Recent searches",
-                  style:
-                  TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 if (controller.recentSearches.isNotEmpty)
                   TextButton(
@@ -100,10 +116,13 @@ class SearchView extends GetView<SearchPageController> {
                 itemBuilder: (context, index) {
                   final searchItem = controller.recentSearches[index];
                   return ListTile(
-                    leading: const Icon(Icons.history, color: Colors.grey),
-                    title: Text(searchItem),
+                    leading: Icon(Icons.history,
+                        color: Theme.of(context).iconTheme.color),
+                    title: Text(searchItem,
+                        style: Theme.of(context).textTheme.bodyMedium),
                     trailing: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.grey),
+                      icon: Icon(Icons.close,
+                          color: Theme.of(context).iconTheme.color),
                       onPressed: () => controller.removeSearch(index),
                     ),
                   );
