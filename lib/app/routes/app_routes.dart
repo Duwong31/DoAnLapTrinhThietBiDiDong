@@ -17,6 +17,7 @@ abstract class Routes {
   static const profile = _Paths.profile;
   static const search = _Paths.search;
   static const outstanding = _Paths.outstanding;
+  static const setting = _Paths.setting;
 }
 
 abstract class _Paths {
@@ -33,4 +34,5 @@ abstract class _Paths {
   static const profile = '/profile';
   static const search = '/search';
   static const outstanding = '/library';
+  static const setting = '/setting';
 }

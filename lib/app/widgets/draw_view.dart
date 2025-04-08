@@ -128,15 +128,16 @@ class DrawerView extends StatelessWidget {
             },
           ),
 
+          // Setting
           ListTile(
             minLeadingWidth: 0,
-            title: 'Profile'.text.size(16).make(),
-            leading: const Icon(Icons.person_outline, color: Colors.black),
+            title: 'Setting'.text.size(16).make(),
+            leading: const Icon(Icons.settings_outlined, color: Colors.black),
             onTap: () {
               drawerKey.currentState!.openEndDrawer();
-              Get.toNamed(Routes.profile);
+              Get.toNamed(Routes.setting);
               FirebaseAnalyticService.logEvent(
-                'Left_Menu_Profile',
+                'Left_Menu_Setting',
               );
             },
           ),

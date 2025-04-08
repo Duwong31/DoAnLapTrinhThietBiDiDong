@@ -16,6 +16,8 @@ import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
+import '../modules/setting/bindings/setting_binding.dart';
+import '../modules/setting/views/setting_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/welcome/bindings/welcome_binding.dart';
@@ -81,6 +83,11 @@ class AppPages {
       name: _Paths.outstanding,
       page: () => const LibraryView(),
       binding: LibraryBinding(),
+    ),
+    GetPage(
+      name: _Paths.setting,
+      page: () => const SettingView(),
+      binding: SettingBinding(),
     ),
   ];
 }
