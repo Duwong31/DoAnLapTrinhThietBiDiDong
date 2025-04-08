@@ -4,12 +4,14 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'app/core/styles/style.dart';
 import 'app/core/utilities/encry_data.dart';
 import 'app/core/utilities/utilities.dart';
 import 'app/data/http_client/http_client.dart';
 import 'app/data/providers/notification_provider.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
+import 'app/modules/setting/controllers/setting_controller.dart';
 import 'root.dart';
 
 Future<void> initServices() async {
@@ -48,6 +50,9 @@ void main() async {
     default:
       ApiClient.setBaseUrl('https://soundflow.com');
   }
+
+  await GetStorage.init(); // ✅ phải init trước runApp
+  Get.put(ThemeController());
 
   // Run the app after setting up Preferences
   runApp(const RootApp());

@@ -48,7 +48,7 @@ class LibraryView extends GetView<LibraryController> {
                     children: [
                       const Text(
                         "My playlist",
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.labelColor),
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.primary),
                       ),
                       TextButton(
                         onPressed: () {

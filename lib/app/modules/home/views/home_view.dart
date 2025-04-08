@@ -25,9 +25,9 @@ class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
   // Widget bài hát dạng ô đơn giản
-  Widget _buildSongCard(Song song) {
+  Widget _buildSongCard(BuildContext context, Song song) {
     return Card(
-      color: AppTheme.primary,
+      color: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: const Center(
         child: Icon(Icons.music_note, color: Colors.white, size: 40),
@@ -36,7 +36,7 @@ class HomeView extends GetView<HomeController> {
   }
 
   // Grid view bài hát
-  Widget _buildSongGrid(List<Song> songs) {
+  Widget _buildSongGrid(BuildContext context, List<Song> songs) {
     return GridView.builder(
       scrollDirection: Axis.horizontal,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -48,29 +48,31 @@ class HomeView extends GetView<HomeController> {
       itemCount: songs.length > 6 ? 6 : songs.length,
       itemBuilder: (context, index) {
         final song = songs[index];
-        return _buildSongCard(song);
+        return _buildSongCard(context, song);
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.titleLarge?.color;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
 
-            // we think you'll like
+            // "We think you'll like"
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "We think you'll like",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.labelColor),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   TextButton(
                     onPressed: () {},
@@ -78,13 +80,13 @@ class HomeView extends GetView<HomeController> {
                       width: 60,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8E8E8),
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           "More",
-                          style: TextStyle(color: AppTheme.labelColor),
+                          style: TextStyle(color: textColor),
                         ),
                       ),
                     ),
@@ -96,17 +98,18 @@ class HomeView extends GetView<HomeController> {
             // Song grid
             SizedBox(
               height: 200,
-              child: _buildSongGrid(sampleSongs),
+              child: _buildSongGrid(context, sampleSongs),
             ),
 
+            // "Music genre"
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     "Music genre",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.labelColor),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   TextButton(
                     onPressed: () {},
@@ -114,13 +117,13 @@ class HomeView extends GetView<HomeController> {
                       width: 60,
                       height: 30,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8E8E8),
+                        color: Theme.of(context).colorScheme.surfaceVariant,
                         borderRadius: BorderRadius.circular(50),
                       ),
-                      child: const Center(
+                      child: Center(
                         child: Text(
                           "More",
-                          style: TextStyle(color: AppTheme.labelColor),
+                          style: TextStyle(color: textColor),
                         ),
                       ),
                     ),
@@ -129,7 +132,7 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
 
-            // Music genres - Horizontal scroll
+            // Genre cards
             SizedBox(
               height: 106,
               child: ListView(
@@ -150,19 +153,20 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
-// Widget for each genre item
+// Genre card item
 Widget _buildCategoryItem(
     BuildContext context,
     String imageUrl,
     String label,
     Widget destination,
     ) {
+  final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+
   return Container(
     width: 85,
     margin: const EdgeInsets.symmetric(horizontal: 5),
     decoration: BoxDecoration(
-      // color: AppTheme.primary,
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(12),
     ),
     child: ElevatedButton(
@@ -192,22 +196,14 @@ Widget _buildCategoryItem(
               fit: BoxFit.cover,
             ),
           ),
-          Text(label, style: const TextStyle(fontSize: 15, color: AppTheme.labelColor)),
+          Text(label, style: TextStyle(fontSize: 15, color: textColor)),
         ],
       ),
     ),
   );
 }
 
-
-
-
-
-
-
-
 // Genre Views Below
-
 class PopView extends StatelessWidget {
   const PopView({super.key});
 
