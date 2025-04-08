@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
 
-class OutstandingItem {
+class LibraryItem {
   final String? id;
   final String? title;
   final String? description;
   final String? imageUrl;
   final DateTime? createdAt;
 
-  OutstandingItem({
+  LibraryItem({
     this.id,
     this.title,
     this.description,
@@ -15,8 +15,8 @@ class OutstandingItem {
     this.createdAt,
   });
 
-  factory OutstandingItem.fromJson(Map<String, dynamic> json) {
-    return OutstandingItem(
+  factory LibraryItem.fromJson(Map<String, dynamic> json) {
+    return LibraryItem(
       id: json['id'],
       title: json['title'],
       description: json['description'],
@@ -28,6 +28,6 @@ class OutstandingItem {
   }
 }
 
-class OutstandingController extends GetxController {
+class LibraryController extends GetxController {
   // Không cần xử lý dữ liệu phức tạp khi chỉ hiển thị văn bản tĩnh
 }

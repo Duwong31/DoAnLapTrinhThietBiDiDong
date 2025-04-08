@@ -4,6 +4,7 @@ import '../../home/controllers/home_controller.dart';
 import '../../messages/controllers/messages_controller.dart';
 import '../../notifications/controllers/notifications_controller.dart';
 import '../../profile/controllers/profile_controller.dart';
+import '../../search/controllers/search_page_controller.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardBinding extends Bindings {
@@ -14,5 +15,6 @@ class DashboardBinding extends Bindings {
     Get.lazyPut(() => MessagesController());
     Get.lazyPut(() => NotificationsController());
     Get.lazyPut(() => ProfileController());
+    Get.lazyPut(() => SearchPageController());
   }
 }
