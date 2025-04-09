@@ -29,7 +29,7 @@ class LibraryItem {
   }
 }
 
-class ListController extends GetxController {
+class LibraryController extends GetxController {
   final RxList<String> hardWords = <String>[].obs;
   final RxString searchQuery = ''.obs;
 
