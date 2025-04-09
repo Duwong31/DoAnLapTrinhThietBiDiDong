@@ -103,10 +103,10 @@ class DashboardController extends GetxController
         FirebaseAnalyticService.logEvent('FooterMenu_Home');
         break;
       case 1:
-        FirebaseAnalyticService.logEvent('FooterMenu_List');
+        FirebaseAnalyticService.logEvent('FooterMenu_Search');
         break;
       case 2:
-        FirebaseAnalyticService.logEvent('FooterMenu_Outstanding');
+        FirebaseAnalyticService.logEvent('FooterMenu_Library');
         break;
       case 3:
         FirebaseAnalyticService.logEvent('FooterMenu_Profile');

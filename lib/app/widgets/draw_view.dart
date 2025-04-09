@@ -68,6 +68,7 @@ class DrawerView extends StatelessWidget {
           ),
           const Divider(height: 30),
 
+          // Notification
           ListTile(
             minLeadingWidth: 0,
             title: 'Notifications'.text.size(16).make(),
@@ -112,6 +113,8 @@ class DrawerView extends StatelessWidget {
             },
           ),
           */
+
+          // Profile
           ListTile(
             minLeadingWidth: 0,
             title: 'Profile'.text.size(16).make(),
@@ -121,6 +124,20 @@ class DrawerView extends StatelessWidget {
               Get.toNamed(Routes.profile);
               FirebaseAnalyticService.logEvent(
                 'Left_Menu_Profile',
+              );
+            },
+          ),
+
+          // Setting
+          ListTile(
+            minLeadingWidth: 0,
+            title: 'Setting'.text.size(16).make(),
+            leading: const Icon(Icons.settings_outlined, color: Colors.black),
+            onTap: () {
+              drawerKey.currentState!.openEndDrawer();
+              Get.toNamed(Routes.setting);
+              FirebaseAnalyticService.logEvent(
+                'Left_Menu_Setting',
               );
             },
           ),

@@ -6,11 +6,11 @@ import '../../../core/styles/style.dart';
 import '../../../data/services/firebase_analytics_service.dart';
 import '../../../widgets/widgets.dart';
 import '../../home/views/home_view.dart';
-import '../../list/views/list_view.dart';
-import '../../outstanding/views/outstanding_view.dart';
+import '../../library/views/library_view.dart';
 import '../../messages/views/messages_view.dart';
 import '../../notifications/views/notifications_view.dart';
 import '../../profile/views/profile_view.dart';
+import '../../search/views/search_view.dart';
 import '../controllers/dashboard_controller.dart';
 
 class DashboardView extends GetView<DashboardController> {
@@ -49,8 +49,8 @@ class DashboardView extends GetView<DashboardController> {
         controller: controller.tabController,
         children: const [
           HomeView(),
-          ListPageView(),
-          OutstandingView(),
+          SearchView(),
+          LibraryView(),
           // MessagesView(),
           // NotificationsView(),
           ProfileView(),

@@ -15,8 +15,9 @@ abstract class Routes {
   static const chatBox = _Paths.chatBox;
   static const detailNotify = _Paths.detailNotify;
   static const profile = _Paths.profile;
-  static const list = _Paths.list;
+  static const search = _Paths.search;
   static const outstanding = _Paths.outstanding;
+  static const setting = _Paths.setting;
 }
 
 abstract class _Paths {
@@ -31,6 +32,7 @@ abstract class _Paths {
   static const chatBox = '/chat-box';
   static const detailNotify = '/detail-notification';
   static const profile = '/profile';
-  static const list = '/list';
-  static const outstanding = '/outstanding';
+  static const search = '/search';
+  static const outstanding = '/library';
+  static const setting = '/setting';
 }

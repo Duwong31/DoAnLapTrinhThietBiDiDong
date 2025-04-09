@@ -6,16 +6,18 @@ import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
-import '../modules/list/bindings/list_binding.dart';
-import '../modules/list/views/list_view.dart';
+import '../modules/library/bindings/library_binding.dart';
+import '../modules/library/views/library_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/notifications/views/notifications_view.dart';
-import '../modules/outstanding/bindings/outstanding_binding.dart';
-import '../modules/outstanding/views/outstanding_view.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/register_view.dart';
+import '../modules/search/bindings/search_binding.dart';
+import '../modules/search/views/search_view.dart';
+import '../modules/setting/bindings/setting_binding.dart';
+import '../modules/setting/views/setting_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/welcome/bindings/welcome_binding.dart';
@@ -73,14 +75,19 @@ class AppPages {
       page: () => const ProfileView(),
     ),
     GetPage(
-      name: _Paths.list,
-      page: () => const ListPageView(),
-      binding: ListBinding(),
+      name: _Paths.search,
+      page: () => const SearchView(),
+      binding: SearchBinding(),
     ),
     GetPage(
       name: _Paths.outstanding,
-      page: () => const OutstandingView(),
-      binding: OutstandingBinding(),
+      page: () => const LibraryView(),
+      binding: LibraryBinding(),
+    ),
+    GetPage(
+      name: _Paths.setting,
+      page: () => const SettingView(),
+      binding: SettingBinding(),
     ),
   ];
 }
