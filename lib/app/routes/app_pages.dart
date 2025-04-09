@@ -92,11 +92,6 @@ class AppPages {
       binding: LibraryBinding(),
     ),
     GetPage(
-      name: _Paths.setting,
-      page: () => const SettingView(),
-      binding: SettingBinding(),
-    ),
-    GetPage(
       name: _Paths.forgotPassword,
       page: () => const ForgotPasswordView(),
       binding: ForgotPasswordBinding()
