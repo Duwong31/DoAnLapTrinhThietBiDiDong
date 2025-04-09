@@ -76,7 +76,7 @@ class _EditProfileBottomState extends State<EditProfileBottom> {
           ).toMap()
         };
         final res = await Repo.user.updateUser(data);
-        if (res) {
+        if (res != null) {
           Get.back();
           ctr.getUserDetail();
           BottomWellSuccess.show('Your profile has been updated successfully.');

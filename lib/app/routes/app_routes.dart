@@ -16,8 +16,12 @@ abstract class Routes {
   static const detailNotify = _Paths.detailNotify;
   static const profile = _Paths.profile;
   static const search = _Paths.search;
+  static const carDetail = _Paths.carDetail;
   static const outstanding = _Paths.outstanding;
   static const setting = _Paths.setting;
+  static const forgotPassword = _Paths.forgotPassword;
+  static const resetPassword = _Paths.resetPassword;
+  static const successSplash = _Paths.successSplash;
 }
 
 abstract class _Paths {
@@ -35,4 +39,8 @@ abstract class _Paths {
   static const search = '/search';
   static const outstanding = '/library';
   static const setting = '/setting';
+  static const carDetail = '/car-detail';
+  static const forgotPassword = '/forgot-password';
+  static const resetPassword = '/reset-password';
+  static const successSplash = '/success-splash';
 }

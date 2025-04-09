@@ -1,139 +1,97 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/mixins/load_more_mixin.dart';
-import '../../../core/utilities/utilities.dart';
 import '../../../data/models/models.dart';
 import '../../../data/repositories/repositories.dart';
-import '../../../widgets/widgets.dart';
-import '../../dashboard/controllers/dashboard_controller.dart';
+import '../../../routes/app_pages.dart';
 
-class NotificationsController extends GetxController
-    with
-        StateMixin<List<NotificationModel>>,
-        GetTickerProviderStateMixin,
-        LoadMoreState {
-  final notifications = <NotificationModel>[];
-  final duration = const Duration(seconds: 3);
-  final int limit = 20;
 
-  late AnimationController toastCtr;
-  late int _pageCount;
 
-  int _page = 1;
-  int removeIndex = 0;
-  Timer? _timer;
-  NotificationModel? removeItem;
+class NotificationsController extends GetxController {
+  var groupList = <GroupNotificationModel>[].obs;
+  final RxInt currentPage = 1.obs;
+  final RxBool isLoadingMore = false.obs;
+  final RxBool isLoading = true.obs;
+
+  ScrollController scrollController = ScrollController();
 
   @override
   void onInit() {
-    toastCtr = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    );
+    scrollController.addListener(() {
+      if (scrollController.position.pixels ==
+          scrollController.position.maxScrollExtent) {
+        onLoadMore();
+      }
+    });
+    groupList.add(GroupNotificationModel("Hôm nay", []));
+    groupList.add(GroupNotificationModel("Trước đó", []));
+    isLoading.value = true;
+    _loadData();
     super.onInit();
   }
 
   @override
-  void onReady() {
-    getList();
-    super.onReady();
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
+
+  Future<void> _loadData() async {
+    try {
+      final response = await Repo.notify.getList(query: {
+        "page":currentPage.value
+      });
+      final currentDate = DateTime.now();
+      final today = DateTime(currentDate.year,currentDate.month,currentDate.day);
+      for (var item in response) {
+        final notificationDate = DateTime(item.createdAt.year,item.createdAt.month,item.createdAt.day);
+        if(notificationDate.isAtSameMomentAs(today)){
+          groupList[0].notificationList.add(item);
+        }else{
+          groupList[1].notificationList.add(item);
+        }
+      }
+      if(response.isNotEmpty){
+        currentPage.value++;
+      }
+    } catch (e) {
+      log('Error loading notification: $e');
+    } finally {
+      isLoadingMore.value = false;
+      isLoading.value = false;
+    }
+  }
+
+
 
   Future<void> onRefresh() async {
-    await getList();
-    await Get.find<DashboardController>().getNumberNotify();
+    for (var item in groupList) {
+      item.notificationList.clear();
+    }
+    currentPage.value = 1;
+    isLoading.value = true;
+    await _loadData();
   }
 
-  Future<void> getList() async {
-    try {
-      _page = 1;
-      final query = {'page': _page, 'limit': limit};
-      final res = await Repo.notify.getList(query: query);
-      _pageCount = res.meta.pages;
-      notifications
-        ..clear()
-        ..addAll(res.data as List<NotificationModel>);
-      change(
-        notifications,
-        status: notifications.isEmpty ? RxStatus.empty() : RxStatus.success(),
-      );
-    } catch (e) {
-      change(state, status: RxStatus.error(e.toString()));
-      AppUtils.log(e);
+  void onLoadMore() {
+    isLoadingMore.value = true;
+    _loadData();
+  }
+
+  void onRead(NotificationModel notification) {
+    notification.isRead = true;
+    Repo.notify.markRead(notification.id);
+    groupList.refresh();
+    if(notification.carId!= null){
+      Get.toNamed(Routes.carDetail, arguments: {
+        'carId': notification.carId.toString(),
+      });
     }
   }
 
-  void remove(id) {
-    BottomWellSuccess.show(
-      'Do you want to delete it?',
-      image: AppImage.confirmDelete,
-      enableDrag: true,
-      callback: () {
-        removeIndex = notifications.indexWhere((e) => e.id == id);
-        removeItem = notifications[removeIndex];
-        notifications.remove(removeItem);
-        toastCtr.forward();
-        change(notifications, status: RxStatus.success());
-        _timer?.cancel();
-        _timer = Timer.periodic(duration, (_) {
-          _timer?.cancel();
-          _delete(removeItem);
-        });
-      },
-    );
-  }
-
-  void changNumberUnreadBottom() {
-    if (Get.isRegistered<DashboardController>()) {
-      Get.find<DashboardController>().readNotify();
-    }
-  }
-
-  void markRead(String id) {
-    for (var e in notifications) {
-      if (e.id == id) {
-        e.isRead = true;
-      }
-    }
-    changNumberUnreadBottom();
-    change(notifications, status: RxStatus.success());
-  }
-
-  void undo() {
-    _timer?.cancel();
-    toastCtr.reverse();
-    if (removeItem != null) {
-      notifications.insert(removeIndex, removeItem!);
-      change(notifications, status: RxStatus.success());
-    }
-    removeItem = null;
-  }
-
-  void _delete(NotificationModel? item) async {
-    if (item != null) {
-      await Repo.notify.deleteNotify(item.id);
-      if (!item.isRead) {
-        changNumberUnreadBottom();
-      }
-    }
-  }
-
-  @override
-  Future<void> onLoadMore() async {
-    if (_pageCount == _page) {
-      return;
-    }
-    change(notifications, status: RxStatus.loadingMore());
-    _page++;
-    final query = {'page': _page, 'limit': limit};
-    final res = await Repo.notify.getList(query: query);
-    final data = [...state!, ...res.data as List<NotificationModel>];
-    notifications
-      ..clear()
-      ..addAll(data);
-    change(notifications, status: RxStatus.success());
-  }
+  
 }
+ 

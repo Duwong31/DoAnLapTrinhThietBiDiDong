@@ -1,7 +1,7 @@
 part of 'repositories.dart';
 
 abstract class NotificationBase {
-  Future<ReposeData> getList({Map<String, dynamic>? query});
+  Future<List<NotificationModel>> getList({Map<String, dynamic>? query});
   Future<NotificationModel> detailNotify(String id);
   Future<bool> deleteNotify(String id);
   Future<bool> markRead(String id);
@@ -10,7 +10,7 @@ abstract class NotificationBase {
 
 class NotificationRepository implements NotificationBase {
   @override
-  Future<ReposeData> getList({Map<String, dynamic>? query}) {
+  Future<List<NotificationModel>> getList({Map<String, dynamic>? query}) {
     return ApiProvider.getNotifications(query: query);
   }
 

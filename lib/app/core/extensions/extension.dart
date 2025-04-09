@@ -77,3 +77,41 @@ extension CapExtension on String {
   String get capitalizeFirstEach =>
       split(" ").map((str) => str.inCaps).join(" ");
 }
+extension DiscountTypeExtension on DiscountType {
+  static DiscountType? fromString(String? status) {
+    if(status==null) return null;
+    switch (status.toLowerCase()) {
+      case 'fixed':
+        return DiscountType.fixed;
+      case 'percent':
+        return DiscountType.percent;
+      default:
+        return null;
+    }
+  }
+}
+extension EventTypeExtension on EventType {
+  static EventType? fromString(String? event) {
+    if(event==null) return null;
+    switch (event) {
+      case 'BookingCreatedEvent':
+        return EventType.bookingCreatedEvent;
+      case 'BookingUpdatedEvent':
+        return EventType.bookingUpdatedEvent;
+      case 'BookingCancelledEvent':
+        return EventType.bookingCancelledEvent;
+      case 'BookingPickupTimeEvent':
+        return EventType.bookingPickupTimeEvent;
+      case 'BookingReturnLateEvent':
+        return EventType.bookingReturnLateEvent;
+      case 'BookingInvoiceEvent':
+        return EventType.bookingInvoiceEvent;
+      case 'CreateReviewEvent':
+        return EventType.createReviewEvent;
+      case 'PaymentSuccessEvent':
+        return EventType.paymentSuccessEvent;
+      default:
+        return null;
+    }
+  }
+}

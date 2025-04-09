@@ -66,10 +66,10 @@ class LoginView extends GetView<LoginController> {
                             fillColor: AppTheme.inputBoxColor,  
                             contentPadding: const EdgeInsets.all(Dimes.size15),
                             onChanged: (String email) {
-                              controller.email = email;
+                              controller.emailController.text = email;
                             },
                             validator: (email) =>
-                                controller.emailValidation(email)),
+                                controller.validateEmail(email)),
                         Dimes.height30,
                         Container(
                           alignment: Alignment.centerLeft,
@@ -85,10 +85,10 @@ class LoginView extends GetView<LoginController> {
                             isPassword: true,
                             isShowSuffixIcon: true,
                             onChanged: (String password) {
-                              controller.password = password;
+                              controller.passwordController.text = password;
                             },
                             validator: (password) =>
-                                controller.passwordValidation(password)),
+                                controller.validatePassword(password)),
                         Container(
                           alignment: Alignment.topRight,
                           child: Obx(() => AppButton(
@@ -97,8 +97,8 @@ class LoginView extends GetView<LoginController> {
                                 axisSize: MainAxisSize.min,
                                 fontSize: 12,
                                 textColor: AppTheme.primary,
-                                loading: controller.isLoading,
-                                onPressed: controller.goToRecoveryAccountView,
+                                loading: controller.isLoading.value,
+                                onPressed: controller.goToForgotPassword,
                               )),
                         ),
                         Dimes.height10,
@@ -106,7 +106,7 @@ class LoginView extends GetView<LoginController> {
                           child: Obx(() => AppButton(
                                 'Login',
                                 color: Colors.transparent,
-                                loading: controller.isLoading,                               
+                                loading: controller.isLoading.value,                               
                                 onPressed: () {
                                   // keyform.currentState!.validate();
                                   // controller.onPressLoginButton();
@@ -143,7 +143,7 @@ class LoginView extends GetView<LoginController> {
                                   fontSize: 16,
                                   axisSize: MainAxisSize.min,
                                   textColor: AppTheme.primary,
-                                  loading: controller.isLoading,
+                                  loading: controller.isLoading.value,
                                   onPressed: controller.goToRegisterView,
                                 )),
                           ],

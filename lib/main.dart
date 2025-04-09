@@ -45,10 +45,10 @@ void main() async {
   final flavor = await getFlavorSettings();
   switch (flavor) {
     case 'dev':
-      ApiClient.setBaseUrl('https://soundflow.com');
+      ApiClient.setBaseUrl('http://127.0.0.1:8000');
       break;
     default:
-      ApiClient.setBaseUrl('https://soundflow.com');
+      ApiClient.setBaseUrl('http://127.0.0.1:8000');
   }
 
   await GetStorage.init(); // ✅ phải init trước runApp

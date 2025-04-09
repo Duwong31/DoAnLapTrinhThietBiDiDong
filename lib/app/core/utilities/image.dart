@@ -58,4 +58,6 @@ class AppImage {
       'assets/images/secondary_background.png';
   static const String primaryBackground =
       'assets/images/primary_background.png';
+  static const String otpPhone = 'assets/images/otp_phone.png';
+  static const String resetPassword = 'assets/images/reset_password.png';
 }

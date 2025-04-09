@@ -1,112 +1,230 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/styles/style.dart';
-import '../../../core/utilities/utilities.dart';
-import '../../../core/utilities/validator/validator.dart';
+import '../../../core/utilities/preferences.dart';
+import '../../../core/utilities/string.dart';
 import '../../../data/repositories/repositories.dart';
-import '../../../data/services/auth_firebase_service.dart';
-import '../../../packages/intl_phone_field/phone_number.dart';
-import '../../../routes/app_pages.dart';
+
+/// Global controllers to prevent disposal during navigation
+final Map<String, TextEditingController> _globalControllers = {};
 
 class LoginController extends GetxController {
-  final _isLoading = false.obs;
-  final isGoogleLoading = false.obs;
-  final authService = AuthFirebaseServiceImpl();
-  final formKey = GlobalKey<FormState>();
-  bool get isLoading => _isLoading.value;
+  // Use getters instead of direct controller references
+  TextEditingController get emailController =>
+      _globalControllers['login_email'] ??= TextEditingController();
 
-  PhoneNumber? phoneNumber;
-  String? email;
-  String? password;
+  TextEditingController get passwordController =>
+      _globalControllers['login_password'] ??= TextEditingController();
+
+  final isPasswordVisible = false.obs;
+  final isLoading = false.obs;
+  final rememberMe = false.obs;
+  final deviceName = "test_device".obs;
+  final autoFilledemail = ''.obs;
+
+  final AuthRepository _authRepository = Repo.auth;
+  final isReadyForInput = false.obs;
 
   @override
-  void onReady() {
-    Preferences.clear();
-    super.onReady();
+  void onInit() {
+    super.onInit();
+    debugPrint("LoginController initialized");
+
+    // Defer controller updates to after the build phase
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Pre-fill email if coming from password reset
+      if (Get.arguments != null && Get.arguments is Map<String, dynamic>) {
+        final email = Get.arguments['email'];
+        if (email != null && email is String) {
+          final formattedemail =
+              email.startsWith('+84') ? '0${email.substring(3)}' : email;
+
+          // Update the controller safely after the build
+          emailController.text = formattedemail;
+          autoFilledemail.value = formattedemail;
+        }
+      }
+
+      // Mark controller as ready for input after initialization
+      isReadyForInput.value = true;
+    });
+    
+    _checkLoginStatus();
   }
 
-  String? emailValidation(String? email) {
-    String? result;
-    if (email == null || email.isEmpty) {
-      result = "Please enter your Email";
-      return result;
+  void togglePasswordVisibility() {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  }
+
+  void toggleRememberMe() {
+    rememberMe.value = !rememberMe.value;
+  }
+
+  String? validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+    return 'Vui lòng nhập email';
     }
-    result = EmailValidator("Invalid entered Email").validate(email);
-    return result;
-  }
-
-  String? passwordValidation(String? password) {
-    String? result;
-    if (password == null || password.isEmpty) {
-      result = "Please enter Password";
-      return result;
+    if (!RegExp(r'^[^@]+@[^@]+\.[^@]+$').hasMatch(value)) {
+      return 'Email không hợp lệ';
     }
-    return result;
+    return null;
   }
 
-  Future<bool> login() async {
-    return Repo.auth.sendEmailPassword(email!, password!);
+  String? validatePassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Vui lòng nhập mật khẩu';
+    }
+    if (value.length < 6) {
+      return 'Mật khẩu phải có ít nhất 6 ký tự';
+    }
+    return null;
   }
-  Future<void> signInWithGoogle() async {
-    isGoogleLoading.value = true; // Use specific loading state
+
+  String formatEmail(String email) {
+    email = email.trim();
+    if (RegExp(r'^0[0-9]{9}$').hasMatch(email)) {
+      return '+84${email.substring(1)}';
+    }
+    return email;
+  }
+
+  // Check login status (Auto-login if "Remember Me" is enabled)
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    rememberMe.value = prefs.getBool('rememberMe') ?? false;
+
+    if (rememberMe.value && Preferences.isAuth()) {
+      Get.offAllNamed('/home');
+    }
+  }
+
+  Future<void> _saveLoginState(String token, Map<String, dynamic> user) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('rememberMe', rememberMe.value);
+
+    if (user['id'] != null) {
+      Preferences.setString(StringUtils.currentId, user['id'].toString());
+    }
+
+    if (user['email'] != null) {
+      Preferences.setString(StringUtils.email, user['email']);
+    }
+
+    if (rememberMe.value) {
+      Preferences.setString(StringUtils.token, token);
+
+      if (user['refresh_token'] != null) {
+        Preferences.setString(StringUtils.refreshToken, user['refresh_token']);
+      }
+    } else {
+      final box = GetStorage();
+      await box.write('access_token', token);
+    }
+  }
+
+  Future<void> login() async {
+    if (!isReadyForInput.value) return;
+
+    final email = emailController.text;
+    final password = passwordController.text;
+
+    final emailValidation = validateEmail(email);
+    if (emailValidation != null) {
+      Get.snackbar(
+        'Lỗi',
+        emailValidation,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+      return;
+    }
+
+    final passwordValidation = validatePassword(password);
+    if (passwordValidation != null) {
+      Get.snackbar(
+        'Lỗi',
+        passwordValidation,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+      return;
+    }
+
     try {
-      final userCredential = await authService.loginWithGoogle();
+      isLoading.value = true;
+      final formattedemail = formatEmail(email);
 
-      if (userCredential != null && userCredential.user != null) {
-        Get.snackbar(
-          'Success',
-          'Logged in with Google successfully!',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
+      final response = await _authRepository.login(
+          formattedemail, password, deviceName.value);
 
-        Get.offAllNamed(Routes.dashboard);
+      if (response != null && response['status'] == 1) {
+        // Handle successful login
+        String? accessToken = response['access_token'];
+        Map<String, dynamic>? userData = response['user'];
+
+        if (accessToken != null && userData != null) {
+          await _saveLoginState(accessToken, userData);
+          await Get.offAllNamed('/home');
+        } else {
+          Get.snackbar(
+            'Lỗi',
+            'Thiếu thông tin đăng nhập',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red[100],
+            colorText: Colors.red[800],
+          );
+          isLoading.value = false;
+        }
       } else {
-        
         Get.snackbar(
-          'Error',
-          'Google Sign-in failed or cancelled. Please try again.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.orangeAccent, 
-          colorText: Colors.white,
+          'Lỗi',
+          response?['message'] ?? 'Đăng nhập thất bại',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[800],
         );
+        isLoading.value = false;
       }
     } catch (e) {
-      // Catch unexpected errors during the process
+      debugPrint('Lỗi đăng nhập: $e');
       Get.snackbar(
-        'Error',
-        'An unexpected error occurred during Google Sign-In: ${e.toString()}',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
+        'Lỗi',
+        'Đăng nhập thất bại: $e',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
       );
-    } finally {
-      isGoogleLoading.value = false; // Stop Google loading indicator
+      isLoading.value = false;
     }
   }
-  void onPressLoginButton() async {
-    if (await login()) {
-      goToHomeView();
-    }
-    //
-  }
 
-  void onPressSignupButton() {
-    goToRegisterView();
-  }
-
-  void onPressForgotPassword() {
-    goToRecoveryAccountView();
+  void goToForgotPassword() {
+    Get.toNamed('/forgot-password');
   }
 
   void goToRegisterView() {
-    Get.toNamed(Routes.register);
+    Get.toNamed('/register');
   }
 
-  void goToHomeView() {
-    Get.toNamed(Routes.home);
+  @override
+  void onClose() {
+    debugPrint("LoginController being closed");
+    super.onClose();
   }
 
-  void goToRecoveryAccountView() {}
+  static void cleanupControllers() {
+    _globalControllers.forEach((_, controller) {
+      controller.dispose();
+    });
+    _globalControllers.clear();
+  }
+
+  void signInWithGoogle() {
+
+  }
+  
 }

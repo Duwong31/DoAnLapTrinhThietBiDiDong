@@ -98,10 +98,10 @@ class RegisterController extends GetxController {
 
     try {
       // Gọi phương thức mới trong Repository
-      final response = await Repo.auth.sendSignupRequest(
-          fullname!.trim(),
+      final response = await Repo.auth.register(
           email!.trim(),
-          password!
+          fullname!.trim(),
+          true
       );
       return Right(response); // Wrap the response in a Right to match the Either type
     } catch (e) {

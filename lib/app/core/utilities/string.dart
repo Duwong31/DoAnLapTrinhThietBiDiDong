@@ -13,4 +13,5 @@ class StringUtils {
   static const String versionApp = 'version_app';
   static const String phoneNumber = 'phone';
   static const String firebaseStoreKeyPrescriptions = 'prescriptions';
+  static const String email = 'email';
 }

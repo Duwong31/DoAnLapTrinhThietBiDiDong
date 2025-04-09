@@ -3,14 +3,13 @@ library models;
 import 'package:get/utils.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/styles/style.dart';
 import '../../core/utilities/app_utils.dart';
 import '../../core/utilities/db_keys.dart';
 import '../../core/utilities/encry_data.dart';
 part 'in_chat.dart';
-part 'message.dart';
-part 'message_model.dart';
-part 'notification.dart';
-part 'notification_old.dart';
+part 'notification_model.dart';
+part 'notification_type.dart';
 part 'user.dart';
 
 class AppStatus<T> {
