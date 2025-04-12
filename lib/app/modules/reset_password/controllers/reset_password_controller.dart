@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/repositories.dart';
+import '../../../routes/app_pages.dart';
 
 
 /// Global controllers to prevent disposal during navigation
@@ -13,8 +14,11 @@ class ResetPasswordController extends GetxController {
   
   TextEditingController get passwordController => 
       _globalControllers['reset_password'] ??= TextEditingController();
-  
+
+  TextEditingController get confirmPasswordController =>
+      _globalControllers['reset_confirm_password'] ??= TextEditingController();
   final isPasswordVisible = false.obs;
+  final isConfirmPasswordVisible = false.obs;
   final isLoading = false.obs;
   final AuthRepository _authRepository = Repo.auth;
   final isReadyForInput = false.obs;
@@ -71,6 +75,9 @@ class ResetPasswordController extends GetxController {
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
+   void toggleConfirmPasswordVisibility() {
+    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
+  }
 
   bool isPasswordValid(String password) {
     return password.length >= 6;
@@ -86,11 +93,22 @@ class ResetPasswordController extends GetxController {
     return null;
   }
 
+  String? validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Vui lòng xác nhận mật khẩu'; 
+    }
+    if (value != passwordController.text) {
+      return 'Mật khẩu không khớp'; 
+    }
+    return null; 
+  }
+
   Future<void> resetPassword() async {
     if (!isReadyForInput.value) return;
     
     final password = passwordController.text;
-    
+    final confirmPassword = confirmPasswordController.text;
+
     if (!isPasswordValid(password)) {
       Get.snackbar(
         'Lỗi',
@@ -120,7 +138,7 @@ class ResetPasswordController extends GetxController {
         phone,
         otp,
         password,
-        password
+        confirmPassword
       ); 
       
       if (response['status'] == 1) {
@@ -140,10 +158,11 @@ class ResetPasswordController extends GetxController {
         
         // Clear password field
         passwordController.clear();
-        
+        confirmPasswordController.clear();
+
         // Navigate to login
         Get.offAllNamed(
-          '/login',
+          Routes.login,
           arguments: {'phone': storedPhone}
         );
       } else {
@@ -182,6 +201,12 @@ class ResetPasswordController extends GetxController {
     if (_globalControllers.containsKey('reset_password')) {
       _globalControllers['reset_password']?.dispose();
       _globalControllers.remove('reset_password');
+      debugPrint("Disposed reset_password controller");
+    }
+    if (_globalControllers.containsKey('reset_confirm_password')) {
+      _globalControllers['reset_confirm_password']?.dispose();
+      _globalControllers.remove('reset_confirm_password');
+      debugPrint("Disposed reset_confirm_password controller");
     }
   }
 } 

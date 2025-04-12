@@ -1,41 +1,46 @@
-import 'package:dartz/dartz.dart'; // Cần import dartz
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-// Import service (chỉ dùng cho Google) và models
-import '../../../data/services/auth_firebase_service.dart'; 
-
-// Import Repository (dùng cho signup thường)
-import '../../../data/repositories/repositories.dart'; // <<< THÊM IMPORT REPO
-
-// Import utilities và routes
+import '../../../data/services/auth_firebase_service.dart';
+import '../../../data/repositories/repositories.dart'; 
 import '../../../routes/app_pages.dart';
-import '../../../core/utilities/validator/validator.dart'; // *** Import validator nếu cần ***
-
+// import '../../../core/utilities/validator/validator.dart'; // Bỏ comment nếu dùng
 
 class RegisterController extends GetxController {
   // --- Dependencies ---
-  // Sử dụng Repo cho signup thường (giống LoginController)
-  final AuthRepository authRepository = Repo.auth; // <<< SỬ DỤNG REPO
-  // Giữ lại authService chỉ cho Google Sign In
-  final authServiceForGoogle = AuthFirebaseServiceImpl(); // <<< ĐỔI TÊN CHO RÕ RÀNG
+  final AuthRepository _authRepository = Repo.auth;
+  final authServiceForGoogle = AuthFirebaseServiceImpl();
 
   // --- State ---
   final formKey = GlobalKey<FormState>(); // Key cho Form validation
-  final _isLoading = false.obs; // Loading state cho signup thường
-  bool get isLoading => _isLoading.value;
+  final isLoading = false.obs;
   final isGoogleLoading = false.obs; // Loading state cho Google
   final isPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
 
-  // --- Input Data (Giống LoginController) ---
-  // Giá trị sẽ được cập nhật từ View thông qua formKey.currentState?.save()
-  String? fullname;
-  String? email;
-  String? password;
-  String? confirmPassword; 
+  // --- Input Controllers (Sử dụng Controllers thay vì lưu biến trực tiếp) ---
+  final fullnameController = TextEditingController(); // Thêm controller cho fullname
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController(); // Thêm controller cho password
+  final confirmPasswordController = TextEditingController(); // Thêm controller cho confirm password
+
+  // --- Constants ---
+  // static const String deviceName = "test_device"; // Lấy device name động nếu có thể
+  late String deviceName; // Khai báo để khởi tạo trong onInit
 
   // --- Methods ---
+
+  @override
+  void onInit() {
+    super.onInit();
+    // Lấy device name/ID thực tế ở đây nếu có thể
+    // Ví dụ đơn giản:
+    deviceName = GetPlatform.isAndroid ? "android_device" : GetPlatform.isIOS ? "ios_device" : "web_device";
+    // Hoặc sử dụng package device_info_plus để lấy ID cụ thể
+  }
+
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -45,139 +50,186 @@ class RegisterController extends GetxController {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
 
-  // --- Validation Methods (Giữ nguyên) ---
-   String? fullnameValidation(String? value) {
+  // --- Validation Methods ---
+  // Sử dụng trực tiếp trong TextFormField hoặc InputCustom thay vì gọi từ controller
+  // Ví dụ validator cho TextFormField: validator: (value) => validateFullname(value),
+  String? validateFullname(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return "Please enter your full name";
+      return "Vui lòng nhập họ tên"; // Sửa tiếng Việt
     }
     return null;
   }
 
-  String? emailValidation(String? value) {
-    if (value == null || value.isEmpty) {
-      return "Please enter your Email";
+  String? validateEmail(String? value) { // Sửa kiểu trả về thành String?
+    if (value == null || value.trim().isEmpty) {
+      return "Vui lòng nhập Email"; // Sửa tiếng Việt
     }
-    if (!GetUtils.isEmail(value)) {
-      return "Invalid entered Email";
+    if (!GetUtils.isEmail(value.trim())) {
+      return "Email không hợp lệ"; // Sửa tiếng Việt
     }
-    return null;
+    return null; // Trả về null nếu hợp lệ
   }
 
-  String? passwordValidation(String? value) {
+  String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return "Please enter Password";
+      return "Vui lòng nhập mật khẩu"; // Sửa tiếng Việt
     }
     if (value.length < 6) {
-      return "Password must be at least 6 characters";
+      return "Mật khẩu phải có ít nhất 6 ký tự"; // Sửa tiếng Việt
     }
+    // Thêm kiểm tra độ phức tạp nếu backend yêu cầu (ví dụ: chữ hoa, ký tự đặc biệt)
+    // final RegExp passwordRegExp = RegExp(r'^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$');
+    // if (!passwordRegExp.hasMatch(value)) {
+    //   return 'Mật khẩu cần chữ hoa, ký tự đặc biệt'; // Sửa tiếng Việt
+    // }
     return null;
   }
 
-   String? confirmPasswordValidation(String? value) {
+  String? validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
-      return "Please confirm your Password";
+      return "Vui lòng xác nhận mật khẩu"; // Sửa tiếng Việt
     }
-    // Kiểm tra với biến password đã được save
-    if (value != password) {
-      return "Passwords do not match";
+    // Kiểm tra với passwordController trực tiếp
+    if (value != passwordController.text) {
+      return "Mật khẩu không khớp"; // Sửa tiếng Việt
     }
     return null;
   }
 
-  // --- Core Logic Helper for Standard Signup (Tương tự login() trong LoginController) ---
-  // Gọi đến Repository thay vì service Firebase trực tiếp
-  Future<Either<String, String>> signup() async {
-    // Đảm bảo các giá trị đã được lưu từ form
-    if (fullname == null || email == null || password == null || confirmPassword == null) {
-       return const Left('Form data is incomplete.');
-    }
-    // Kiểm tra mật khẩu trùng khớp trước khi gửi đi
-    if (password != confirmPassword) {
-      return const Left('Password and Confirm Password do not match!');
-    }
+  Future<void> _performEmailSignup() async { 
+    final name = fullnameController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text;
 
+    isLoading.value = true;
     try {
-      // Gọi phương thức mới trong Repository
-      final response = await Repo.auth.register(
-          email!.trim(),
-          fullname!.trim(),
-          true
+      debugPrint('Gửi yêu cầu đăng ký cho email: $email với device: $deviceName');
+
+      // *** Gọi API chỉ với email và deviceName ***
+      final response = await _authRepository.register(
+        name,
+        email, 
+        password,
+        deviceName, 
       );
-      return Right(response); // Wrap the response in a Right to match the Either type
+      debugPrint('Phản hồi đăng ký: $response');
+
+  
+      if (response["status"] == true) {
+        // String otp = response["data"]["otp"]?.toString() ?? ''; 
+        // String userId = response["data"]["user_id"]?.toString() ?? '';
+
+        // debugPrint('Nhận được otp: $otp, userId: $userId');
+        // debugPrint('Nhận được userId: $userId');
+
+
+        // if (userId.isEmpty) {
+        //   Get.snackbar(
+        //     "Lỗi đăng ký",
+        //     "Không nhận được thông tin user_id từ server.",
+        //     snackPosition: SnackPosition.TOP,
+        //     backgroundColor: Colors.red[100],
+        //     colorText: Colors.red[800],
+        //   );
+        //   // Không set isLoading = false ở đây vì có finally
+        //   return; // Thoát sớm nếu không có userId
+        // }
+        Get.snackbar(
+            "Đăng ký thành công",
+            response["message"] ?? "Tài khoản của bạn đã được tạo. Vui lòng đăng nhập.", 
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.green[100],
+            colorText: Colors.green[800],
+          );
+
+        Get.offAllNamed(
+          Routes.login,
+          arguments: {
+            'email': email, 
+            // 'userId': userId,
+            // 'isResetPassword': false, 
+          },
+        );
+      } else {
+        // Hiển thị lỗi từ server
+        Get.snackbar(
+          "Đăng ký thất bại",
+          response["message"] ?? "Có lỗi xảy ra, vui lòng thử lại.",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red[100],
+          colorText: Colors.red[800],
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint('DioException khi đăng ký: $e');
+      debugPrint('DioException response: ${e.response?.data}');
+      String apiError = "Lỗi không xác định từ máy chủ.";
+      if (e.response?.data is Map && e.response!.data['message'] != null) {
+        apiError = e.response!.data['message'];
+      } else if (e.response?.data != null) {
+        apiError = e.response!.data.toString();
+      } else if (e.message != null) {
+        apiError = e.message!;
+      }
+      Get.snackbar(
+        "Lỗi Máy Chủ", // Sửa tiêu đề
+        apiError,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.orange[100],
+        colorText: Colors.orange[800],
+      );
     } catch (e) {
-      // Bắt các lỗi không mong muốn khác (mặc dù repo nên trả về Either)
-      return Left('An unexpected error occurred during signup: ${e.toString()}');
+      debugPrint('Lỗi đăng ký không xác định: $e');
+      Get.snackbar(
+        "Lỗi Hệ Thống", // Sửa tiêu đề
+        "Đã xảy ra lỗi không mong muốn: ${e.toString()}",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+    } finally {
+      isLoading.value = false; // Luôn tắt loading ở cuối
     }
   }
 
 
-  // --- Button Press Handler (Tương tự onPressLoginButton) ---
-  void onPressSignUpButton() async {
+  // --- Button Press Handler (Xử lý nhấn nút Đăng ký) ---
+  void onPressSignUpButton() {
     final currentState = formKey.currentState;
-    if (currentState == null) return;
-
-    // 1. Lưu dữ liệu từ Form
-    currentState.save();
-
-    // 2. Validate Form
-    if (!currentState.validate()) {
+    if (currentState == null) {
+      debugPrint("Form state is null");
       return;
     }
 
-    // 3. Bắt đầu loading và gọi logic đăng ký qua Repository
-    _isLoading.value = true;
-    final result = await signup(); // Gọi hàm signup() dùng Repo
-    _isLoading.value = false;
-
-    // 4. Xử lý kết quả trả về từ Repository (API)
-    result.fold(
-      (failureMessage) {
-        // Hiển thị lỗi
-        Get.snackbar(
-          'Sign Up Failed',
-          failureMessage, // Thông báo lỗi từ API
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.redAccent,
-          colorText: Colors.white,
-        );
-      },
-      (successMessage) {
-        // Hiển thị thành công và điều hướng
-        Get.snackbar(
-          'Success',
-          successMessage, // Thông báo thành công từ API
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white,
-        );
-        goToLogin(); // Điều hướng đến trang đăng nhập
-      },
-    );
+    if (!currentState.validate()) {
+      debugPrint("Form validation failed");
+      // Tự động hiển thị lỗi trên các trường Input
+      return;
+    }
+    _performEmailSignup(); // Gọi hàm helper đã tạo
   }
 
 
-  // --- Google Sign In Logic (Giữ nguyên - gọi trực tiếp service Firebase) ---
+  // --- Google Sign In Logic (Giữ nguyên) ---
   Future<void> signInWithGoogle() async {
     isGoogleLoading.value = true;
     try {
-      // Gọi trực tiếp service Firebase cho Google Sign In
       final userCredential = await authServiceForGoogle.loginWithGoogle();
 
       if (userCredential != null && userCredential.user != null) {
         Get.snackbar(
-          'Success',
-          'Logged in with Google successfully!',
+          'Thành công', // Sửa tiếng Việt
+          'Đăng nhập bằng Google thành công!', // Sửa tiếng Việt
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white,
         );
-        // Điều hướng đến màn hình chính
-        Get.offAllNamed(Routes.dashboard); // Hoặc Routes.home
+        Get.offAllNamed(Routes.dashboard); // Điều hướng đến dashboard
       } else {
-        // Xử lý lỗi/hủy bỏ
+        // Người dùng có thể đã hủy bỏ
         Get.snackbar(
-          'Error',
-          'Google Sign-in failed or cancelled. Please try again.',
+          'Thông báo', // Sửa tiêu đề
+          'Đăng nhập Google thất bại hoặc đã bị hủy.', // Sửa tiếng Việt
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.orangeAccent,
           colorText: Colors.white,
@@ -186,8 +238,8 @@ class RegisterController extends GetxController {
     } catch (e) {
       // Bắt lỗi không mong muốn
       Get.snackbar(
-        'Error',
-        'An unexpected error occurred during Google Sign-In: ${e.toString()}',
+        'Lỗi', // Sửa tiếng Việt
+        'Đã xảy ra lỗi không mong muốn khi đăng nhập Google: ${e.toString()}', // Sửa tiếng Việt
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.redAccent,
         colorText: Colors.white,
@@ -197,15 +249,21 @@ class RegisterController extends GetxController {
     }
   }
 
-  // --- Navigation (Giữ nguyên) ---
+  // --- Navigation ---
   void goToLogin() {
+    // Có thể dùng Get.back() nếu màn đăng ký được mở từ đăng nhập
+    // Hoặc dùng offNamed để xóa màn đăng ký khỏi stack
     Get.offNamed(Routes.login);
   }
 
-  // --- Lifecycle ---
+  // --- Cleanup ---
   @override
   void onClose() {
-    // Không còn TextEditingController để dispose
+    // Dispose controllers để tránh rò rỉ bộ nhớ
+    fullnameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.onClose();
   }
 }

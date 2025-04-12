@@ -65,7 +65,7 @@ class BottomWellSuccess extends StatelessWidget {
               AppButton(button, onPressed: () {
                 Get.back();
                 callback?.call();
-              })
+              },)
             ],
           ),
         ));

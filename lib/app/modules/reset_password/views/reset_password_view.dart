@@ -33,15 +33,14 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
             child: Padding(
               padding: EdgeInsets.symmetric(
                 horizontal: screenWidth * 0.06,
-                vertical: screenHeight * 0.02,
               ),
               child: Form(
                 key: controller.formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     SizedBox(height: screenHeight * 0.02),
-                    // Responsive image container
                     Center(
                       child: SizedBox(
                         height: screenHeight * 0.15,
@@ -110,8 +109,49 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
                       ),
                     )),
 
-                    SizedBox(height: screenHeight * 0.04), // Tăng khoảng cách một chút
+                    SizedBox(height: screenHeight * 0.02),
 
+                    Obx(() => ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: screenWidth * 0.9,
+                      ),
+                      child: TextFormField(
+                        controller: controller.confirmPasswordController, // Use the new controller
+                        obscureText: !controller.isConfirmPasswordVisible.value, // Use the new visibility state
+                        decoration: InputDecoration(
+                          hintText: 'Confirm new password', // i18n
+                          hintStyle: TextStyle(
+                            fontFamily: 'Noto Sans',
+                            fontSize: screenWidth * 0.035,
+                            fontWeight: FontWeight.w400,
+                            height: 2,
+                            color: const Color(0xFF9E9E9E),
+                          ),
+                          filled: true,
+                          fillColor: const Color(0xFFF5F5F5),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: screenWidth * 0.04,
+                            vertical: screenHeight * 0.018,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              controller.isConfirmPasswordVisible.value // Use the new visibility state
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.grey[600],
+                            ),
+                            onPressed: controller.toggleConfirmPasswordVisibility, // Use the new toggle method
+                          ),
+                        ),
+                        validator: controller.validateConfirmPassword, // Use the new validator
+                      ),
+                    )),
+
+                    SizedBox(height: screenHeight * 0.04),
                     // Submit button - ĐÃ CHỈNH SỬA KÍCH THƯỚC
                     Obx(() => Padding(
 
