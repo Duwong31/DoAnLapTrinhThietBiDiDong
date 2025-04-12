@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
-import '../controllers/playlist_controller.dart';
+import '../controllers/playlist_page_controller.dart';
 
 class PlayListView extends GetView<PlayListController> {
   const PlayListView({Key? key}) : super(key: key);

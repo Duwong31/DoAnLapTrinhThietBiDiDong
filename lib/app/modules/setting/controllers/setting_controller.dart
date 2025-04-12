@@ -17,3 +17,27 @@ class ThemeController extends GetxController {
         : ThemeMode.light;
   }
 }
+
+// Language setting
+class LanguageController extends GetxController {
+  final _locale = const Locale('en', 'US').obs; // Mặc định là tiếng Anh
+  final box = GetStorage();
+
+  Locale get selectedLocale => _locale.value;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final savedLangCode = box.read('locale');
+    if (savedLangCode == 'vi_VN') {
+      _locale.value = const Locale('vi', 'VN');
+      Get.updateLocale(_locale.value);
+    }
+  }
+
+  void changeLanguage(Locale locale) {
+    _locale.value = locale;
+    Get.updateLocale(locale);
+    box.write('locale', '${locale.languageCode}_${locale.countryCode}');
+  }
+}

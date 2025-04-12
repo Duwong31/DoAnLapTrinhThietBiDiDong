@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
-import '../controllers/album_controller.dart';
+import '../controllers/album_page_controller.dart';
 
 class AlbumView extends GetView<AlbumController> {
   const AlbumView({Key? key}) : super(key: key);
@@ -56,12 +56,12 @@ class AlbumView extends GetView<AlbumController> {
                     Icon(
                       Icons.download_for_offline_outlined,
                       size: 40,
-                      color: AppTheme.primary,
+                      color: AppTheme.labelColor,
                     ),
                     Icon(
                       Icons.more_horiz_outlined,
                       size: 40,
-                      color: AppTheme.primary,
+                      color: AppTheme.labelColor,
                     )
                   ],
                 ),
@@ -70,12 +70,12 @@ class AlbumView extends GetView<AlbumController> {
                     Icon(
                       Icons.shuffle,
                       size: 40,
-                      color: AppTheme.primary,
+                      color: AppTheme.labelColor,
                     ),
                     Icon(
                       Icons.play_circle_outline,
                       size: 40,
-                      color: AppTheme.primary,
+                      color: AppTheme.labelColor,
                     )
                   ],
                 )

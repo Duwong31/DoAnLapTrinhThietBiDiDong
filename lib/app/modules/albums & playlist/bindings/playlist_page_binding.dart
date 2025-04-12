@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 
-import '../controllers/playlist_controller.dart';
+import '../controllers/playlist_page_controller.dart';
 
 
 class PlayListBinding extends Bindings {

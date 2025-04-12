@@ -22,7 +22,7 @@ class LibraryView extends GetView<LibraryController> {
               children: [
                 _buildMenuItem(context, 'Liked tracks', const LikeView()),
                 _buildMenuItem(context, 'Playlists', const PlaylistView()),
-                _buildMenuItem(context, 'Albums', const AlbumView()),
+                _buildMenuItem(context, 'Albums', const AlbumsView()),
                 _buildMenuItem(context, 'Following', const FollowView()),
                 _buildMenuItem(context, 'Stations', const StationView()),
                 _buildMenuItem(context, 'Uploads', const UploadView()),
@@ -143,8 +143,8 @@ class PlaylistView extends StatelessWidget {
   }
 }
 
-class AlbumView extends StatelessWidget {
-  const AlbumView({super.key});
+class AlbumsView extends StatelessWidget {
+  const AlbumsView({super.key});
 
   @override
   Widget build(BuildContext context) {

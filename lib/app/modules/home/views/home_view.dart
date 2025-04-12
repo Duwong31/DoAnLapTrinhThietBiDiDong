@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
 // Dummy Song model
@@ -24,7 +25,6 @@ final List<Song> sampleSongs = [
 class HomeView extends GetView<HomeController> {
   const HomeView({super.key});
 
-  // Widget bài hát dạng ô đơn giản
   Widget _buildSongCard(BuildContext context, Song song) {
     return Card(
       color: Theme.of(context).colorScheme.primary,
@@ -35,7 +35,6 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  // Grid view bài hát
   Widget _buildSongGrid(BuildContext context, List<Song> songs) {
     return GridView.builder(
       scrollDirection: Axis.horizontal,
@@ -53,6 +52,56 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
+  Widget _buildCategoryItem(
+      BuildContext context, String imageUrl, String label, String routeName) {
+    final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+
+    return Container(
+      width: 100,
+      margin: const EdgeInsets.symmetric(horizontal: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: () => Get.toNamed(routeName),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                imageUrl,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 5),
+            SizedBox(
+              width: 85,
+              child: Text(
+                label,
+                style: TextStyle(fontSize: 12, color: textColor),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).textTheme.titleLarge?.color;
@@ -63,89 +112,108 @@ class HomeView extends GetView<HomeController> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            // "We think you'll like"
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "We think you'll like",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Container(
-                      width: 60,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "More",
-                          style: TextStyle(color: textColor),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SectionHeader(
+              title: "we_think_you_like".tr,
+              textColor: textColor,
+              onMorePressed: () {},
             ),
-
-            // Song grid
             SizedBox(
               height: 200,
               child: _buildSongGrid(context, sampleSongs),
             ),
+            Dimes.height10,
 
-            // "Music genre"
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Music genre",
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  TextButton(
-                    onPressed: () {},
-                    child: Container(
-                      width: 60,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceVariant,
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                      child: Center(
-                        child: Text(
-                          "More",
-                          style: TextStyle(color: textColor),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            SectionHeader(
+              title: "music_genre".tr,
+              textColor: textColor,
+              onMorePressed: () {},
             ),
-
-            // Genre cards
             SizedBox(
-              height: 106,
+              height: 122,
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 children: [
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg', 'Pop', const PopView()),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg', 'HipHop', const HipHopView()),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg', 'EDM', const EDMView()),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg', 'Jazz', const JazzView()),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg', 'Rock', const JazzView()),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg', 'Pop', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg', 'HipHop', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg', 'EDM', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg', 'Jazz', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg', 'Rock', Routes.album),
                 ],
               ),
             ),
+            Dimes.height10,
+
+            SectionHeader(
+              title: "artists".tr,
+              textColor: textColor,
+              onMorePressed: () {},
+            ),
+            SizedBox(
+              height: 122,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zadn.vn/w360_r1x1_jpeg/avatars/0/3/3/7/0337e4cc5a05cdcc93b5d65762aea241.jpg', 'Jack - J97', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-Kqc0EeoQXIjYObfm-Fyae3w-t500x500.jpg', 'Phan Mạnh Quỳnh', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://i1.sndcdn.com/artworks-IYYY8cfvf0zw-0-t500x500.jpg', 'Mr.Siro', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://photo-zmp3.zadn.vn/avatars/5/9/6/9/59696c9dba7a914d587d886049c10df6.jpg', 'Sơn Tùng - MTP', Routes.album),
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zadn.vn/w360_r1x1_jpeg/cover/3/b/3/3/3b333f6327d95ba9ef3fdabe5a7e1754.jpg', 'The Weeknd', Routes.album),
+                ],
+              ),
+            ),
+            Dimes.height10,
+
+            SectionHeader(
+              title: "you_might_want_to_hear".tr,
+              textColor: textColor,
+              onMorePressed: () {},
+            ),
+            SizedBox(
+              height: 122,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg', 'For the Brokenhearted', Routes.playlist),
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg', 'The Other One', Routes.playlist),
+                ],
+              ),
+            ),
+            Dimes.height10,
+
+            SectionHeader(
+              title: "chill".tr,
+              textColor: textColor,
+              onMorePressed: () {},
+            ),
+            SizedBox(
+              height: 122,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg', 'Mood Healer', Routes.playlist),
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg', 'Top Chill Vibes', Routes.playlist),
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg', 'Modern Chill', Routes.playlist),
+                  _buildCategoryItem(context,
+                      'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg', 'Addictive Lofi Vibes', Routes.playlist),
+                ],
+              ),
+            ),
+            Dimes.height10,
           ],
         ),
       ),
@@ -153,127 +221,43 @@ class HomeView extends GetView<HomeController> {
   }
 }
 
-// Genre card item
-Widget _buildCategoryItem(
-    BuildContext context,
-    String imageUrl,
-    String label,
-    Widget destination,
-    ) {
-  final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+class SectionHeader extends StatelessWidget {
+  final String title;
+  final VoidCallback onMorePressed;
+  final Color? textColor;
 
-  return Container(
-    width: 85,
-    margin: const EdgeInsets.symmetric(horizontal: 5),
-    decoration: BoxDecoration(
-      color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
-        padding: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destination),
-        );
-      },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+  const SectionHeader({
+    super.key,
+    required this.title,
+    required this.onMorePressed,
+    this.textColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final effectiveTextColor = textColor ?? Theme.of(context).textTheme.titleMedium?.color;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              imageUrl,
-              width: 85,
-              height: 85,
-              fit: BoxFit.cover,
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: AppTheme.primary,
             ),
           ),
-          Text(label, style: TextStyle(fontSize: 15, color: textColor)),
-        ],
-      ),
-    ),
-  );
-}
-
-// Genre Views Below
-class PopView extends StatelessWidget {
-  const PopView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Pop")),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
-        children: const [
-          ListTile(leading: Icon(Icons.music_note), title: Text("Pop Song 1")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("Pop Song 2")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("Pop Song 3")),
-        ],
-      ),
-    );
-  }
-}
-
-class HipHopView extends StatelessWidget {
-  const HipHopView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("HipHop")),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
-        children: const [
-          ListTile(leading: Icon(Icons.music_note), title: Text("HipHop Track 1")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("HipHop Track 2")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("HipHop Track 3")),
-        ],
-      ),
-    );
-  }
-}
-
-class EDMView extends StatelessWidget {
-  const EDMView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("EDM")),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
-        children: const [
-          ListTile(leading: Icon(Icons.music_note), title: Text("EDM Banger 1")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("EDM Banger 2")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("EDM Banger 3")),
-        ],
-      ),
-    );
-  }
-}
-
-class JazzView extends StatelessWidget {
-  const JazzView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Jazz")),
-      body: ListView(
-        padding: const EdgeInsets.all(12),
-        children: const [
-          ListTile(leading: Icon(Icons.music_note), title: Text("Jazz Tune 1")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("Jazz Tune 2")),
-          ListTile(leading: Icon(Icons.music_note), title: Text("Jazz Tune 3")),
+          TextButton(
+            onPressed: onMorePressed,
+            child:  Center(
+                child: Text(
+                  "more".tr,
+                  style: TextStyle(color: effectiveTextColor, fontSize: 10),
+                ),
+              ),
+            ),
         ],
       ),
     );

@@ -32,7 +32,7 @@ class SettingView extends GetView<SettingController> {
           _buildMenuItem(context, 'Audio Quality', const AudioQualityView()),
           _buildMenuItem(context, 'Video Quality', const VideoQualityView()),
           _buildMenuItem(context, 'Apps and Devices', const AppsDevicesView()),
-          _buildMenuItem(context, 'Language', const LanguageView()),
+          _buildMenuItem(context, 'Language', LanguageView()),
           _buildMenuItem(context, 'About', const AboutView()),
         ],
       ),
@@ -141,13 +141,53 @@ class AppsDevicesView extends StatelessWidget {
 }
 
 class LanguageView extends StatelessWidget {
-  const LanguageView({super.key});
+  final LanguageController controller = Get.put(LanguageController());
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Language')),
-      body: const Center(child: Text('Language settings here')),
+      appBar: AppBar(title: Text('language'.tr)),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Obx(() => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'select_language'.tr,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+
+            // English
+            ListTile(
+              title: const Text('English'),
+              leading: Radio<Locale>(
+                value: const Locale('en', 'US'),
+                groupValue: controller.selectedLocale ,
+                onChanged: (Locale? value) {
+                  if (value != null) {
+                    controller.changeLanguage(value);
+                  }
+                },
+              ),
+            ),
+
+            // Vietnamese
+            ListTile(
+              title: const Text('Tiếng Việt'),
+              leading: Radio<Locale>(
+                value: const Locale('vi', 'VN'),
+                groupValue: controller.selectedLocale,
+                onChanged: (Locale? value) {
+                  if (value != null) {
+                    controller.changeLanguage(value);
+                  }
+                },
+              ),
+            ),
+          ],
+        )),
+      ),
     );
   }
 }
