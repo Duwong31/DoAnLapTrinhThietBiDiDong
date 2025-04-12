@@ -7,8 +7,8 @@ class ApiUrl {
   static const String receipt = '/api';
 
   // Auth
-  static const String login = '$receipt/login';
-  static const String logout = '$receipt/logout';
+  static const String login = '$receipt/auth/login';
+  static const String logout = '$receipt/auth/logout';
   static const String register = '$receipt/auth/register';
   static const String verifyPhoneOtp = '$receipt/auth/verify-phone-otp';
   static const String sendOtp = '$receipt/auth/send-otp';
