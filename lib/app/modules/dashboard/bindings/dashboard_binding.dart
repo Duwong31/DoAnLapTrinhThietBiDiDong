@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../albums & playlist/controllers/album_page_controller.dart';
+import '../../albums & playlist/controllers/playlist_page_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../messages/controllers/messages_controller.dart';
 import '../../notifications/controllers/notifications_controller.dart';
@@ -17,5 +19,7 @@ class DashboardBinding extends Bindings {
     Get.lazyPut(() => ProfileController());
     Get.lazyPut(() => SearchPageController());
     Get.lazyPut(() => ThemeController());
+    Get.lazyPut(() => AlbumController());
+    Get.lazyPut(() => PlayListController());
   }
 }

@@ -1,5 +1,9 @@
 import 'package:get/get.dart';
 
+import '../modules/albums & playlist/bindings/album_page_binding.dart';
+import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
+import '../modules/albums & playlist/views/album_page_view.dart';
+import '../modules/albums & playlist/views/playlist_page_view.dart';
 import '../modules/change-password/bindings/change_password_binding.dart';
 import '../modules/change-password/views/change_password_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -112,6 +116,21 @@ class AppPages {
         animationPath: 'assets/animations/success.json', 
         duration: Duration(milliseconds: 1300), 
         nextRoute: Routes.resetPassword)
+    ),
+    GetPage(
+        name: _Paths.setting,
+        page: () => const SettingView(),
+      binding: SettingBinding()
+    ),
+    GetPage(
+        name: _Paths.album,
+        page: () => const AlbumView(),
+        binding: AlbumBinding()
+    ),
+    GetPage(
+        name: _Paths.playlist,
+        page: () => const PlayListView(),
+        binding: PlayListBinding()
     )
   ];
 }

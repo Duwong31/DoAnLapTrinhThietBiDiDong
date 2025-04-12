@@ -12,6 +12,7 @@ import 'app/data/http_client/http_client.dart';
 import 'app/data/providers/notification_provider.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
+import 'app/widgets/messages.dart'; // ✅ thêm dòng này
 import 'root.dart';
 
 Future<void> initServices() async {
@@ -23,22 +24,16 @@ Future<void> initServices() async {
   EncryptData.init();
   if (Preferences.isAuth()) {
     await Get.putAsync(
-      () => ProfileController().getUserDetail(),
+          () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }
-  // ShopifyConfig.setConfig(
-  //   StringUtils().storefrontAccessToken,
-  //   StringUtils().storeUrl,
-  //   StringUtils().storefrontApiVersion,
-  // );
   Get.log('All services started...');
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Setup Firebase và Preferences before running the app
   await Firebase.initializeApp();
   await Preferences.setPreferences();
 
@@ -51,27 +46,22 @@ void main() async {
       ApiClient.setBaseUrl('https://soundflow.click');
   }
 
-  await GetStorage.init(); // ✅ phải init trước runApp
+  await GetStorage.init();
   Get.put(ThemeController());
 
-  // Run the app after setting up Preferences
   runApp(const RootApp());
 
-  // Complete initialization of other services
   EncryptData.init();
   await NotificationProvider.initialize();
 
   if (Preferences.isAuth()) {
     await Get.putAsync(
-      () => ProfileController().getUserDetail(),
+          () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }
 
-  // Setup error handling for Firebase Crashlytics
   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-
-  // Setup error handling for unhandled errors
   PlatformDispatcher.instance.onError = (error, stack) {
     FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
     return true;

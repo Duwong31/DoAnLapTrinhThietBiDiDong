@@ -22,6 +22,8 @@ abstract class Routes {
   static const forgotPassword = _Paths.forgotPassword;
   static const resetPassword = _Paths.resetPassword;
   static const successSplash = _Paths.successSplash;
+  static const album = _Paths.album;
+  static const playlist = _Paths.playlist;
 }
 
 abstract class _Paths {
@@ -43,4 +45,6 @@ abstract class _Paths {
   static const forgotPassword = '/forgot-password';
   static const resetPassword = '/reset-password';
   static const successSplash = '/success-splash';
+  static const album = '/album';
+  static const playlist = '/playlist';
 }
