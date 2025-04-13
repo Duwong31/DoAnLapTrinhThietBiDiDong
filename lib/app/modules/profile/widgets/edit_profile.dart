@@ -187,7 +187,7 @@ class _EditProfileBottomState extends State<EditProfileBottom> {
                       controller: _email,
                       prefixIcon: Image.asset(AppImage.email),
                       isShowPrefixIcon: true,
-                      hintText: 'Email',
+                      hintText: 'Email', 
                     ),
                     Align(
                       alignment: Alignment.centerRight,

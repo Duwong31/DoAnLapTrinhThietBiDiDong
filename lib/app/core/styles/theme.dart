@@ -25,6 +25,11 @@ class AppGradient {
     Color.fromRGBO(86, 86, 86, 1),
     Color.fromRGBO(248, 130, 95, 1),
   ], begin: Alignment.centerLeft, end: Alignment.centerRight);
+  static const yellowOrange = LinearGradient(colors: [
+    Color(0xffF9AE12),
+    Color(0xffF37D1B),
+    Color(0xffED5023)
+  ], begin: Alignment.centerLeft, end: Alignment.centerRight);
 }
 
 class AppTheme {

@@ -28,10 +28,10 @@ class WelcomeController extends GetxController {
   }
 
   void toLoginPage() {
-    Get.offAllNamed(Routes.login);
+    Get.offNamed(Routes.login);
   }
   void toSignUpPage() {
-    Get.offAllNamed(Routes.register);
+    Get.offNamed(Routes.register);
   }
 
   @override

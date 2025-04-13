@@ -2,24 +2,26 @@ part of 'repositories.dart';
 
 abstract class AuthBase {
   Future<void> logout();
-  Future<dynamic> register( String email, String deviceName, bool term);
+  Future<dynamic> register(String name, String email,String password, String deviceName);
   Future<dynamic> verifyOtp(String userId, String otp, String deviceName);
    Future<String?> refreshToken();
   Future<dynamic> resendOtp(String phone);
   Future<dynamic> setPassword(String phone, String otp, String password,
       String passwordConfirmation, String userId, String deviceName);
   Future<dynamic> forgotPassword(String phone);
+  Future<dynamic> forgotPasswordEmail(String email);
   Future<dynamic> resetPassword(
-      String phone, String otp, String password, String passwordConfirmation);
-  Future<dynamic> login(String phone, String password, String deviceName);
+      String phone, String password, String passwordConfirmation);
+  Future<dynamic> resetPasswordEmail(String email, String password, String passwordConfirmation);
+  Future<dynamic> login(String email, String password, String deviceName);
   Future<dynamic> changePassword(String currentPassword, String newPassword,
       String newPasswordConfirmation);
 }
 
 class AuthRepository extends BaseRepository implements AuthBase {
   @override
-  Future<dynamic> register(String email, String deviceName, bool term) {
-    return handleCall(() => ApiProvider.register(email, deviceName, term));
+  Future<dynamic> register(String name, String email, String password, String deviceName) {
+    return handleCall(() => ApiProvider.register(name, email,password, deviceName));
   }
 
   @override
@@ -62,11 +64,19 @@ class AuthRepository extends BaseRepository implements AuthBase {
   }
 
   @override
-  Future<dynamic> resetPassword(
-      String phone, String otp, String password, String passwordConfirmation) {
-    return handleCall(() =>ApiProvider.resetPassword(phone, otp, password, passwordConfirmation));
+  Future<dynamic> forgotPasswordEmail(String email) {
+    return handleCall(() => ApiProvider.forgotPasswordEmail(email));
   }
-
+  @override
+  Future<dynamic> resetPassword(
+      String phone, String password, String passwordConfirmation) {
+    return handleCall(() =>ApiProvider.resetPassword(phone, password, passwordConfirmation));
+  }
+  @override
+  Future<dynamic> resetPasswordEmail(
+    String email, String password, String passwordConfirmation){
+      return handleCall(() => ApiProvider.resetPasswordEmail(email, password, passwordConfirmation));
+    }
   @override
   Future<dynamic> changePassword(String currentPassword, String newPassword,
       String newPasswordConfirmation) {

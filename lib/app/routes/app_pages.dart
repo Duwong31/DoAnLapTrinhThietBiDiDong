@@ -73,11 +73,11 @@ class AppPages {
       page: () => const WelcomeView(),
       binding: WelcomeBinding(),
     ),
-    GetPage(
-      name: _Paths.changePassword,
-      page: () => const ChangePasswordView(),
-      binding: ChangePasswordBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.changePassword,
+    //   page: () => const ChangePasswordView(),
+    //   binding: ChangePasswordBinding(),
+    // ),
     // GetPage(
     //   name: _Paths.detailNotify,
     //   page: () => NotificationDetail(id: Get.parameters['id'] as String),
