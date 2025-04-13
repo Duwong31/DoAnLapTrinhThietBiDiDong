@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
+import '../../albums & playlist/views/album_page_view.dart';
+import '../../albums & playlist/views/playlist_page_view.dart';
 import '../controllers/library_controller.dart';
 
 class LibraryView extends GetView<LibraryController> {
@@ -21,8 +23,8 @@ class LibraryView extends GetView<LibraryController> {
               physics: const NeverScrollableScrollPhysics(),
               children: [
                 _buildMenuItem(context, 'Liked tracks', const LikeView()),
-                _buildMenuItem(context, 'Playlists', const PlaylistView()),
-                _buildMenuItem(context, 'Albums', const AlbumsView()),
+                _buildMenuItem(context, 'Playlists', const PlayListView()),
+                _buildMenuItem(context, 'Albums', const AlbumView()),
                 _buildMenuItem(context, 'Following', const FollowView()),
                 _buildMenuItem(context, 'Stations', const StationView()),
                 _buildMenuItem(context, 'Uploads', const UploadView()),
@@ -30,11 +32,11 @@ class LibraryView extends GetView<LibraryController> {
             ),
 
             const Divider(
-              color: Colors.black, // Màu của đường kẻ
-              height: 1, // Chiều cao của đường kẻ (độ dày)
-              thickness: 0.5, // Độ dày của đường kẻ
-              indent: 15, // Khoảng cách bên trái (dễ dàng điều chỉnh chiều dài)
-              endIndent: 15, // Khoảng cách bên phải
+              color: Colors.black, // màu của đường kẻ
+              height: 1, // chiều cao của đường kẻ (độ dày)
+              thickness: 0.5, // độ dày của đường kẻ
+              indent: 15, // khoảng cách bên trái (dễ dàng điều chỉnh chiều dài)
+              endIndent: 15, // khoảng cách bên phải
             ),
 
 
@@ -111,6 +113,7 @@ Widget _buildMenuItem(BuildContext context, String title, Widget destination) {
   return ListTile(
     title: Text(title),
     trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+    // onPressed: () => Get.toNamed(routeName),
     onTap: () {
       Navigator.push(
         context,
@@ -128,28 +131,6 @@ class LikeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(child: Text("Liked tracks")),
-    );
-  }
-}
-
-class PlaylistView extends StatelessWidget {
-  const PlaylistView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Playlists")),
-    );
-  }
-}
-
-class AlbumsView extends StatelessWidget {
-  const AlbumsView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Albums")),
     );
   }
 }

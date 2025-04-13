@@ -23,7 +23,10 @@ abstract class Routes {
   static const resetPassword = _Paths.resetPassword;
   static const successSplash = _Paths.successSplash;
   static const album = _Paths.album;
+  static const albumnow = _Paths.albumnow;
   static const playlist = _Paths.playlist;
+  static const playlistnow = _Paths.playlistnow;
+
 }
 
 abstract class _Paths {
@@ -46,5 +49,7 @@ abstract class _Paths {
   static const resetPassword = '/reset-password';
   static const successSplash = '/success-splash';
   static const album = '/album';
+  static const albumnow = '/albumnow';
   static const playlist = '/playlist';
+  static const playlistnow = '/playlistnow';
 }

@@ -87,7 +87,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.search,
-      page: () => const SearchView(),
+      page: () =>  SearchView(),
       binding: SearchBinding(),
     ),
     GetPage(
@@ -128,8 +128,18 @@ class AppPages {
         binding: AlbumBinding()
     ),
     GetPage(
+        name: _Paths.albumnow,
+        page: () => const AlbumNow(),
+        binding: AlbumBinding()
+    ),
+    GetPage(
         name: _Paths.playlist,
         page: () => const PlayListView(),
+        binding: PlayListBinding()
+    ),
+    GetPage(
+        name: _Paths.playlistnow,
+        page: () => const PlayListNow(),
         binding: PlayListBinding()
     )
   ];
