@@ -21,10 +21,10 @@ class ResetPasswordView extends GetView<ResetPasswordController> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         // Bạn có thể bỏ comment dòng này nếu muốn nút back
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        //   onPressed: () => Get.back(),
-        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: SafeArea(
         child: GestureDetector(

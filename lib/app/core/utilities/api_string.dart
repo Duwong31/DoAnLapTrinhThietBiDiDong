@@ -15,7 +15,9 @@ class ApiUrl {
   static const String resendOtp = '$receipt/auth/resend-otp';
   static const String setPassword = '$receipt/auth/set-password';
   static const String forgotPassword = '$receipt/forgot-password';
+  static const String forgotPasswordEmail = '$receipt/auth/forgot-password-email';
   static const String resetPassword = '$receipt/reset-password';
+  static const String resetPasswordEmail = '$receipt/auth/reset-password-email';
   static const String changePassword = '$receipt/auth/change-password';
 
   static String detailRecipient(id) => '$receipt/recipients/$id';

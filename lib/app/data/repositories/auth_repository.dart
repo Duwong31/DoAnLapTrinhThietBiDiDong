@@ -9,8 +9,10 @@ abstract class AuthBase {
   Future<dynamic> setPassword(String phone, String otp, String password,
       String passwordConfirmation, String userId, String deviceName);
   Future<dynamic> forgotPassword(String phone);
+  Future<dynamic> forgotPasswordEmail(String email);
   Future<dynamic> resetPassword(
-      String phone, String otp, String password, String passwordConfirmation);
+      String phone, String password, String passwordConfirmation);
+  Future<dynamic> resetPasswordEmail(String email, String password, String passwordConfirmation);
   Future<dynamic> login(String email, String password, String deviceName);
   Future<dynamic> changePassword(String currentPassword, String newPassword,
       String newPasswordConfirmation);
@@ -62,11 +64,19 @@ class AuthRepository extends BaseRepository implements AuthBase {
   }
 
   @override
-  Future<dynamic> resetPassword(
-      String phone, String otp, String password, String passwordConfirmation) {
-    return handleCall(() =>ApiProvider.resetPassword(phone, otp, password, passwordConfirmation));
+  Future<dynamic> forgotPasswordEmail(String email) {
+    return handleCall(() => ApiProvider.forgotPasswordEmail(email));
   }
-
+  @override
+  Future<dynamic> resetPassword(
+      String phone, String password, String passwordConfirmation) {
+    return handleCall(() =>ApiProvider.resetPassword(phone, password, passwordConfirmation));
+  }
+  @override
+  Future<dynamic> resetPasswordEmail(
+    String email, String password, String passwordConfirmation){
+      return handleCall(() => ApiProvider.resetPasswordEmail(email, password, passwordConfirmation));
+    }
   @override
   Future<dynamic> changePassword(String currentPassword, String newPassword,
       String newPasswordConfirmation) {
