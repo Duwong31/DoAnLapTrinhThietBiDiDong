@@ -88,7 +88,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.search,
-      page: () => const SearchView(),
+      page: () => SearchView(),
       binding: SearchBinding(),
     ),
     GetPage(
@@ -97,46 +97,46 @@ class AppPages {
       binding: LibraryBinding(),
     ),
     GetPage(
-      name: _Paths.forgotPassword,
-      page: () => const ForgotPasswordView(),
-      binding: ForgotPasswordBinding()
-    ),
+        name: _Paths.forgotPassword,
+        page: () => const ForgotPasswordView(),
+        binding: ForgotPasswordBinding()),
     GetPage(
-      name: _Paths.otpLogin,
-      page: () => const OtpLoginView(),
-      binding: OtpLoginBinding()
-    ),
+        name: _Paths.otpLogin,
+        page: () => const OtpLoginView(),
+        binding: OtpLoginBinding()),
     GetPage(
-      name: _Paths.resetPassword,
-      page: () => const ResetPasswordView(),
-      binding: ResetPasswordBinding()
-    ),
+        name: _Paths.resetPassword,
+        page: () => const ResetPasswordView(),
+        binding: ResetPasswordBinding()),
     GetPage(
-      name: _Paths.successSplash,
-      page: () => const LottieSplashView(
-        animationPath: 'assets/animations/success.json', 
-        duration: Duration(milliseconds: 1300), 
-        nextRoute: Routes.resetPassword)
-    ),
+        name: _Paths.successSplash,
+        page: () => const LottieSplashView(
+            animationPath: 'assets/animations/success.json',
+            duration: Duration(milliseconds: 1300),
+            nextRoute: Routes.resetPassword)),
     GetPage(
         name: _Paths.setting,
         page: () => const SettingView(),
-      binding: SettingBinding()
-    ),
+        binding: SettingBinding()),
     GetPage(
         name: _Paths.album,
         page: () => const AlbumView(),
-        binding: AlbumBinding()
-    ),
+        binding: AlbumBinding()),
+    GetPage(
+        name: _Paths.albumnow,
+        page: () => const AlbumNow(),
+        binding: AlbumBinding()),
     GetPage(
         name: _Paths.playlist,
         page: () => const PlayListView(),
-        binding: PlayListBinding()
-    ),
+        binding: PlayListBinding()),
+    GetPage(
+        name: _Paths.playlistnow,
+        page: () => const PlayListNow(),
+        binding: PlayListBinding()),
     GetPage(
         name: _Paths.songs,
         page: () => const AllSongsView(),
-        binding: NowPlayingBinding()
-    )
+        binding: NowPlayingBinding())
   ];
 }

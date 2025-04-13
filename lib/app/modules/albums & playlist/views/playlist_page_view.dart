@@ -21,6 +21,86 @@ class PlayListView extends GetView<PlayListController> {
             Get.toNamed(Routes.dashboard);
           },
         ),
+        title: const Text('PlayList'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        child: Obx(() => _buildLazyGridView(context)),
+      ),
+    );
+  }
+
+  Widget _buildLazyGridView(BuildContext context) {
+    final items = controller.playlists;
+
+    return GridView.builder(
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+        childAspectRatio: 0.8,
+      ),
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return GestureDetector(
+          onTap: () {
+            Get.toNamed(Routes.playlistnow, arguments: item);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceVariant,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Image.network(
+                      item.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                Dimes.height8,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    item.title,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+
+  }
+}
+
+
+class PlayListNow extends GetView<PlayListController> {
+  const PlayListNow({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        elevation: .1,
+        centerTitle: true,
+        backgroundColor: AppTheme.appBar,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          onPressed: () {
+            Get.back();
+          },
+        ),
         title: const Text(
           'PlayList',
         ),
@@ -43,8 +123,8 @@ class PlayListView extends GetView<PlayListController> {
             const Text(
               'Dành Riêng Cho Kẻ Lụy Tình',
               style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
               ),
             ),
             Dimes.height40,
