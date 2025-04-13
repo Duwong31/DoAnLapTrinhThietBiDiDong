@@ -110,3 +110,19 @@ class AppTheme {
     );
   }
 }
+
+const Color backgroundGradientStart = Color(0xFFFFF3E0);
+const Color backgroundGradientcenter = Color(0xFFFFEE58);
+const Color backgroundGradientEnd = Color(0xFFFFA726);
+
+LinearGradient Themes() {
+  return const LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      backgroundGradientStart,
+      backgroundGradientcenter,
+      backgroundGradientEnd,
+    ],
+  );
+}
