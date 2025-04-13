@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-
-import '../../models/songs/all_songs.dart';
+import '../../../models/song.dart';
 
 abstract interface class DataSource{
   Future<List<Song>?> loadData({
