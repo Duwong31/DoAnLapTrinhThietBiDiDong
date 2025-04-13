@@ -27,6 +27,7 @@ abstract class Routes {
   static const playlist = _Paths.playlist;
   static const playlistnow = _Paths.playlistnow;
 
+  static var songs = _Paths.songs;
 }
 
 abstract class _Paths {
@@ -52,4 +53,5 @@ abstract class _Paths {
   static const albumnow = '/albumnow';
   static const playlist = '/playlist';
   static const playlistnow = '/playlistnow';
+  static const songs = '/songs';
 }

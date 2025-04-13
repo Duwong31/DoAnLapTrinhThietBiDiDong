@@ -2,186 +2,210 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../data/repositories/repositories.dart';
+import '../../../routes/app_pages.dart';
 
-
-/// Global controllers to prevent disposal during navigation
+/// Global controllers (xem xét lại nếu thực sự cần thiết với GetX)
 final Map<String, TextEditingController> _globalControllers = {};
 
 class ResetPasswordController extends GetxController {
-  // Thêm formKey vào controller
   late final GlobalKey<FormState> formKey;
-  
-  TextEditingController get passwordController => 
+
+  TextEditingController get passwordController =>
       _globalControllers['reset_password'] ??= TextEditingController();
-  
+  TextEditingController get confirmPasswordController =>
+      _globalControllers['reset_confirm_password'] ??= TextEditingController();
+
   final isPasswordVisible = false.obs;
+  final isConfirmPasswordVisible = false.obs;
   final isLoading = false.obs;
   final AuthRepository _authRepository = Repo.auth;
-  final isReadyForInput = false.obs;
-  
-  late String userId;
-  late String phone;
-  late String otp;
+  // final isReadyForInput = false.obs; // Có thể không cần
+
+  // --- Lưu trữ thông tin từ arguments ---
+  String? email; // Sẽ có giá trị nếu reset qua email
+  String? phone; // Sẽ có giá trị nếu reset qua phone
+  late String userId; // Giữ lại nếu cần (ví dụ để hiển thị thông tin user)
+
+  // --- Cờ xác định phương thức reset ---
+  bool get isEmailReset => email != null && email!.isNotEmpty;
+  bool get isPhoneReset => phone != null && phone!.isNotEmpty;
 
   @override
   void onInit() {
     super.onInit();
-    // Khởi tạo formKey
     formKey = GlobalKey<FormState>();
-    
     debugPrint("ResetPasswordController initialized");
     _initializeData();
-    
-    // Mark controller as ready for input after initialization
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      isReadyForInput.value = true;
-    });
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   isReadyForInput.value = true;
+    // });
   }
 
   void _initializeData() {
     try {
-      if (Get.arguments != null && Get.arguments is Map<String, dynamic>) {
-        userId = Get.arguments['userId'] ?? '';
-        phone = Get.arguments['phone'] ?? '';
-        otp = Get.arguments['otp'] ?? '';
-        debugPrint('ResetPasswordController received userId: $userId, phone: $phone, otp: $otp');
+      final args = Get.arguments as Map<String, dynamic>?;
+      if (args != null) {
+        userId = args['userId'] ?? '';
+        email = args['email'];
+        phone = args['phone'];
+        // --- KHÔNG LẤY OTP TỪ ARGUMENTS ---
+        // otp = args['otp'] ?? ''; // Xóa dòng này
+
+        debugPrint('ResetPasswordController received - userId: $userId, email: $email, phone: $phone');
+
+        // --- BỎ KIỂM TRA OTP, CHỈ CẦN USERID VÀ EMAIL/PHONE ---
+        if (userId.isEmpty || (!isEmailReset && !isPhoneReset)) {
+          throw Exception("Incomplete information received for password reset (missing userId or email/phone).");
+        }
       } else {
-        userId = '';
-        phone = '';
-        otp = '';
-        debugPrint('ResetPasswordController received no arguments or invalid format');
-      }
-      
-      if (phone.isEmpty || otp.isEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Get.snackbar(
-            'Cảnh báo',
-            'Thông tin không đầy đủ. Vui lòng thử lại từ đầu.',
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.orange[100],
-            colorText: Colors.orange[800],
-          );
-        });
+         throw Exception("Arguments are missing for password reset.");
       }
     } catch (e) {
-      debugPrint('Error initializing data: $e');
+      debugPrint('Error initializing reset password data: $e');
+       WidgetsBinding.instance.addPostFrameCallback((_) {
+          Get.snackbar(
+            'Error',
+            'Could not prepare password reset. Please try the process again.',
+            snackPosition: SnackPosition.TOP,
+            backgroundColor: Colors.red[100],
+            colorText: Colors.red[800],
+          );
+          Get.offAllNamed(Routes.forgotPassword);
+       });
     }
   }
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
-
-  bool isPasswordValid(String password) {
-    return password.length >= 6;
+   void toggleConfirmPasswordVisibility() {
+    isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
-  
+
+  // --- Validation giữ nguyên ---
   String? validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Vui lòng nhập mật khẩu';
+      return 'Please enter a password';
     }
     if (value.length < 6) {
-      return 'Mật khẩu phải có ít nhất 6 ký tự';
+      return 'Password must be at least 6 characters';
+    }
+    // Thêm regex nếu cần
+    // final passwordRegex = RegExp(r'^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{6,}$');
+    // if (!passwordRegex.hasMatch(value)) {
+    //   return 'Password requires uppercase & special char.';
+    // }
+    return null;
+  }
+
+  String? validateConfirmPassword(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please confirm your password';
+    }
+    if (value != passwordController.text) {
+      return 'Passwords do not match';
     }
     return null;
   }
 
   Future<void> resetPassword() async {
-    if (!isReadyForInput.value) return;
-    
+    // if (!isReadyForInput.value) return; // Bỏ nếu không dùng
+
+    if (!formKey.currentState!.validate()) {
+      return;
+    }
+
     final password = passwordController.text;
-    
-    if (!isPasswordValid(password)) {
-      Get.snackbar(
-        'Lỗi',
-        'Vui lòng nhập mật khẩu có ít nhất 6 ký tự',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[800],
-      );
+    final confirmPassword = confirmPasswordController.text;
+
+    // --- BỎ KIỂM TRA OTP ---
+    if (!isEmailReset && !isPhoneReset) {
+      _showErrorSnackbar('Error', 'Incomplete information to reset password.');
       return;
     }
-    
-    if (phone.isEmpty || otp.isEmpty) {
-      Get.snackbar(
-        'Lỗi',
-        'Thông tin không đầy đủ để đặt lại mật khẩu',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red[100],
-        colorText: Colors.red[800],
-      );
-      return;
-    }
-      
+
     try {
-      isLoading.value = true; 
-      
-      final response = await _authRepository.resetPassword(
-        phone,
-        otp,
-        password,
-        password
-      ); 
-      
-      if (response['status'] == 1) {
-        // Store data before navigation
-        final storedPhone = phone;
-        
+      isLoading.value = true;
+      dynamic response;
+
+      if (isEmailReset) {
+        debugPrint('Calling resetPasswordEmail API with email: $email');
+        response = await _authRepository.resetPasswordEmail(
+          email!,
+          // --- KHÔNG GỬI OTP ---
+          password,
+          confirmPassword
+        );
+      } else if (isPhoneReset) {
+        debugPrint('Calling resetPassword (phone) API with phone: $phone');
+        response = await _authRepository.resetPassword(
+          phone!,
+          // --- KHÔNG GỬI OTP ---
+          password,
+          confirmPassword
+        );
+      } else {
+         throw Exception("Cannot determine reset method (email or phone).");
+      }
+
+      debugPrint('Reset Password API response: $response');
+
+      if (response != null && response['status'] == 1) {
         Get.snackbar(
-          'Thành công',
-          'Đặt lại mật khẩu thành công',
+          'Success',
+          response['message'] ?? 'Password reset successfully',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green[100],
           colorText: Colors.green[800],
           duration: const Duration(seconds: 2),
         );
-
         await Future.delayed(const Duration(seconds: 2));
-        
-        // Clear password field
         passwordController.clear();
-        
-        // Navigate to login
-        Get.offAllNamed(
-          '/login',
-          arguments: {'phone': storedPhone}
-        );
+        confirmPasswordController.clear();
+        Get.offAllNamed(Routes.login, arguments: {
+           if (isEmailReset) 'email': email,
+           if (isPhoneReset) 'phone': phone,
+        });
       } else {
-        isLoading.value = false;
-        Get.snackbar(
-          'Lỗi',
-          response['message'] ?? 'Không thể đặt lại mật khẩu',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red[100],
-          colorText: Colors.red[800],
-        );
+        _showErrorSnackbar('Error', response?['message'] ?? 'Could not reset password.');
       }
     } catch (e) {
+      debugPrint('Error resetting password: $e');
+      _showErrorSnackbar('Error', 'Could not reset password: $e');
+    } finally {
       isLoading.value = false;
-      debugPrint('Chi tiết lỗi đặt lại mật khẩu: $e');
-      
-      if (!Get.isSnackbarOpen) {
-        Get.snackbar(
-          'Lỗi',
-          'Không thể đặt lại mật khẩu: $e',
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: Colors.red[100],
-          colorText: Colors.red[800],
-        );
-      }
     }
   }
+
+  void _showErrorSnackbar(String title, String message) {
+     Get.snackbar(
+        title,
+        message,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red[100],
+        colorText: Colors.red[800],
+      );
+   }
 
   @override
   void onClose() {
     debugPrint("ResetPasswordController being closed");
+    // cleanupControllers(); // Xem xét lại việc gọi cleanup ở đây
     super.onClose();
   }
 
+  // --- Cleanup Controllers (Xem xét lại sự cần thiết) ---
   static void cleanupControllers() {
     if (_globalControllers.containsKey('reset_password')) {
       _globalControllers['reset_password']?.dispose();
       _globalControllers.remove('reset_password');
+      debugPrint("Disposed reset_password controller");
+    }
+    if (_globalControllers.containsKey('reset_confirm_password')) {
+      _globalControllers['reset_confirm_password']?.dispose();
+      _globalControllers.remove('reset_confirm_password');
+      debugPrint("Disposed reset_confirm_password controller");
     }
   }
-} 
+}

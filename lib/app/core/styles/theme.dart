@@ -25,6 +25,11 @@ class AppGradient {
     Color.fromRGBO(86, 86, 86, 1),
     Color.fromRGBO(248, 130, 95, 1),
   ], begin: Alignment.centerLeft, end: Alignment.centerRight);
+  static const yellowOrange = LinearGradient(colors: [
+    Color(0xffF9AE12),
+    Color(0xffF37D1B),
+    Color(0xffED5023)
+  ], begin: Alignment.centerLeft, end: Alignment.centerRight);
 }
 
 class AppTheme {
@@ -109,4 +114,20 @@ class AppTheme {
       bottomAppBarTheme: BottomAppBarTheme(color: colorScheme.surface),
     );
   }
+}
+
+const Color backgroundGradientStart = Color(0xFFFFF3E0);
+const Color backgroundGradientcenter = Color(0xFFFFEE58);
+const Color backgroundGradientEnd = Color(0xFFFFA726);
+
+LinearGradient Themes() {
+  return const LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      backgroundGradientStart,
+      backgroundGradientcenter,
+      backgroundGradientEnd,
+    ],
+  );
 }

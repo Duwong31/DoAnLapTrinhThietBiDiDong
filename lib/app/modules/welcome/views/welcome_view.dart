@@ -33,7 +33,7 @@ class WelcomeView extends GetView<WelcomeController> {
                 textAlign: TextAlign.center,
               ),
 
-              const Spacer(),
+              Dimes.height120,
 
               //SIGN UP BUTTON
               Padding(
@@ -62,7 +62,7 @@ class WelcomeView extends GetView<WelcomeController> {
                 ),
               ),
                 ),
-                const SizedBox(height: 16),
+                Dimes.height10,
               //LOG IN BUTTON
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),

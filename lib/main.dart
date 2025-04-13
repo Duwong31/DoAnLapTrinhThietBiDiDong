@@ -10,6 +10,7 @@ import 'app/core/utilities/encry_data.dart';
 import 'app/core/utilities/utilities.dart';
 import 'app/data/http_client/http_client.dart';
 import 'app/data/providers/notification_provider.dart';
+import 'app/modules/ songs/bindings/audio_service.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
 import 'app/widgets/messages.dart'; // ✅ thêm dòng này
@@ -40,15 +41,16 @@ void main() async {
   final flavor = await getFlavorSettings();
   switch (flavor) {
     case 'dev':
-      ApiClient.setBaseUrl('http://127.0.0.1:8000');
+      ApiClient.setBaseUrl('https://soundflow.click');
       break;
     default:
-      ApiClient.setBaseUrl('http://127.0.0.1:8000');
+      ApiClient.setBaseUrl('https://soundflow.click');
   }
 
   await GetStorage.init();
   Get.put(ThemeController());
 
+  AudioService();
   runApp(const RootApp());
 
   EncryptData.init();

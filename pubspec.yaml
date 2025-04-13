@@ -3,7 +3,7 @@ version: 3.0.13+93
 publish_to: none
 description: A new Flutter project.
 environment:
-  sdk: ">=2.18.4 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   cupertino_icons: ^1.0.2
@@ -52,6 +52,9 @@ dependencies:
   get_storage: ^2.1.1
   easy_localization: ^3.0.7+1
   lottie: ^3.3.1
+  just_audio: ^0.9.46
+  audio_video_progress_bar: ^2.0.3
+  pinput: ^5.0.1
 
 
 flutter_launcher_icons:
@@ -74,4 +77,9 @@ flutter:
     - assets/drawer/
     - assets/navigator/
     - assets/animations/
+
+analyzer:
+  enable-experiment:
+    - class-modifiers
+
 #flutter 3.27.1

@@ -69,8 +69,8 @@ class LoginView extends GetView<LoginController> {
                               controller.emailController.text = email;
                             },
                             validator: (email) =>
-                                controller.validateEmail(email)),
-                        Dimes.height30,
+                                controller.validateEmail(email),),
+                        Dimes.height20,
                         Container(
                           alignment: Alignment.centerLeft,
                           child: 'Password'
@@ -88,7 +88,7 @@ class LoginView extends GetView<LoginController> {
                               controller.passwordController.text = password;
                             },
                             validator: (password) =>
-                                controller.validatePassword(password)),
+                                controller.validatePassword(password),),
                         Container(
                           alignment: Alignment.topRight,
                           child: Obx(() => AppButton(
@@ -108,9 +108,18 @@ class LoginView extends GetView<LoginController> {
                                 color: Colors.transparent,
                                 loading: controller.isLoading.value,                               
                                 onPressed: () {
-                                  // keyform.currentState!.validate();
-                                  // controller.onPressLoginButton();
-                                  Get.toNamed(Routes.dashboard);
+                                  final isValid = keyform.currentState?.validate() ?? false;
+
+                                  // 2. If the form is valid, call the controller's login method
+                                  if (isValid) {
+                                    controller.login(); // <-- Call the actual login logic
+                                  } else {
+                                    // Optional: You could show a generic snackbar here
+                                    // if validation fails, but individual field errors
+                                    // are usually sufficient.
+                                    print("Form validation failed");
+                                  }
+                                  // Get.toNamed(Routes.dashboard);
                                 },
                               )),
                         ),
@@ -159,6 +168,7 @@ class LoginView extends GetView<LoginController> {
       ),
     );
   }
+  
   Widget _continueWithPhone({required VoidCallback onPressed}) {
     return TextButton(
       onPressed: () async{

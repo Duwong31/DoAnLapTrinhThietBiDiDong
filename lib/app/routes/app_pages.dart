@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-
+import '../modules/ songs/bindings/songs_binding.dart';
+import '../modules/ songs/view/all_songs_view.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
@@ -72,11 +73,11 @@ class AppPages {
       page: () => const WelcomeView(),
       binding: WelcomeBinding(),
     ),
-    GetPage(
-      name: _Paths.changePassword,
-      page: () => const ChangePasswordView(),
-      binding: ChangePasswordBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.changePassword,
+    //   page: () => const ChangePasswordView(),
+    //   binding: ChangePasswordBinding(),
+    // ),
     // GetPage(
     //   name: _Paths.detailNotify,
     //   page: () => NotificationDetail(id: Get.parameters['id'] as String),
@@ -87,7 +88,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.search,
-      page: () =>  SearchView(),
+      page: () => SearchView(),
       binding: SearchBinding(),
     ),
     GetPage(
@@ -96,51 +97,46 @@ class AppPages {
       binding: LibraryBinding(),
     ),
     GetPage(
-      name: _Paths.forgotPassword,
-      page: () => const ForgotPasswordView(),
-      binding: ForgotPasswordBinding()
-    ),
+        name: _Paths.forgotPassword,
+        page: () => const ForgotPasswordView(),
+        binding: ForgotPasswordBinding()),
     GetPage(
-      name: _Paths.otpLogin,
-      page: () => const OtpLoginView(),
-      binding: OtpLoginBinding()
-    ),
+        name: _Paths.otpLogin,
+        page: () => const OtpLoginView(),
+        binding: OtpLoginBinding()),
     GetPage(
-      name: _Paths.resetPassword,
-      page: () => const ResetPasswordView(),
-      binding: ResetPasswordBinding()
-    ),
+        name: _Paths.resetPassword,
+        page: () => const ResetPasswordView(),
+        binding: ResetPasswordBinding()),
     GetPage(
-      name: _Paths.successSplash,
-      page: () => const LottieSplashView(
-        animationPath: 'assets/animations/success.json', 
-        duration: Duration(milliseconds: 1300), 
-        nextRoute: Routes.resetPassword)
-    ),
+        name: _Paths.successSplash,
+        page: () => const LottieSplashView(
+            animationPath: 'assets/animations/success.json',
+            duration: Duration(milliseconds: 1300),
+            nextRoute: Routes.resetPassword)),
     GetPage(
         name: _Paths.setting,
         page: () => const SettingView(),
-      binding: SettingBinding()
-    ),
+        binding: SettingBinding()),
     GetPage(
         name: _Paths.album,
         page: () => const AlbumView(),
-        binding: AlbumBinding()
-    ),
+        binding: AlbumBinding()),
     GetPage(
         name: _Paths.albumnow,
         page: () => const AlbumNow(),
-        binding: AlbumBinding()
-    ),
+        binding: AlbumBinding()),
     GetPage(
         name: _Paths.playlist,
         page: () => const PlayListView(),
-        binding: PlayListBinding()
-    ),
+        binding: PlayListBinding()),
     GetPage(
         name: _Paths.playlistnow,
         page: () => const PlayListNow(),
-        binding: PlayListBinding()
-    )
+        binding: PlayListBinding()),
+    GetPage(
+        name: _Paths.songs,
+        page: () => const AllSongsView(),
+        binding: NowPlayingBinding())
   ];
 }

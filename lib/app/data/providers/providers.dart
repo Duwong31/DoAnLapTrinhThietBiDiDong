@@ -26,11 +26,11 @@ import '../models/voucher_model/voucher.dart';
 abstract class BaseApiService {
   final Dio _dio;
   final GetStorage _storage = GetStorage();
-  final String _baseUrl = 'https://otod.theapp4u.com';
+  final String _baseUrl = 'https://soundflow.click';
 
   BaseApiService()
       : _dio = Dio(BaseOptions(
-          baseUrl: 'https://otod.theapp4u.com',
+          baseUrl: 'https://soundflow.click',
           connectTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
           headers: {
@@ -231,18 +231,19 @@ class UserApiService extends BaseApiService {
     }
   }
 
-  Future<dynamic> register(String phone, String deviceName, bool term) async {
+  Future<dynamic> register(String name, String email, String password, String deviceName) async {
     return handleApiError(() async {
       AppUtils.log(
-          'API Request to ${ApiUrl.register} with data: {"registration_type": "phone", "phone": $phone, "device_name": $deviceName, "term": ${term ? 1 : 0}}');
+          'API Request to ${ApiUrl.register} with data: {"registration_type": "email","name": $name, "email": $email,"password": $password, "device_name": $deviceName');
 
       final response = await post(
         ApiUrl.register,
         data: {
-          "registration_type": "phone",
-          "phone": phone,
+          "registration_type": "email",
+          "name": name,
+          "email": email,
+          "password": password,
           "device_name": deviceName,
-          "term": term ? 1 : 0,
         },
         options: Options(
           headers: {'Content-Type': 'application/json'},
@@ -325,6 +326,28 @@ class UserApiService extends BaseApiService {
       return response.data;
     });
   }
+  Future<dynamic> forgotPasswordEmail(String email) async {
+    return handleApiError(() async {
+      AppUtils.log(
+          'API Request to ${ApiUrl.forgotPasswordEmail} with data: {"email": $email}'); // Assuming ApiUrl.forgotPasswordEmail exists
+
+      final response = await post(
+        ApiUrl.forgotPasswordEmail, // Define this URL in ApiUrl
+        data: {"email": email},
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      AppUtils.log('API Response from forgot-password-email: ${response.data}');
+      // Expecting a response like: { status: 1, message: 'OTP sent to email', data: { user_id: ... } } or error
+      return response.data;
+    });
+  }
 
   Future<dynamic> forgotPassword(String phone) async {
     return handleApiError(() async {
@@ -348,17 +371,48 @@ class UserApiService extends BaseApiService {
     });
   }
 
-  Future<dynamic> resetPassword(String phone, String otp, String password,
+  Future<dynamic> resetPasswordEmail(String email, String password,
       String passwordConfirmation) async {
     return handleApiError(() async {
       AppUtils.log(
-          'API Request to ${ApiUrl.resetPassword} with data: {"phone": $phone, "otp": $otp, "password": $password, "password_confirmation": $passwordConfirmation}');
+          'API Request to ${ApiUrl.resetPasswordEmail} with data: {"email": $email, "password": $password, "password_confirmation": $passwordConfirmation}'); // Assuming ApiUrl.resetPasswordEmail exists
+
+      final response = await post(
+        ApiUrl.resetPasswordEmail, // Define this URL in ApiUrl
+        data: {
+          "email": email,
+          // "otp": otp,
+          "password": password,
+          "password_confirmation": passwordConfirmation
+        },
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          validateStatus: (status) => status != null && status < 500,
+        ),
+      );
+
+      AppUtils.log('API Response from reset-password-email: ${response.data}');
+
+      // No automatic login/token saving here usually, just confirm success/failure
+      // Example success: { status: 1, message: 'Password reset successfully' }
+      return response.data;
+    });
+  }
+
+  Future<dynamic> resetPassword(String phone, String password,
+      String passwordConfirmation) async {
+    return handleApiError(() async {
+      AppUtils.log(
+          'API Request to ${ApiUrl.resetPassword} with data: {"phone": $phone, "password": $password, "password_confirmation": $passwordConfirmation}');
 
       final response = await post(
         ApiUrl.resetPassword,
         data: {
           "phone": phone,
-          "otp": otp,
+          // "otp": otp,
           "password": password,
           "password_confirmation": passwordConfirmation
         },
@@ -398,14 +452,14 @@ class UserApiService extends BaseApiService {
   }
 
   Future<dynamic> login(
-      String phone, String password, String deviceName) async {
+      String email, String password, String deviceName) async {
     return handleApiError(() async {
       AppUtils.log(
-          'API Request to ${ApiUrl.login} with data: {"phone": $phone, "password": $password, "device_name": $deviceName}');
+          'API Request to ${ApiUrl.login} with data: {"email": $email, "password": $password, "device_name": $deviceName}');
 
       final response = await post(
         ApiUrl.login,
-        data: {"phone": phone, "password": password, "device_name": deviceName},
+        data: {"email": email, "password": password, "device_name": deviceName},
         options: Options(
           headers: {
             'Content-Type': 'application/json',
@@ -880,8 +934,8 @@ class ApiProvider {
 
   static Future<Dashboard> getDashboard() => _userService.getDashboard();
 
-  static Future<dynamic> register(String phone, String deviceName, bool term) =>
-      _userService.register(phone, deviceName, term);
+  static Future<dynamic> register(String name, String email, String password, String deviceName) =>
+      _userService.register(name,email,password, deviceName);
 
   static Future<dynamic> resendOtp(String phone) =>
       _userService.resendOtp(phone);
@@ -894,13 +948,20 @@ class ApiProvider {
   static Future<dynamic> forgotPassword(String phone) =>
       _userService.forgotPassword(phone);
 
-  static Future<dynamic> resetPassword(String phone, String otp,
+  static Future<dynamic> forgotPasswordEmail(String email) =>
+      _userService.forgotPasswordEmail(email);
+
+  static Future<dynamic> resetPassword(String phone,
           String password, String passwordConfirmation) =>
-      _userService.resetPassword(phone, otp, password, passwordConfirmation);
+      _userService.resetPassword(phone, password, passwordConfirmation);
+
+  static Future<dynamic> resetPasswordEmail(String email,
+          String password, String passwordConfirmation) =>
+      _userService.resetPasswordEmail(email, password, passwordConfirmation);
 
   static Future<dynamic> login(
-          String phone, String password, String deviceName) =>
-      _userService.login(phone, password, deviceName);
+          String email, String password, String deviceName) =>
+      _userService.login(email, password, deviceName);
 
   static Future<dynamic> changePassword(String currentPassword,
           String newPassword, String newPasswordConfirmation) =>

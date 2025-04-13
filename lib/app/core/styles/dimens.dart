@@ -51,6 +51,7 @@ class Dimes {
   static const double size82 = 82.0;
   static const double size88 = 88.0;
   static const double size100 = 100.0;
+  static const double size120 = 120.0;
   static const double size128 = 128.0;
   static const double size160 = 160.0;
   static const double size172 = 172.0;
@@ -84,6 +85,7 @@ class Dimes {
   static const SizedBox height60 = SizedBox(height: Dimes.size60);
   static const SizedBox height62 = SizedBox(height: Dimes.size62);
   static const SizedBox height65 = SizedBox(height: Dimes.size65);
+  static const SizedBox height120 = SizedBox(height: Dimes.size120);
 
   /* width */
   static const SizedBox width5 = SizedBox(width: Dimes.size5);
