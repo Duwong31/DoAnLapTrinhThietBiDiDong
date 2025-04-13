@@ -1,0 +1,2 @@
+D:/Sportify_App/android/app/.cxx/Debug/3d111p35/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/Sportify_App/android/app/.cxx/Debug/3d111p35/armeabi-v7a/CMakeFiles/rebuild_cache.dir

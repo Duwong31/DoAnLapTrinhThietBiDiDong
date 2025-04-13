@@ -1,0 +1,7 @@
+flutter_application_id:
+  android:
+    id: "org.soundflow"
+    name: "SoundFlow"
+  ios:
+    id: "org.soundflow"
+    name: "SoundFlow"
