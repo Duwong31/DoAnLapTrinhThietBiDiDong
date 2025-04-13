@@ -115,7 +115,6 @@ class HomeView extends GetView<HomeController> {
             SectionHeader(
               title: "we_think_you_like".tr,
               textColor: textColor,
-              onMorePressed: () {},
             ),
             SizedBox(
               height: 200,
@@ -126,7 +125,6 @@ class HomeView extends GetView<HomeController> {
             SectionHeader(
               title: "music_genre".tr,
               textColor: textColor,
-              onMorePressed: () {},
             ),
             SizedBox(
               height: 122,
@@ -151,7 +149,6 @@ class HomeView extends GetView<HomeController> {
             SectionHeader(
               title: "artists".tr,
               textColor: textColor,
-              onMorePressed: () {},
             ),
             SizedBox(
               height: 122,
@@ -176,7 +173,6 @@ class HomeView extends GetView<HomeController> {
             SectionHeader(
               title: "you_might_want_to_hear".tr,
               textColor: textColor,
-              onMorePressed: () {},
             ),
             SizedBox(
               height: 122,
@@ -195,7 +191,6 @@ class HomeView extends GetView<HomeController> {
             SectionHeader(
               title: "chill".tr,
               textColor: textColor,
-              onMorePressed: () {},
             ),
             SizedBox(
               height: 122,
@@ -223,13 +218,11 @@ class HomeView extends GetView<HomeController> {
 
 class SectionHeader extends StatelessWidget {
   final String title;
-  final VoidCallback onMorePressed;
   final Color? textColor;
 
   const SectionHeader({
     super.key,
     required this.title,
-    required this.onMorePressed,
     this.textColor,
   });
 
@@ -250,11 +243,16 @@ class SectionHeader extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: onMorePressed,
+            onPressed: (){
+              Get.toNamed(Routes.songs);
+            },
             child:  Center(
                 child: Text(
                   "more".tr,
-                  style: TextStyle(color: effectiveTextColor, fontSize: 10),
+                  style: TextStyle(
+                    color: effectiveTextColor, fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),

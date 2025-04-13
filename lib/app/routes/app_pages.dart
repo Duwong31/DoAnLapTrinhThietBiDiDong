@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-
+import '../modules/ songs/bindings/songs_binding.dart';
+import '../modules/ songs/view/all_songs_view.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
@@ -131,6 +132,11 @@ class AppPages {
         name: _Paths.playlist,
         page: () => const PlayListView(),
         binding: PlayListBinding()
+    ),
+    GetPage(
+        name: _Paths.songs,
+        page: () => const AllSongsView(),
+        binding: NowPlayingBinding()
     )
   ];
 }
