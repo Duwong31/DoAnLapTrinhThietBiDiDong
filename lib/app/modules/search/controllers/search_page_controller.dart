@@ -1,54 +1,89 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SearchItem {
-  final String? id;
-  final String? title;
-  final String? description;
-  final DateTime? createdAt;
+class Song {
+  final String id;
+  final String title;
+  final String artist;
+  final String image;
 
-  SearchItem({
-    this.id,
-    this.title,
-    this.description,
-    this.createdAt,
+  Song({
+    required this.id,
+    required this.title,
+    required this.artist,
+    required this.image,
   });
 
-  factory SearchItem.fromJson(Map<String, dynamic> json) {
-    return SearchItem(
-      id: json['id'],
-      title: json['title'],
-      description: json['description'],
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
+  factory Song.fromJson(Map<String, dynamic> json) {
+    return Song(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      artist: json['artist'] ?? '',
+      image: json['image'] ?? '',
     );
   }
 }
 
-class SearchPageController extends GetxController {
-  final RxList<String> suggestions = <String>[].obs;
-  final RxList<String> recentSearches = <String>[].obs;
 
-  final searchTextController = ''.obs;
+class SearchPageController extends GetxController {
+  final searchTextController = TextEditingController();
+  final isSearching = false.obs;
+  final suggestions = <Song>[].obs;
+  final recentSearches = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadRecentSearches();
-    _fetchSuggestions();
   }
 
-  Future<void> _loadRecentSearches() async {
-    final prefs = await SharedPreferences.getInstance();
-    final searches = prefs.getStringList('recentSearches') ?? [];
-    recentSearches.assignAll(searches);
+  void startSearch() {
+    isSearching.value = true;
   }
 
-  Future<void> _fetchSuggestions() async {
-    await Future.delayed(Duration(seconds: 1));
-    suggestions.assignAll(["Pop", "Rock", "Hip-hop", "Jazz", "EDM"]);
+  void stopSearch() {
+    searchTextController.clear();
+    FocusManager.instance.primaryFocus?.unfocus();
+    isSearching.value = false;
+    suggestions.clear();
   }
+
+  void onSearchChanged(String query) async {
+    isSearching.value = true; // ✅ Bắt buộc để giữ giao diện tìm kiếm
+
+    if (query.isEmpty) {
+      suggestions.clear();
+      return;
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('https://thantrieu.com/resources/braniumapis/songs.json'),
+      );
+
+      if (response.statusCode == 200) {
+        final decodedJson = json.decode(utf8.decode(response.bodyBytes));
+        final List<dynamic> songList = decodedJson['songs'];
+
+        final filtered = songList
+            .map((e) => Song.fromJson(e))
+            .where((song) =>
+        song.title.toLowerCase().contains(query.toLowerCase()) ||
+            song.artist.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+
+        suggestions.value = filtered;
+      } else {
+        print('Lỗi API: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Lỗi kết nối hoặc phân tích: $e');
+    }
+  }
+
 
   Future<void> saveSearch(String query) async {
     if (query.isEmpty) return;
@@ -69,5 +104,11 @@ class SearchPageController extends GetxController {
     final prefs = await SharedPreferences.getInstance();
     recentSearches.clear();
     await prefs.remove('recentSearches');
+  }
+
+  Future<void> _loadRecentSearches() async {
+    final prefs = await SharedPreferences.getInstance();
+    final searches = prefs.getStringList('recentSearches') ?? [];
+    recentSearches.assignAll(searches);
   }
 }
