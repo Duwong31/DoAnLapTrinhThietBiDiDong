@@ -526,7 +526,20 @@ class UserApiService extends BaseApiService {
   Future<UserModel> getDetail() async {
     return handleApiError(() async {
       final response = await get(ApiUrl.userRecipient);
-      return UserModel.fromMap(response.data['data']);
+      debugPrint(">>> [UserApiService.getDetail] RAW API Response Data: ${response.data}");
+      try {
+        // Giả sử API trả về {'data': { ... user data ... }}
+        if (response.data != null && response.data['data'] is Map<String, dynamic>) {
+           return UserModel.fromMap(response.data['data'] as Map<String, dynamic>);
+        } else {
+           debugPrint(">>> [UserApiService.getDetail] LỖI: API response không chứa key 'data' hoặc 'data' không phải là Map.");
+           throw Exception("Invalid API response structure for user details.");
+        }
+      } catch (e, stack) {
+         debugPrint(">>> [UserApiService.getDetail] LỖI trong quá trình parsing UserModel.fromMap: $e\nStack: $stack");
+         // Ném lại lỗi để ProfileController có thể bắt và hiển thị thông báo (nhưng không clear Prefs)
+         rethrow;
+      }
     });
   }
 
