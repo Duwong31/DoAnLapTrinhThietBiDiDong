@@ -19,7 +19,10 @@ import '../modules/library/views/library_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/notifications/views/notifications_view.dart';
+import '../modules/profile/bindings/edit_profile_binding.dart';
+import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/profile/views/edit_profile.dart';
 import '../modules/register/bindings/otp_binding.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/otp_view.dart';
@@ -142,6 +145,10 @@ class AppPages {
     GetPage(
         name: _Paths.songs_view,
         page: () => NowPlaying.fromRoute(),
-        binding: NowPlayingBinding())
+        binding: NowPlayingBinding()),
+    GetPage(
+      name: _Paths.editProfile,
+      page: () => EditProfilePage(),
+      binding: EditProfileBinding()) 
   ];
 }

@@ -14,15 +14,16 @@ class SettingView extends GetView<SettingController> {
       appBar: AppBar(
         elevation: .1,
         centerTitle: true,
-        backgroundColor: AppTheme.appBar,
+        backgroundColor: Colors.grey[100],
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
           onPressed: () {
             Get.toNamed(Routes.dashboard);
           },
         ),
         title: const Text(
-          'Setting',
+          'Settings',
+          style: TextStyle(color: Color(0XFF000000), fontSize: 20, fontFamily: 'Noto Sans'),
         ),
       ),
       body: ListView(

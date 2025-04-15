@@ -554,6 +554,25 @@ class UserApiService extends BaseApiService {
       }
     });
   }
+  Future<UserModel> updateUserProfile(Map<String, dynamic> updatedData) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.updateUserProfile} with data: $updatedData');
+
+      // Sử dụng phương thức post (hoặc put nếu bạn định nghĩa route là PUT)
+      final response = await post(ApiUrl.updateUserProfile, data: updatedData);
+
+      AppUtils.log('API Response from update profile: ${response.data}');
+
+      // Kiểm tra response thành công và có data user trả về
+      if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] is Map<String, dynamic>) {
+        // Giả sử API trả về thông tin user đã cập nhật trong key 'data'
+        return UserModel.fromMap(response.data['data']);
+      } else {
+        // Ném lỗi với message từ API nếu có, hoặc lỗi chung
+        throw Exception(response.data['message'] ?? 'Failed to update profile');
+      }
+    });
+  }
 
   Future<bool> verifyInformation(Map<String, dynamic> body) async {
     return handleApiError(() async {
@@ -925,6 +944,9 @@ class ApiProvider {
 
   static Future<UserModel?> updateUser(Map<String, dynamic> data) =>
       _userService.updateUser(data);
+      
+   static Future<UserModel> updateUserProfile(Map<String, dynamic> data) =>
+      _userService.updateUserProfile(data);
 
   static Future<bool> verifyInformation(Map<String, dynamic> data) =>
       _userService.verifyInformation(data);

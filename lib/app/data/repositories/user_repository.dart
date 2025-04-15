@@ -5,6 +5,7 @@ abstract class UserBase {
   Future<UserModel> getDetail();
   Future<UserModel> uploadAvatar(Uint8List bytes);
   Future<UserModel?> updateUser(Map<String, dynamic> data);
+  Future<UserModel> updateUserProfile(Map<String, dynamic> data);
   Future<int?> uploadFile(File file, int folderId);
   Future<Dashboard> getDashboard();
   Future<UserModel> deleteRecipient();
@@ -22,6 +23,11 @@ class UserRepository extends BaseRepository implements UserBase {
   @override
   Future<UserModel?> updateUser(Map<String, dynamic> data) {
     return handleCall(() => ApiProvider.updateUser(data));
+  }
+
+  @override
+  Future<UserModel> updateUserProfile(Map<String, dynamic> data){
+    return handleCall(() => ApiProvider.updateUserProfile(data));
   }
 
   @override

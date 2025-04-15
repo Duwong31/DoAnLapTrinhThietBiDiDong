@@ -44,6 +44,7 @@ class ApiUrl {
   //User
   static detailUser() => '$receipt/';
   static const String userRecipient = '$receipt/auth/me';
+  static const String updateUserProfile = '$receipt/user/profile';
   static const String verifyInformation = '$receipt/kyc/submit';
   static const String uploadFile = '$receipt/media/store';
   static const String userBookingHistory= '$receipt/user/booking-history';
