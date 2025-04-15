@@ -25,12 +25,10 @@ class NowPlaying extends StatelessWidget {
     if (arguments['playingSong'] == null || arguments['playingSong'] is! Song) {
       throw Exception("Invalid song data");
     }
-
     // Kiểm tra songs
     if (arguments['songs'] == null || arguments['songs'] is! List<Song>) {
       throw Exception("Invalid songs list data");
     }
-
     return NowPlaying(
       playingSong: arguments['playingSong'] as Song,
       songs: arguments['songs'] as List<Song>,
