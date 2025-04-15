@@ -98,7 +98,7 @@ class _AllSongsViewState extends State<AllSongsView> {
       binding: NowPlayingBinding(),
       arguments: {
         'songs': allSongs,
-        'currentSong': song,
+        'playingSong': song,
       },
     );
 

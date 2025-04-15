@@ -139,9 +139,9 @@ class AppPages {
         page: () => const PlayListNow(),
         binding: PlayListBinding()),
     GetPage(
-        name: _Paths.songs,
+        name: _Paths.all_song_view,
         page: () => const AllSongsView(),
-        binding: NowPlayingBinding()),
+        ),
     GetPage(
         name: _Paths.songs_view,
         page: () => NowPlaying.fromRoute(),

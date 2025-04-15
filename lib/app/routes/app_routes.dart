@@ -26,9 +26,13 @@ abstract class Routes {
   static const albumnow = _Paths.albumnow;
   static const playlist = _Paths.playlist;
   static const playlistnow = _Paths.playlistnow;
+<<<<<<< HEAD
   static const editProfile = _Paths.editProfile;
   static var songs = _Paths.songs;
+=======
+>>>>>>> song
   static var songs_view = _Paths.songs_view;
+  static const all_song_view = _Paths.all_song_view;
 }
 
 abstract class _Paths {
@@ -54,7 +58,12 @@ abstract class _Paths {
   static const albumnow = '/albumnow';
   static const playlist = '/playlist';
   static const playlistnow = '/playlistnow';
+<<<<<<< HEAD
   static const songs = '/songs';
   static const editProfile = '/editProfile';
+=======
+  static const all_song_view = '/all_song_view';
+>>>>>>> song
   static const songs_view = '/songs_view';
+
 }
