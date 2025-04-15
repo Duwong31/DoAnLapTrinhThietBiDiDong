@@ -53,15 +53,15 @@ class UserModel {
   final UserStoreModel? userStoreModel;
 
   factory UserModel.fromMap(Map<dynamic, dynamic> json) => UserModel(
-        id: json["id"],
+        id: json["id"]?.toString(),
         email: json["email"],
         firstName: json["first_name"] ?? '',
         lastName: json["last_name"] ?? '',
         dateOfBirth: json['date_of_birth'] != null
             ? DateTime.parse(json['date_of_birth'])
             : null,
-        phone: json['phone_number'],
-        insuranceCard: json["insurance_card"],
+        phone: json['phone_number'].toString(),
+        insuranceCard: json["insurance_card"].toString(),
         avatar: json['avatar'],
         address: json['addresses'] == null
             ? []

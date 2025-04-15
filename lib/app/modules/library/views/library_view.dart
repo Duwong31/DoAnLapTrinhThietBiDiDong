@@ -24,7 +24,7 @@ class LibraryView extends GetView<LibraryController> {
               children: [
                 _buildMenuItem(context, 'Liked tracks', const LikeView()),
                 _buildMenuItem(context, 'Playlists', const PlayListView()),
-                _buildMenuItem(context, 'Albums', const AlbumView()),
+                _buildMenuItem(context, 'Albums', AlbumView()),
                 _buildMenuItem(context, 'Following', const FollowView()),
                 _buildMenuItem(context, 'Stations', const StationView()),
                 _buildMenuItem(context, 'Uploads', const UploadView()),

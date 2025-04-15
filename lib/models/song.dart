@@ -1,12 +1,12 @@
 class Song {
   Song({
     required this.id,
-    required this.title,
-    required this.album,
-    required this.artist,
+    required this.title,        // Tiêu đề/tên của bài hát
+    required this.album,        // Tên album chứa bài hát này
+    required this.artist,       // Nghệ sĩ/ca sĩ thể hiện bài hát
     required this.source,
     required this.image,
-    required this.duration,
+    required this.duration,       // Thời lượng bài hát
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
@@ -41,5 +41,36 @@ class Song {
   @override
   String toString() {
     return 'Song{id: $id, title: $title, album: $album, artist: $artist, source: $source, image: $image, duration: $duration}';
+  }
+}
+
+
+// phong song model
+class SongModel {
+  final String id;
+  final String title;
+  final int duration;
+  final String source;
+  final String artist;
+  final String image;
+
+  SongModel({
+    required this.id,
+    required this.title,
+    required this.duration,
+    required this.source,
+    required this.artist,
+    required this.image,
+  });
+
+  factory SongModel.fromJson(Map<String, dynamic> json) {
+    return SongModel(
+      id: json['id'].toString(),
+      title: json['title'] ?? '',
+      duration: json['duration'] ?? 0,
+      source: json['preview'] ?? '',
+      artist: json['artist']?['name'] ?? '',
+      image: json['album']?['cover_medium'] ?? '',
+    );
   }
 }

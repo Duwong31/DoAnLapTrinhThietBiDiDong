@@ -15,6 +15,7 @@ class AppImage {
   static const String welcome_2 = 'assets/images/welcome_2.png';
   static const String welcome_3 = 'assets/images/welcome_3.png';
   static const String logo = 'assets/images/logo.png';
+  static const String logo1 = 'assets/images/logo1.png';
   static const String email = 'assets/images/email.png';
   static const String password = 'assets/images/password.png';
   static const String search = 'assets/navigator/search.png';

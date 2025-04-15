@@ -2,6 +2,7 @@ C/C++ Structured Logw
 u
 sC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\additional_project_files.txtC
 A
+<<<<<<< HEAD
 ?com.android.build.gradle.internal.cxx.io.EncodedFileFingerPrint	õÊèÍã2 âÊèÍã2t
 r
 pC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\android_gradle_build.json	õÊèÍã2² äÊèÍã2y
@@ -26,3 +27,29 @@ p
 nC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\symbol_folder_index.txt	õÊèÍã2e óÊèÍã2K
 I
 GC:\flutter\packages\flutter_tools\gradle\src\main\groovy\CMakeLists.txt	õÊèÍã2§ õ ÜÚÏ2
+=======
+?com.android.build.gradle.internal.cxx.io.EncodedFileFingerPrint	’¼ºÅã2 …òß‚ã2t
+r
+pC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\android_gradle_build.json	’¼ºÅã2² ‰òß‚ã2y
+w
+uC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\android_gradle_build_mini.json	’¼ºÅã2• ™òß‚ã2f
+d
+bC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\build.ninja	’¼ºÅã2ÐÏ ñß‚ã2j
+h
+fC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\build.ninja.txt	’¼ºÅã2o
+m
+kC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\build_file_index.txt	’¼ºÅã2G òß‚ã2p
+n
+lC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\compile_commands.json	’¼ºÅã2t
+r
+pC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\compile_commands.json.bin	’¼ºÅã2	z
+x
+vC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\metadata_generation_command.txt	’¼ºÅã2
+Ø ›òß‚ã2m
+k
+iC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\prefab_config.json	’¼ºÅã2( œòß‚ã2r
+p
+nC:\app_soundflow\DoAnLapTrinhThietBiDiDong\android\app\.cxx\Debug\6kn3j146\armeabi-v7a\symbol_folder_index.txt	’¼ºÅã2e œòß‚ã2K
+I
+GC:\flutter\packages\flutter_tools\gradle\src\main\groovy\CMakeLists.txt	’¼ºÅã2§ õ ÜÚÏ2
+>>>>>>> 5093fe458d34b495713aae9d0cd56829f2c75f51

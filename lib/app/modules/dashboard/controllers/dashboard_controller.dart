@@ -42,7 +42,7 @@ class DashboardController extends GetxController
       BottomBarModel(AppImage.home, 'Home', 0),
       BottomBarModel(AppImage.search, 'Search', 0),
       BottomBarModel(AppImage.library, 'Library', 0),
-      BottomBarModel(AppImage.user, 'Personal', 0),
+      BottomBarModel(AppImage.logo1, 'Personal', 0),
     ];
 
     change(items, status: RxStatus.success());

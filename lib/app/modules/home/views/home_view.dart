@@ -1,61 +1,121 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../ songs/view/songs_view.dart';
+import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/home_controller.dart';
 
-// Dummy Song model
-class Song {
-  final String title;
-  final String artist;
-
-  Song({required this.title, required this.artist});
-}
-
-// Dummy search of songs
-final List<Song> sampleSongs = [
-  Song(title: 'Song 1', artist: 'Artist A'),
-  Song(title: 'Song 2', artist: 'Artist B'),
-  Song(title: 'Song 3', artist: 'Artist C'),
-  Song(title: 'Song 4', artist: 'Artist D'),
-  Song(title: 'Song 5', artist: 'Artist E'),
-  Song(title: 'Song 6', artist: 'Artist F'),
-];
-
-class HomeView extends GetView<HomeController> {
+class HomeView extends StatefulWidget {
   const HomeView({super.key});
 
-  Widget _buildSongCard(BuildContext context, Song song) {
-    return Card(
-      color: Theme.of(context).colorScheme.primary,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: const Center(
-        child: Icon(Icons.music_note, color: Colors.white, size: 40),
-      ),
-    );
-  }
+  @override
+  State<HomeView> createState() => _HomeViewState();
+}
 
-  Widget _buildSongGrid(BuildContext context, List<Song> songs) {
-    return GridView.builder(
-      scrollDirection: Axis.horizontal,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        childAspectRatio: 0.2,
-        crossAxisSpacing: 2,
-        mainAxisSpacing: 2,
-      ),
-      itemCount: songs.length > 6 ? 6 : songs.length,
-      itemBuilder: (context, index) {
-        final song = songs[index];
-        return _buildSongCard(context, song);
+class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
+  final HomeController controller = Get.put(HomeController());
+
+  @override
+  bool get wantKeepAlive => true;
+
+  void _navigateToNowPlaying(Song song, List<Song> songs) {
+    Get.toNamed(
+      Routes.songs_view,
+      arguments: {
+        'playingSong': song,
+        'songs': songs,
       },
     );
   }
 
+  Widget _buildSongGrid(BuildContext context, List<Song> songs) {
+    return SizedBox(
+      height: 120,
+      child: Obx(() => GridView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.3,        // Tỷ lệ khung hình
+          // crossAxisSpacing: 0,         // Khoảng cách giữa các cột
+          mainAxisSpacing: 30,          // Khoảng cách giữa các hàng
+        ),
+        itemCount: controller.songs.length > 6 ? 6 : controller.songs.length,
+        itemBuilder: (context, index) {
+          return _buildSongCard(context, controller.songs[index]);
+        },
+      )),
+    );
+  }
+
+  Widget _buildSongCard(BuildContext context, Song song) {
+    return Container(
+      width: 200,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(6),
+          child: Container(
+            width: 50,
+            height: 50,
+            color: Colors.grey[200],
+            child: song.image.isNotEmpty
+                ? Image.network(
+              song.image,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.music_note,
+                size: 24,
+                color: Colors.grey,
+              ),
+            )
+                : const Icon(
+              Icons.music_note,
+              size: 24,
+              color: Colors.grey,
+            ),
+          ),
+        ),
+        title: Text(
+          song.title,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.black,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Text(
+          song.artist,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        onTap: () {
+          if (controller.songs.isNotEmpty) {
+            _navigateToNowPlaying(song, controller.songs);
+          } else {
+            Get.snackbar('Error', 'No songs available to play');
+          }
+        },
+      ),
+    );
+  }
+
+
   Widget _buildCategoryItem(
       BuildContext context, String imageUrl, String label, String routeName) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
-
     return Container(
       width: 100,
       margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -104,8 +164,8 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final textColor = Theme.of(context).textTheme.titleLarge?.color;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
@@ -117,11 +177,10 @@ class HomeView extends GetView<HomeController> {
               textColor: textColor,
             ),
             SizedBox(
-              height: 200,
-              child: _buildSongGrid(context, sampleSongs),
+              height: 225,
+              child: _buildSongGrid(context, controller.songs),
             ),
-            Dimes.height10,
-
+            Dimes.height20,
             SectionHeader(
               title: "music_genre".tr,
               textColor: textColor,
@@ -145,7 +204,6 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             Dimes.height10,
-
             SectionHeader(
               title: "artists".tr,
               textColor: textColor,
@@ -169,7 +227,6 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             Dimes.height10,
-
             SectionHeader(
               title: "you_might_want_to_hear".tr,
               textColor: textColor,
@@ -187,7 +244,6 @@ class HomeView extends GetView<HomeController> {
               ),
             ),
             Dimes.height10,
-
             SectionHeader(
               title: "chill".tr,
               textColor: textColor,
@@ -243,19 +299,20 @@ class SectionHeader extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: (){
+            onPressed: () {
               Get.toNamed(Routes.songs);
             },
-            child:  Center(
-                child: Text(
-                  "more".tr,
-                  style: TextStyle(
-                    color: effectiveTextColor, fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
+            child: Center(
+              child: Text(
+                "more".tr,
+                style: TextStyle(
+                  color: effectiveTextColor,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
+          ),
         ],
       ),
     );

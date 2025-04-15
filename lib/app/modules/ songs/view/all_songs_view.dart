@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
 import '../../../data/sources/source_songs.dart';
@@ -18,15 +17,15 @@ class AllSongsView extends StatefulWidget {
 
 class _AllSongsViewState extends State<AllSongsView> {
   final List<Song> _songs = [];
-  bool _isLoading = false;
-  bool _hasMore = true;
+  bool _isLoading = false;          // để biết app có đang tải dữ liệu hay không
+  bool _hasMore = true;             //  dùng để xác định xem còn dữ liệu để tải tiếp không
   int _currentPage = 1;
   final int _perPage = 20;
 
-  late final AudioService _audioService;
-  late final AudioPlayer _player;
-  Song? _currentlyPlaying;
-  final ScrollController _scrollController = ScrollController();
+  late final AudioService _audioService;        // quản lý logic phát nhạc
+  late final AudioPlayer _player;               // Đối tượng từ thư viện phát nhạc, như just_audio
+  Song? _currentlyPlaying;                      // Lưu bài hát hiện đang phát. null nếu chưa phát bài nào.
+  final ScrollController _scrollController = ScrollController();      // Điều khiển scroll của ListView, dùng để detect người dùng cuộn đến cuối danh sách để tải thêm bài mới.
 
   @override
   void initState() {
@@ -139,10 +138,6 @@ class _AllSongsViewState extends State<AllSongsView> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      // trailing: IconButton(
-      //   icon: const Icon(Icons.more_vert),
-      //   onPressed: () {},
-      // ),
       onTap: () => _navigateToNowPlaying(song, allSongs),
     );
   }
