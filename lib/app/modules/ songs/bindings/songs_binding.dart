@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import '../../../../models/song.dart';
 import '../controllers/songs_controller.dart';
 
 class NowPlayingBinding implements Bindings {
@@ -8,9 +9,23 @@ class NowPlayingBinding implements Bindings {
     // Lấy AudioPlayer đã được đăng ký từ AudioService
     final audioPlayer = Get.find<AudioPlayer>();
 
+    // Lấy dữ liệu từ arguments
+    final songs = Get.arguments['songs'];
+    final currentSong = Get.arguments['playingSong']; // Sửa từ 'currentSong' thành 'playingSong'
+
+    // Kiểm tra null và kiểu dữ liệu cho songs
+    if (songs == null || songs is! List<Song>) {
+      throw Exception("Songs list is missing or invalid");
+    }
+
+    // Kiểm tra null và kiểu dữ liệu cho currentSong
+    if (currentSong == null || currentSong is! Song) {
+      throw Exception("Current song is missing or invalid");
+    }
+
     Get.lazyPut<NowPlayingController>(() => NowPlayingController(
-      songs: Get.arguments['songs'],                        // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
-      currentSong: Get.arguments['currentSong'],        // Lấy bài hát hiện tại
+      songs: songs,                     // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
+      currentSong: currentSong,      // Lấy bài hát hiện tại
       player: audioPlayer,              // Lấy một instance của AudioPlayer đã được đăng ký trước (ở nơi khác)
     ));
   }
