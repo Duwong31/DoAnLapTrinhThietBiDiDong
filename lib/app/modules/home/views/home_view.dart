@@ -300,7 +300,7 @@ class SectionHeader extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Get.toNamed(Routes.songs);
+              Get.toNamed(Routes.all_song_view);
             },
             child: Center(
               child: Text(
