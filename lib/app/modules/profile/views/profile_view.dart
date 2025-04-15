@@ -46,7 +46,7 @@ class _ProfileViewState extends State<ProfileView>
             physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(16),
             child: Obx(
-              () => ctr.user.value == null
+                  () => ctr.user.value == null
                   ? const Loading()
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -158,11 +158,12 @@ class _ProfileViewState extends State<ProfileView>
                         ),
                       ],
                     ),
+                  ),
+                
+              ),
             ),
           ),
-        ),
-      ),
-    );
+      );
   }
 
   @override

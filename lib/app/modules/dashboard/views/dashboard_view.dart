@@ -7,10 +7,7 @@ import '../../../data/services/firebase_analytics_service.dart';
 import '../../../widgets/widgets.dart';
 import '../../home/views/home_view.dart';
 import '../../library/views/library_view.dart';
-import '../../messages/views/messages_view.dart';
-import '../../notifications/views/notifications_view.dart';
 import '../../premium/views/premium_view.dart';
-import '../../profile/views/profile_view.dart';
 import '../../search/views/search_view.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -69,8 +66,8 @@ class _BottomNavigator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return to.obx(
-      (state) => Obx(
-        () => Material(
+          (state) => Obx(
+            () => Material(
           elevation: 4,
           child: Container(
             padding: EdgeInsets.only(bottom: context.padding.bottom),
@@ -80,15 +77,15 @@ class _BottomNavigator extends StatelessWidget {
                   .asMap()
                   .map(
                     (index, e) => MapEntry(
-                      index,
-                      _BottomBarItem(
-                        currentIndex: to.currentIndex.value,
-                        index: index,
-                        item: e,
-                        onTap: to.changeTab,
-                      ),
-                    ),
-                  )
+                  index,
+                  _BottomBarItem(
+                    currentIndex: to.currentIndex.value,
+                    index: index,
+                    item: e,
+                    onTap: to.changeTab,
+                  ),
+                ),
+              )
                   .values
                   .toList(),
             ),
@@ -126,28 +123,28 @@ class _BottomBarItem extends StatelessWidget {
               textSize: 8,
               icon: item.iconData != null
                   ? Icon(
-                      Icons.store_outlined,
-                      color: index == currentIndex
-                          ? AppTheme.primary
-                          : AppTheme.deactivate,
-                    )
+                Icons.store_outlined,
+                color: index == currentIndex
+                    ? AppTheme.primary
+                    : AppTheme.deactivate,
+              )
                   : Image.asset(
-                      item.image,
-                      width: 24,
-                      height: 24,
-                      fit: BoxFit.cover,
-                      color: index == currentIndex
-                          ? AppTheme.primary
-                          : AppTheme.deactivate,
-                    ),
+                item.image,
+                width: 24,
+                height: 24,
+                fit: BoxFit.cover,
+                color: index == currentIndex
+                    ? AppTheme.primary
+                    : AppTheme.deactivate,
+              ),
             ),
             item.title.text
                 .size(12)
                 .color(
-                  index == currentIndex
-                      ? AppTheme.primary
-                      : AppTheme.deactivate,
-                )
+              index == currentIndex
+                  ? AppTheme.primary
+                  : AppTheme.deactivate,
+            )
                 .make(),
           ],
         ),
