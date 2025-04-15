@@ -1,29 +1,66 @@
+import 'dart:convert';
+
+import 'package:extended_image/extended_image.dart' as http;
 import 'package:get/get.dart';
 
-class Album {
-  final String title;
-  final String imageUrl;
-
-  Album({required this.title, required this.imageUrl});
-}
-
+import '../../../../models/album.dart';
+import '../../../../models/song.dart';
 
 class AlbumController extends GetxController {
-  final playlists = <Album>[].obs;
+  var playlists = <AlbumModel>[].obs;
+  var isLoading = true.obs;
 
   @override
   void onInit() {
+    fetchAlbums();
     super.onInit();
-    fetchPlaylists();
   }
 
-  void fetchPlaylists() async {
-    await Future.delayed(Duration(seconds: 1)); // giả lập API delay
-    playlists.assignAll([
-      Album(title: "Jack - J97", imageUrl: "https://photo-resize-zmp3.zadn.vn/w360_r1x1_jpeg/avatars/0/3/3/7/0337e4cc5a05cdcc93b5d65762aea241.jpg"),
-      Album(title: "Phan Mạnh Quỳnh", imageUrl: "https://i1.sndcdn.com/artworks-Kqc0EeoQXIjYObfm-Fyae3w-t500x500.jpg"),
-      Album(title: "Sơn Tùng - MTP", imageUrl: "https://photo-zmp3.zadn.vn/avatars/5/9/6/9/59696c9dba7a914d587d886049c10df6.jpg"),
-      // thêm album nếu muốn
-    ]);
+  void fetchAlbums() async {
+    try {
+      isLoading(true);
+      final res = await http.get(Uri.parse('https://api.deezer.com/chart/0/albums'));
+      if (res.statusCode == 200) {
+        final jsonData = json.decode(res.body);
+        final List albums = jsonData['data'];
+        playlists.value = albums.map((e) => AlbumModel.fromJson(e)).toList();
+      }
+    } catch (e) {
+      print("Error fetching albums: $e");
+    } finally {
+      isLoading(false);
+    }
+  }
+}
+
+class AlbumNowController extends GetxController {
+  var album = {}.obs;
+  var songs = <SongModel>[].obs;
+  var isLoading = true.obs;
+
+  @override
+  void onInit() {
+    fetchAlbum();
+    super.onInit();
+  }
+
+  void fetchAlbum() async {
+    try {
+      isLoading(true);
+      final response = await http.get(Uri.parse('https://api.deezer.com/album/302127'));
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(utf8.decode(response.bodyBytes));
+        album.value = jsonData;
+
+        final trackList = jsonData['tracks']['data'] as List<dynamic>;
+        songs.value = trackList.map((e) => SongModel.fromJson(e)).toList();
+      } else {
+        print('Failed to load album');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      isLoading(false);
+    }
   }
 }

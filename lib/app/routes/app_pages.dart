@@ -124,7 +124,7 @@ class AppPages {
         binding: AlbumBinding()),
     GetPage(
         name: _Paths.albumnow,
-        page: () => const AlbumNow(),
+        page: () => AlbumNow(),
         binding: AlbumBinding()),
     GetPage(
         name: _Paths.playlist,

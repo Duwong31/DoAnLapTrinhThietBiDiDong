@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/album_page_controller.dart';
@@ -17,20 +16,24 @@ class AlbumView extends GetView<AlbumController> {
         backgroundColor: AppTheme.appBar,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_outlined),
-          onPressed: () {
-            Get.toNamed(Routes.dashboard);
-          },
+          onPressed: () => Get.toNamed(Routes.dashboard),
         ),
-        title: const Text('Album'),
+        title: const Text('Albums'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Obx(() => _buildLazyGridView(context)),
+        child: Obx(() {
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          return _buildGridView(context);
+        }),
       ),
     );
   }
 
-  Widget _buildLazyGridView(BuildContext context) {
+  Widget _buildGridView(BuildContext context) {
     final items = controller.playlists;
 
     return GridView.builder(
@@ -43,9 +46,11 @@ class AlbumView extends GetView<AlbumController> {
       ),
       itemBuilder: (context, index) {
         final item = items[index];
+
         return GestureDetector(
           onTap: () {
-            Get.toNamed(Routes.albumnow, arguments: item);
+            // Chuyển id album qua AlbumNowView
+            Get.toNamed(Routes.albumnow, arguments: item.id);
           },
           child: Container(
             decoration: BoxDecoration(
@@ -65,13 +70,23 @@ class AlbumView extends GetView<AlbumController> {
                     ),
                   ),
                 ),
-                Dimes.height8,
+                const SizedBox(height: 8),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     item.title,
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Text(
+                    item.artist,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
                   ),
                 ),
               ],
@@ -80,90 +95,103 @@ class AlbumView extends GetView<AlbumController> {
         );
       },
     );
-
   }
 }
 
-
-class AlbumNow extends GetView<AlbumController> {
-  const AlbumNow({Key? key}) : super(key: key);
+class AlbumNow extends StatelessWidget {
+  final controller = Get.put(AlbumNowController());
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: .1,
-        centerTitle: true,
-        backgroundColor: AppTheme.appBar,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        title: const Text(
-          'Album',
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: Image.network(
-                'https://photo-resize-zmp3.zadn.vn/w360_r1x1_jpeg/avatars/0/3/3/7/0337e4cc5a05cdcc93b5d65762aea241.jpg',
-                height: 300,
-                width: 300,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Dimes.height10,
-            const Text(
-              'Jack - J97',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-            Dimes.height40,
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return GetX<AlbumNowController>(
+      builder: (controller) {
+        if (controller.isLoading.value) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final album = controller.album;
+        final songs = controller.songs;
+
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(album['title'] ?? 'Album'),
+          ),
+          body: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.download_for_offline_outlined,
-                      size: 40,
-                      color: AppTheme.primary,
-                    ),
-                    Icon(
-                      Icons.more_horiz_outlined,
-                      size: 40,
-                      color: AppTheme.primary,
-                    )
-                  ],
+                // Album Info Section
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          album['cover_medium'],
+                          width: 120,
+                          height: 120,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(album['title'] ?? '',
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text(album['artist']['name'] ?? '',
+                                style: const TextStyle(fontSize: 16)),
+                            const SizedBox(height: 8),
+                            Text('${album['nb_tracks']} tracks • ${album['duration']} sec',
+                                style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.shuffle,
-                      size: 40,
-                      color: AppTheme.primary,
-                    ),
-                    Icon(
-                      Icons.play_circle_outline,
-                      size: 40,
-                      color: AppTheme.primary,
-                    )
-                  ],
-                )
+
+                const Divider(),
+
+                // Songs List directly in view
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: songs.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final song = songs[index];
+                    return ListTile(
+                      leading: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          song.image,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      title: Text(song.title),
+                      subtitle: Text(song.artist),
+                      trailing: Text("${song.duration}s"),
+                      onTap: () {
+                        // TODO: handle song play/navigation
+                        print('Tapped on: ${song.title}');
+                      },
+                    );
+                  },
+                ),
               ],
-            )
-          ],
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
