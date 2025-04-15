@@ -17,6 +17,27 @@ class NowPlaying extends StatelessWidget {
     required this.songs,
   });
 
+  //
+  factory NowPlaying.fromRoute() {
+    final arguments = Get.arguments as Map<String, dynamic>? ?? {};
+
+    // Kiểm tra playingSong
+    if (arguments['playingSong'] == null || arguments['playingSong'] is! Song) {
+      throw Exception("Invalid song data");
+    }
+
+    // Kiểm tra songs
+    if (arguments['songs'] == null || arguments['songs'] is! List<Song>) {
+      throw Exception("Invalid songs list data");
+    }
+
+    return NowPlaying(
+      playingSong: arguments['playingSong'] as Song,
+      songs: arguments['songs'] as List<Song>,
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return NowPlayingPage(

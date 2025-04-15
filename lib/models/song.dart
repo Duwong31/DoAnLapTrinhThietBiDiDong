@@ -1,12 +1,12 @@
 class Song {
   Song({
     required this.id,
-    required this.title,
-    required this.album,
-    required this.artist,
+    required this.title,        // Tiêu đề/tên của bài hát
+    required this.album,        // Tên album chứa bài hát này
+    required this.artist,       // Nghệ sĩ/ca sĩ thể hiện bài hát
     required this.source,
     required this.image,
-    required this.duration,
+    required this.duration,       // Thời lượng bài hát
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
