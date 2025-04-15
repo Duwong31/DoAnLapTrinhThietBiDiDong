@@ -11,22 +11,20 @@ class NowPlayingBinding implements Bindings {
 
     // Lấy dữ liệu từ arguments
     final songs = Get.arguments['songs'];
-    final currentSong = Get.arguments['playingSong']; // Sửa từ 'currentSong' thành 'playingSong'
-
+    final playing_song = Get.arguments['playingSong'];
     // Kiểm tra null và kiểu dữ liệu cho songs
     if (songs == null || songs is! List<Song>) {
       throw Exception("Songs list is missing or invalid");
     }
-
     // Kiểm tra null và kiểu dữ liệu cho currentSong
-    if (currentSong == null || currentSong is! Song) {
+    if (playing_song == null || playing_song is! Song) {
       throw Exception("Current song is missing or invalid");
     }
 
     Get.lazyPut<NowPlayingController>(() => NowPlayingController(
-      songs: songs,                     // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
-      currentSong: currentSong,      // Lấy bài hát hiện tại
-      player: audioPlayer,              // Lấy một instance của AudioPlayer đã được đăng ký trước (ở nơi khác)
+      songs: songs,                               // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
+      currentSong: Get.arguments['currentSong'] ?? playing_song,           // Lấy bài hát hiện tại
+      player: audioPlayer,                          // Lấy một instance của AudioPlayer đã được đăng ký trước (ở nơi khác)
     ));
   }
 }
