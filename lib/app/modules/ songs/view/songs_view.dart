@@ -17,6 +17,7 @@ class NowPlaying extends StatelessWidget {
     required this.songs,
   });
 
+  //
   factory NowPlaying.fromRoute() {
     final arguments = Get.arguments as Map<String, dynamic>? ?? {};
 
