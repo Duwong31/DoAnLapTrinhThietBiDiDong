@@ -1,0 +1,2 @@
+D:/Sportify_App/android/app/.cxx/RelWithDebInfo/2z2m335y/arm64-v8a/CMakeFiles/edit_cache.dir
+D:/Sportify_App/android/app/.cxx/RelWithDebInfo/2z2m335y/arm64-v8a/CMakeFiles/rebuild_cache.dir

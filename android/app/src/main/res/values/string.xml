@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_map_key">xxx</string>
+    <string name="app_name">SoundFlow</string>
+    <string name="pay_button">Pay</string>
+</resources>
