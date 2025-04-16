@@ -32,7 +32,8 @@ class ProfileController extends GetxController with ScrollMixin {
     try {
     debugPrint(">>> [ProfileController] Bắt đầu gọi Repo.user.getDetail()");
     user.value = await Repo.user.getDetail();
-    // debugPrint(">>> [ProfileController] Gọi Repo.user.getDetail() thành công. User: ${user.value?.toJson()}"); 
+    debugPrint(">>> AFTER getUserDetail - User ID: ${user.value?.id}, Avatar URL: ${user.value?.avatar}, Avatar ID: ${user.value?.avatarId}");
+    
 
     if (isLogin) {
       FirebaseAnalyticService.logEvent('Login');

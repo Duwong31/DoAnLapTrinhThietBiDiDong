@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart'; // Import Material
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../core/utilities/app_utils.dart';
 import '../../../data/models/models.dart';
 import '../../../data/repositories/repositories.dart';
 import 'profile_controller.dart';
@@ -54,12 +55,23 @@ class EditProfileController extends GetxController{
   Future<void> changeAvatar() async {
     final picker = ImagePicker();
     // Consider adding image quality options
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    try {
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 1024,
+        maxHeight: 1024
+      );
 
-    if (pickedFile != null) {
-      avatar.value = File(pickedFile.path);
-      // Note: This only changes the display. You need to upload this file
-      // and update the user's profile on the backend when 'Save' is pressed.
+      if (pickedFile != null) {
+        avatar.value = File(pickedFile.path);
+         debugPrint(">>> [EditProfileController] New avatar selected: ${avatar.value?.path}");
+      } else {
+         debugPrint(">>> [EditProfileController] User cancelled image picking.");
+      }
+    } catch (e) {
+       debugPrint(">>> [EditProfileController] Image picking error: $e");
+       AppUtils.toast('Could not select image. Please try again.');
     }
   }
 
@@ -73,71 +85,78 @@ class EditProfileController extends GetxController{
     }
 
     Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
-
+    int? uploadedAvatarId;
     // 5. Call your repository/API to update the profile
     //    - Pass the updatedFullName
     //    - If newAvatarFile is not null, upload the avatar file and pass the resulting URL/ID
     try {
-      // Chuẩn bị dữ liệu gửi đi (chỉ gửi những gì muốn cập nhật)
+      if (newAvatarFile != null) {
+         debugPrint(">>> [EditProfileController] Attempting to upload new avatar...");
+         uploadedAvatarId = await Repo.user.uploadFile(newAvatarFile); // No folderId needed usually for avatar
+         if (uploadedAvatarId == null) {
+           // Handle upload failure specifically
+           debugPrint(">>> [EditProfileController] Avatar upload failed (returned null ID).");
+           throw Exception("Failed to upload avatar.");
+         }
+         debugPrint(">>> [EditProfileController] Avatar uploaded successfully, ID: $uploadedAvatarId");
+      } else {
+         debugPrint(">>> [EditProfileController] No new avatar file selected for upload.");
+      }
+
       Map<String, dynamic> dataToUpdate = {
         'name': updatedFullName,
-        // Thêm các trường khác nếu bạn có TextField và muốn cập nhật
-        // 'first_name': firstNameController.text.trim(), // Ví dụ
-        // 'last_name': lastNameController.text.trim(), // Ví dụ
-        // 'phone': phoneController.text.trim(), // Ví dụ
-        // 'bio': bioController.text.trim(), // Ví dụ
       };
 
-      // Gọi hàm updateUserProfile từ Repository
-      // Giả sử bạn đã khởi tạo Repo: import 'package:your_app/data/repositories/repositories.dart';
-      final UserModel updatedUser = await Repo.user.updateUserProfile(dataToUpdate);
+      if (uploadedAvatarId != null) {
+        dataToUpdate['avatar_id'] = uploadedAvatarId;
+      }
+       // If newAvatarFile is null (user didn't pick a new one),
+       // we DON'T send avatar_id, preserving the existing one on the backend.
+       // If you want to allow REMOVING the avatar, you'd need a separate mechanism
+       // or agree on sending avatar_id: null or avatar_id: 0.
 
+      // --- Step 3: Call the profile update API ---
+      debugPrint(">>> [EditProfileController] Calling updateUserProfile with data: $dataToUpdate");
+
+      await Repo.user.updateUserProfile(dataToUpdate);
+      debugPrint(">>> [EditProfileController] Profile update API call successful.");
       // --- Xử lý khi thành công ---
       if (Get.isDialogOpen ?? false) {
         Get.back(); // Đóng loading dialog
       }
 
       // Cập nhật dữ liệu user trong ProfileController (nếu có) để UI cập nhật ngay
-      try {
-        // Tìm ProfileController và cập nhật giá trị user
-         final profileController = Get.find<ProfileController>();
-         profileController.user.value = updatedUser;
-         debugPrint(">>> [EditProfileController] Updated ProfileController locally.");
+       try {
+        final profileController = Get.find<ProfileController>();
+        await profileController.getUserDetail(); // Gọi hàm để làm mới dữ liệu
+        debugPrint(">>> [EditProfileController] Đã làm mới dữ liệu ProfileController.");
       } catch (e) {
-         debugPrint(">>> [EditProfileController] Could not find ProfileController to update locally: $e");
-         // Có thể gọi getUserDetail() ở ProfileView sau khi quay lại
+         debugPrint(">>> [EditProfileController] Không tìm thấy/làm mới được ProfileController: $e");
+         // Không sao cả, màn hình Profile sẽ tự load lại khi quay về
       }
+      avatar.value = null;
 
-      Get.back(); // Quay lại màn hình ProfileView
-      Get.snackbar('Success', 'Profile updated successfully'); // Thông báo thành công
-
-      // Tùy chọn: Có thể gọi lại hàm fetch user của ProfileController sau khi quay lại
-      // để đảm bảo dữ liệu là mới nhất từ server (dù đã cập nhật local)
-      // Future.delayed(Duration(milliseconds: 100), () {
-      //   try {
-      //     Get.find<ProfileController>().getUserDetail();
-      //   } catch (e) {}
-      // });
-
+      Get.back(); // Navigate back to the previous screen (ProfileView)
+      AppUtils.toast('Profile updated successfully'); // Show success message
 
     } catch (e) {
-      // --- Xử lý khi thất bại ---
+      // --- Step 5: Handle errors ---
       if (Get.isDialogOpen ?? false) {
-        Get.back(); // Đóng loading dialog
+        Get.back(); // Close loading dialog
       }
 
-      // Hiển thị lỗi cụ thể hơn nếu có thể
       String errorMessage = 'Failed to update profile.';
-      if (e is DioException && e.response?.data is Map) {
-         // Cố gắng lấy message lỗi từ response API
-         errorMessage = e.response!.data['message'] ?? errorMessage;
-         // Bạn cũng có thể xử lý lỗi validation chi tiết hơn nếu API trả về 'errors'
-         // Ví dụ: final errors = e.response!.data['errors'];
-      } else {
-         errorMessage = e.toString(); // Lỗi chung
+      if (e is DioException) { // Handle Dio specific errors
+         errorMessage = e.response?.data?['message'] ?? e.message ?? errorMessage;
+          debugPrint(">>> [EditProfileController] DioException: ${e.response?.statusCode} - ${e.response?.data}");
+      } else { // Handle general errors
+         errorMessage = e.toString();
+          debugPrint(">>> [EditProfileController] General Exception: $e");
       }
-      debugPrint(">>> [EditProfileController] Save Profile Error: $e");
-      Get.snackbar('Error', errorMessage); // Thông báo lỗi
+      AppUtils.toast(errorMessage); // Show error message
+
     }
+    // NO finally block needed to reset avatar.value here,
+    // it should only be reset on SUCCESS to avoid losing the selection if save fails.
   }
 }

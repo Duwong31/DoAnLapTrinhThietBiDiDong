@@ -592,18 +592,32 @@ class UserApiService extends BaseApiService {
     });
   }
 
-  Future<int?> uploadFile(File newFile,int folderId) async {
-    final file = MultipartFile.fromBytes(newFile.readAsBytesSync(), filename: '${DateTime.now().microsecondsSinceEpoch}${newFile.path.split("/").last.split(".").first}.png');
+  Future<int?> uploadFile(File newFile,{int? folderId}) async {
+    final fileName = newFile.path.split('/').last;
+    final file = await MultipartFile.fromFile(newFile.path, filename: fileName);
     return handleApiError(() async {
+      debugPrint(">>> [UserApiService.uploadFile] Uploading avatar...");
       final response = await post(ApiUrl.uploadFile,
           data: FormData.fromMap(
-              {'file': file, "folder_id": folderId, "type": "image"}));
+              {'file': file, 
+              // "folder_id": folderId, 
+              "type": "image"
+          }),
+          options: Options(
+            headers: getAuthHeaders()..addAll({'Content-Type': 'multipart/form-data'}),
+            validateStatus: (status) => status != null && status < 500,
+        )
+      );
+        debugPrint(">>> [UserApiService.uploadFile] Response: ${response.data}");
 
-      if (response.statusCode == 200) {
-        return response.data['data']['id'];
-      } else {
-        throw Exception(response.data['message'] ?? 'Lỗi không xác định.');
-      }
+        if (response.statusCode == 200 && response.data['uploaded'] == 1 && response.data['data']?['id'] != null) {
+           debugPrint(">>> [UserApiService.uploadFile] Upload success, file ID: ${response.data['data']['id']}");
+           return response.data['data']['id'] as int?;
+        } else {
+           String errorMsg = response.data['error']?['message'] ?? 'Failed to upload avatar.';
+           debugPrint(">>> [UserApiService.uploadFile] Upload failed: $errorMsg");
+           throw Exception(errorMsg);
+        }
     });
   }
 
@@ -951,8 +965,8 @@ class ApiProvider {
   static Future<bool> verifyInformation(Map<String, dynamic> data) =>
       _userService.verifyInformation(data);
 
-  static Future<int?> uploadFile(File file, int folderId) =>
-      _userService.uploadFile(file, folderId);
+  static Future<int?> uploadFile(File file, {int? folderId}) =>
+      _userService.uploadFile(file, folderId: folderId);
 
   static Future<UserModel> uploadAvatar(Uint8List bytes) =>
       _userService.uploadAvatar(bytes);

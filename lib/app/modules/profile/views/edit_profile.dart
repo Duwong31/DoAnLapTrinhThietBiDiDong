@@ -40,20 +40,28 @@ class EditProfilePage extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             // --- Avatar Section ---
-            Obx(() => Column(
+            Obx(() {
+              ImageProvider? imageProvider;
+                if (ctr.avatar.value != null) {
+                  // New avatar selected (File)
+                  imageProvider = FileImage(ctr.avatar.value!);
+                } else if (ctr.user.value?.avatar != null && ctr.user.value!.avatar!.isNotEmpty) {
+                  // Existing avatar URL from user data
+                  imageProvider = NetworkImage(ctr.user.value!.avatar!);
+                } else {
+                  // No avatar selected or exists
+                  imageProvider = null; // Will show placeholder icon
+                }
+                return Column(
                   children: [
                     CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.grey[300],
                        // Use FileImage if avatar.value is a File
                        // Use NetworkImage if ctr.user.value.avatar is a URL initially
-                      backgroundImage: ctr.avatar.value != null
-                          ? FileImage(ctr.avatar.value!) as ImageProvider // Cast needed
-                          : (ctr.user.value?.avatar != null // Check for initial network avatar URL
-                              ? NetworkImage(ctr.user.value!.avatar!)
-                              : null),
-                      child: (ctr.avatar.value == null && ctr.user.value?.avatar == null)
-                          ? const Icon(Icons.person, color: Colors.grey, size: 60) // Placeholder icon
+                      backgroundImage: imageProvider,
+                      child: (imageProvider == null)
+                          ? Icon(Icons.person_outline, color: Colors.grey[400], size: 60) // Placeholder icon
                           : null,
                     ),
                     const SizedBox(height: 8),
@@ -65,7 +73,9 @@ class EditProfilePage extends StatelessWidget {
                       ),
                     ),
                   ],
-                )),
+                );
+              }
+            ),
             const SizedBox(height: 32),
 
             // --- Full Name TextField ---
@@ -97,7 +107,6 @@ class EditProfilePage extends StatelessWidget {
             //     border: UnderlineInputBorder(),
             //   ),
             // ),
-
           ],
         ),
       ),
