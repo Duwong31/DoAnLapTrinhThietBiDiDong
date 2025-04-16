@@ -1,9 +1,12 @@
+// C:\work\SoundFlow\lib\app\modules\albums & playlist\views\playlist_page_view.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../../../core/styles/style.dart';
-import '../../../routes/app_pages.dart';
-import '../controllers/playlist_page_controller.dart';
+// Import style, routes, controller và model
+import '../../../core/styles/style.dart';       // <-- Điều chỉnh đường dẫn
+import '../../../routes/app_pages.dart';      // <-- Điều chỉnh đường dẫn
+import '../controllers/playlist_page_controller.dart'; // <-- Điều chỉnh đường dẫn
+import '../../../data/models/playlist.dart';      // <-- Điều chỉnh đường dẫn
 
 class PlayListView extends GetView<PlayListController> {
   const PlayListView({Key? key}) : super(key: key);
@@ -14,156 +17,122 @@ class PlayListView extends GetView<PlayListController> {
       appBar: AppBar(
         elevation: .1,
         centerTitle: true,
-        backgroundColor: AppTheme.appBar,
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
           onPressed: () {
-            Get.toNamed(Routes.dashboard);
+            // Quyết định nên back hay về dashboard
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard); // Thay thế stack nếu không có trang trước
+            }
           },
         ),
-        title: const Text('PlayList'),
+        title: const Text('PlayList', style: TextStyle(color: Colors.black),),
+         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.black),
+            tooltip: 'Refresh',
+            onPressed: () => controller.fetchPlaylists(), // Gọi hàm refresh từ controller
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Obx(() => _buildLazyGridView(context)),
+        // Sử dụng Obx để lắng nghe thay đổi state trong controller
+        child: Obx(() {
+          // Hiển thị loading indicator khi đang fetch dữ liệu
+          if (controller.isLoading.value) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          // Hiển thị thông báo nếu không có playlist
+          if (controller.playlists.isEmpty) {
+            return const Center(child: Text("No playlists found."));
+          }
+          // Hiển thị GridView khi có dữ liệu
+          return _buildLazyGridView(context);
+        }),
       ),
     );
   }
 
+  // Widget xây dựng GridView
   Widget _buildLazyGridView(BuildContext context) {
+    // Lấy danh sách items từ controller (đã được cập nhật bởi Obx)
     final items = controller.playlists;
 
     return GridView.builder(
       itemCount: items.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.8,
+        crossAxisCount: 2,          // Số cột
+        crossAxisSpacing: 12,     // Khoảng cách ngang
+        mainAxisSpacing: 12,      // Khoảng cách dọc
+        childAspectRatio: 0.8,    // Tỷ lệ chiều rộng/cao của item
       ),
       itemBuilder: (context, index) {
-        final item = items[index];
+        final Playlist item = items[index]; // Lấy item playlist cụ thể
         return GestureDetector(
           onTap: () {
+            // Điều hướng đến trang chi tiết playlist, truyền object Playlist qua arguments
             Get.toNamed(Routes.playlistnow, arguments: item);
           },
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              // Nên dùng màu từ Theme
+              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
               borderRadius: BorderRadius.circular(16),
+              boxShadow: [ // Thêm shadow nhẹ cho đẹp hơn
+                 BoxShadow(
+                   color: Colors.grey.withOpacity(0.2),
+                   spreadRadius: 1,
+                   blurRadius: 4,
+                   offset: const Offset(0, 2),
+                 )
+              ]
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch, // Để ảnh và text giãn đầy chiều ngang
               children: [
-                ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: AspectRatio(
-                    aspectRatio: 1,
+                Expanded( // Cho phép ảnh chiếm không gian còn lại theo chiều dọc
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                     child: Image.network(
                       item.imageUrl,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.cover, // Đảm bảo ảnh cover hết vùng
+                       // Placeholder và error builder cho Image.network
+                       loadingBuilder: (context, child, loadingProgress) {
+                         if (loadingProgress == null) return child;
+                         return Container( // Giữ đúng kích thước khi loading
+                           color: Colors.grey[300],
+                           child: const Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                         );
+                       },
+                       errorBuilder: (context, error, stackTrace) => Container(
+                         color: Colors.grey[300],
+                         child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                       ),
                     ),
                   ),
                 ),
-                Dimes.height8,
+                // Sử dụng const SizedBox hoặc Dimes từ style
+                const SizedBox(height: 8), // Hoặc Dimes.height8
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
                     item.title,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), // Style chữ
+                    maxLines: 2, // Giới hạn 2 dòng
+                    overflow: TextOverflow.ellipsis, // Hiển thị ... nếu quá dài
                   ),
                 ),
+                const SizedBox(height: 8), // Thêm khoảng cách dưới cùng
               ],
             ),
           ),
         );
       },
-    );
-
-  }
-}
-
-
-class PlayListNow extends GetView<PlayListController> {
-  const PlayListNow({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: .1,
-        centerTitle: true,
-        backgroundColor: AppTheme.appBar,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-          onPressed: () {
-            Get.back();
-          },
-        ),
-        title: const Text(
-          'PlayList',
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Center(
-              child: Image.network(
-                'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
-                height: 300,
-                width: 300,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Dimes.height10,
-            const Text(
-              'Dành Riêng Cho Kẻ Lụy Tình',
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold
-              ),
-            ),
-            Dimes.height40,
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.download_for_offline_outlined,
-                      size: 40,
-                      color: AppTheme.primary,
-                    ),
-                    Icon(
-                      Icons.more_horiz_outlined,
-                      size: 40,
-                      color: AppTheme.primary,
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.shuffle,
-                      size: 40,
-                      color: AppTheme.primary,
-                    ),
-                    Icon(
-                      Icons.play_circle_outline,
-                      size: 40,
-                      color: AppTheme.primary,
-                    )
-                  ],
-                )
-              ],
-            )
-          ],
-        ),
-      ),
     );
   }
 }
