@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
 
+import '../../models/song.dart';
 import '../core/styles/style.dart';
 import '../core/utilities/image.dart';
 import '../routes/app_pages.dart';
 
 class SongOptionsSheet extends StatelessWidget {
-  const SongOptionsSheet({super.key});
+  const SongOptionsSheet({super.key,});
 
   @override
   Widget build(BuildContext context) {

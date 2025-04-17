@@ -12,6 +12,8 @@ abstract class UserBase {
   Future<UserModel> restoreRecipient();
   Future<bool> addAddress(String address, String apartment);
   Future<bool> verifyInformation(Map<String, dynamic> body);
+  Future<dynamic> createPlaylist(String name);
+  Future<List<Playlist>> getPlaylists();
 }
 
 class UserRepository extends BaseRepository implements UserBase {
@@ -67,5 +69,31 @@ class UserRepository extends BaseRepository implements UserBase {
   @override
   Future<bool> verifyInformation(Map<String, dynamic> body) {
     return handleCall(() => ApiProvider.verifyInformation(body));
+  }
+
+  @override
+  Future<dynamic> createPlaylist(String name) { 
+    return handleCall(() => ApiProvider.createPlaylist(name));
+  }
+
+  @override
+  Future<List<Playlist>> getPlaylists() { 
+    return handleCall(() async {
+      print("UserRepository: Calling ApiProvider.getPlaylists...");
+      // Gọi provider (không cần tham số name)
+      final responseData = await ApiProvider.getPlaylists();
+
+      // Lấy danh sách data (an toàn)
+      final List<dynamic> playlistData = responseData['data'] as List<dynamic>? ?? [];
+      print("UserRepository: Received ${playlistData.length} playlist items from API.");
+
+      // Parse thành List<Playlist>
+      final playlists = playlistData
+          .map((map) => Playlist.fromMap(map as Map<String, dynamic>)) // Hoặc fromJson
+          .toList();
+
+      print("UserRepository: Parsed ${playlists.length} playlists successfully.");
+      return playlists;
+    });
   }
 }

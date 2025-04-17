@@ -33,6 +33,7 @@ abstract class Routes {
   static var songs_view = _Paths.songs_view;
   static const all_song_view = _Paths.all_song_view;
   static const createNewPlaylist = _Paths.createNewPlaylist;
+   
 }
 
 abstract class _Paths {
@@ -65,4 +66,5 @@ abstract class _Paths {
   static const songs_view = '/songs_view';
   static const addToPlaylist = '/add-to-playlist';
   static const createNewPlaylist = '/create-new-playlist';
+
 }

@@ -711,7 +711,54 @@ class UserApiService extends BaseApiService {
       return response.data['status'] == 1;
     });
   }
+
+  Future<dynamic> createPlaylist(String name) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.createPlaylist} with data: {"name": "$name"}');
+
+      final response = await post(
+        ApiUrl.createPlaylist,
+        data: {'name': name}, // Gửi tên playlist trong body
+        // options: getOptions() // getOptions đã bao gồm header Authorization
+      );
+
+      AppUtils.log('API Response from create playlist: ${response.data}');
+
+      // Kiểm tra response thành công từ backend
+      // Backend của bạn đang trả về status=1 và data của playlist mới
+      if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] != null) {
+        // Có thể trả về dữ liệu playlist mới nếu cần
+        return response.data; // Hoặc response.data['data']
+      } else {
+        // Ném lỗi với message từ API hoặc lỗi chung
+        throw Exception(response.data['message'] ?? 'Failed to create playlist');
+      }
+    });
+  }
+
+  Future<Map<String, dynamic>> getPlaylists() async {
+  return handleApiError(() async {
+    AppUtils.log('API Request to ${ApiUrl.getPlaylists}');
+    // Gọi API GET, không cần data body
+    final response = await get(ApiUrl.getPlaylists /* options: getOptions() đã bao gồm */);
+    print("<<<--- API GetPlaylists Response ---");
+    print("Status Code: ${response.statusCode}");
+    print("Response Data: ${response.data}"); // In toàn bộ data
+    print("--- API GetPlaylists Response --->>>");
+
+    // Kiểm tra cấu trúc response chuẩn từ backend của bạn
+    if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] is List) {
+      // Trả về toàn bộ map để Repository xử lý parsing
+      return response.data;
+    } else {
+      throw Exception(response.data['message'] ?? 'Failed to fetch playlists');
+    }
+  });
 }
+}
+
+// Trong providers.dart, class UserApiService
+
 
 // NotificationApiService handles all notification-related API operations
 class NotificationApiService extends BaseApiService {
@@ -1116,5 +1163,10 @@ class ApiProvider {
 
   // static Future<bool> sendFeedback(Map<String, dynamic> body) =>
   //     _feedbackService.sendFeedback(body);
+
+  static Future<dynamic> createPlaylist(String name) =>
+    _userService.createPlaylist(name);
+
+  static Future<Map<String, dynamic>> getPlaylists() => _userService.getPlaylists();
 }
 

@@ -32,6 +32,20 @@ class DashboardView extends GetView<DashboardController> {
               );
             },
           ),
+          actions: [
+            Obx(() {
+              // Chỉ hiện nút dấu cộng nếu đang ở tab Library (index = 2)
+              if (controller.currentIndex.value == 2) {
+                return IconButton(
+                  icon: const Icon(Icons.add,size: 32, color: AppTheme.primary),
+                  onPressed: () {
+                    controller.showCreatePlaylistDialog();
+                  },
+                );
+              }
+              return const SizedBox.shrink(); // không hiển thị gì nếu không phải tab Library
+            }),
+          ],
           // title: Obx(() {
           //   String title =
           //       'Welcome, ${controller.profile.user.value?.fullName}!';

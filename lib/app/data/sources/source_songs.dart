@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import '../../../models/song.dart';
@@ -28,6 +29,53 @@ class RemoteDataSource implements DataSource{
       List<Song> songs = songList.map((song) => Song.fromJson(song)).toList();
       return songs;
     }else{
+      return null;
+    }
+  }
+  
+  final Dio _externalApiDio = Dio(BaseOptions(
+      baseUrl: 'https://api.external-music-source.com', // <-- THAY THẾ BASE URL
+      connectTimeout: Duration(seconds: 5),
+      receiveTimeout: Duration(seconds: 5),
+      // Thêm headers nếu API nguồn nhạc yêu cầu (ví dụ: API Key)
+      // headers: {
+      //   'Authorization': 'Bearer YOUR_EXTERNAL_API_KEY',
+      //   'Accept': 'application/json',
+      // }
+  ));
+
+  Future<Song?> getDetails(String songId) async {
+    // *** THAY THẾ '/songs/$songId' BẰNG ENDPOINT THỰC TẾ ***
+    final String endpoint = '/songs/$songId'; // Ví dụ endpoint
+
+    print("RemoteDataSource: Fetching details for song $songId from $endpoint");
+
+    try {
+      // Thực hiện cuộc gọi GET (hoặc phương thức khác nếu API yêu cầu)
+      final response = await _externalApiDio.get(endpoint);
+
+      // Kiểm tra response thành công
+      if (response.statusCode == 200 && response.data != null) {
+        print("RemoteDataSource: Received details for song $songId");
+        // Parse dữ liệu JSON thành đối tượng Song
+        // Đảm bảo Song.fromMap hoạt động đúng với cấu trúc response.data này
+        return Song.fromJson(response.data as Map<String, dynamic>);
+      } else {
+        // Log lỗi nếu status code không phải 200
+        print("RemoteDataSource: Error fetching song $songId. Status: ${response.statusCode}, Data: ${response.data}");
+        return null;
+      }
+    } on DioException catch (e) {
+      // Log lỗi Dio (lỗi mạng, timeout, v.v.)
+      print("RemoteDataSource: DioException fetching song $songId: ${e.message}");
+      if (e.response != null) {
+        print("RemoteDataSource: DioException response data: ${e.response?.data}");
+      }
+      return null;
+    } catch (e, stackTrace) {
+      // Log các lỗi khác (ví dụ: lỗi parsing)
+      print("RemoteDataSource: Unexpected error fetching song $songId: $e");
+      print(stackTrace);
       return null;
     }
   }

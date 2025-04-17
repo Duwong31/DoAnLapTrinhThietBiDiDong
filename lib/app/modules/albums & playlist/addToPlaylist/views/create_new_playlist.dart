@@ -2,36 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../core/styles/style.dart';
+// *** THÊM IMPORT CONTROLLER ***
+import '../controllers/create_new_playlist_controller.dart';
 
-class CreateNewPlaylist extends StatefulWidget {
+// *** CHUYỂN THÀNH GetView ***
+class CreateNewPlaylist extends GetView<CreateNewPlaylistController> {
   const CreateNewPlaylist({Key? key}) : super(key: key);
 
-  @override
-  State<CreateNewPlaylist> createState() => _CreateNewPlaylistState();
-}
-
-class _CreateNewPlaylistState extends State<CreateNewPlaylist> {
-  final TextEditingController _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _createPlaylist() {
-    final name = _nameController.text.trim();
-    if (name.isEmpty) {
-      Get.snackbar("Oops", "Playlist name can't be empty.",
-          backgroundColor: Colors.redAccent, colorText: Colors.white);
-      return;
-    }
-
-    // TODO: Gửi name lên controller hoặc xử lý lưu playlist
-    Get.back();
-    Get.snackbar("Success", "Playlist \"$name\" created!",
-        backgroundColor: Colors.green, colorText: Colors.white);
-  }
+  // Không cần State nữa, xóa class _CreateNewPlaylistState
 
   @override
   Widget build(BuildContext context) {
@@ -53,24 +31,28 @@ class _CreateNewPlaylistState extends State<CreateNewPlaylist> {
           children: [
             const SizedBox(height: 40),
             const Text(
-              "Create your playlist's name",
+              "Give your playlist a name", // Sửa text một chút
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 40),
 
             /// Field input kiểu underline
-              Row(
-                children: [
-                const SizedBox(width: 12), // Tương ứng Dimes.width12
+            Row(
+              children: [
+                const SizedBox(width: 12),
                 Expanded(
                   child: TextField(
-                    controller: _nameController,
+                    // *** SỬ DỤNG CONTROLLER TỪ GetView ***
+                    controller: controller.nameController,
                     decoration: const InputDecoration(
+                      hintText: "Playlist Name", // Thêm hintText
                       border: UnderlineInputBorder(),
                       isDense: true,
                     ),
                     textCapitalization: TextCapitalization.words,
+                    // Tự động focus khi màn hình mở lên
+                    autofocus: true,
                   ),
                 ),
               ],
@@ -82,22 +64,36 @@ class _CreateNewPlaylistState extends State<CreateNewPlaylist> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: _createPlaylist,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primary,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                    ),
-                    child: const Text("Create",
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
-                  ),
+                  // *** SỬ DỤNG Obx ĐỂ HIỂN THỊ LOADING ***
+                  child: Obx(() => ElevatedButton(
+                        // Gọi hàm từ controller
+                        onPressed: controller.isLoading.value ? null : controller.createPlaylist,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primary,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          // Thay đổi style khi đang loading
+                          disabledBackgroundColor: AppTheme.primary.withOpacity(0.5)
+                        ),
+                        child: controller.isLoading.value
+                            ? const SizedBox( // Hiển thị loading indicator
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                            : const Text("Create", // Hiển thị text bình thường
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                      )),
                 ),
                 const SizedBox(width: 16), // Khoảng cách giữa 2 nút
                 Expanded(
                   child: OutlinedButton(
+                    // *** Vẫn dùng Get.back() đơn giản ***
                     onPressed: () => Get.back(),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
@@ -106,9 +102,11 @@ class _CreateNewPlaylistState extends State<CreateNewPlaylist> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text("Cancel",
+                    // Sửa màu chữ nút Cancel cho hợp lý
+                    child: Text("Cancel",
                         style: TextStyle(
-                            color: Colors.black, fontSize: 16, fontWeight: FontWeight.normal)),
+                            color: isDark ? Colors.white : Colors.black,
+                             fontSize: 16, fontWeight: FontWeight.normal)),
                   ),
                 ),
               ],

@@ -8,6 +8,7 @@ import '../../../core/utilities/utilities.dart';
 import '../../../data/http_client/http_client.dart';
 import '../../../data/providers/notification_provider.dart';
 import '../../../data/services/firebase_analytics_service.dart';
+import '../../../routes/app_pages.dart';
 import '../../profile/controllers/profile_controller.dart';
 
 class BottomBarModel {
@@ -70,6 +71,57 @@ class DashboardController extends GetxController
       AppUtils.log(value, tag: 'FirebaseMessaging');
     });
   }
+  
+  void showCreatePlaylistDialog() {
+  Get.bottomSheet(
+    Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Wrap(
+        children: [
+          // Thanh ngang kéo xuống ở trên cùng
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          ),
+
+          InkWell(
+            onTap: () {
+              Get.back(); // đóng bottom sheet
+              Get.toNamed(Routes.createNewPlaylist);// điều hướng tới trang playlist
+            },
+            child: const Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.playlist_add, size: 30,),
+                SizedBox(width: 10),
+                Text(
+                  "Playlist",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+    isScrollControlled: true,
+  );
+}
+
 
   @override
   void onReady() {

@@ -13,7 +13,7 @@ class AddToPlaylistPage extends StatefulWidget {
 }
 
 class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
-  int? selectedIndex;
+  Set<int> selectedIndexes = {}; // <-- đổi từ int? selectedIndex sang Set
 
   List<Map<String, dynamic>> playlists = [
     {
@@ -25,12 +25,14 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
     {
       'name': 'Người ta nghe gì',
       'songs': '2 songs',
-      'image': 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
+      'image':
+          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
     },
     {
       'name': 'bruh',
       'songs': '1 song',
-      'image': 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
+      'image':
+          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
     },
   ];
 
@@ -42,10 +44,6 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: const BackButton(color: Colors.black),
-        title: const Text(
-          'Add to playlist',
-          style: TextStyle(color: Colors.black),
-        ),
       ),
       body: Column(
         children: [
@@ -60,18 +58,28 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
             ),
             child: const Text('New playlist'),
           ),
           const SizedBox(height: 20),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Text('Saved in', style: TextStyle(fontWeight: FontWeight.bold)),
-                Spacer(),
-                Text('Clear all', style: TextStyle(color: Colors.orange)),
+                const Text('Saved in',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const Spacer(),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedIndexes.clear(); // clear all
+                    });
+                  },
+                  child: const Text('Clear all',
+                      style: TextStyle(color: Colors.orange)),
+                ),
               ],
             ),
           ),
@@ -82,7 +90,8 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
               children: [
                 Icon(Icons.list),
                 SizedBox(width: 8),
-                Text('Most relevant', style: TextStyle(fontWeight: FontWeight.w500)),
+                Text('Most relevant',
+                    style: TextStyle(fontWeight: FontWeight.w500)),
               ],
             ),
           ),
@@ -92,6 +101,7 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
               itemCount: playlists.length,
               itemBuilder: (context, index) {
                 final item = playlists[index];
+                final isSelected = selectedIndexes.contains(index);
                 return ListTile(
                   leading: item.containsKey('gradient')
                       ? Container(
@@ -101,20 +111,40 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
                             shape: BoxShape.rectangle,
                             gradient: item['gradient'],
                           ),
-                          child: const Icon(Icons.favorite, color: Colors.white),
+                          child:
+                              const Icon(Icons.favorite, color: Colors.white),
                         )
-                      : Image.network(item['image'], width: 50, height: 50, fit: BoxFit.cover),
+                      : Image.network(item['image'],
+                          width: 50, height: 50, fit: BoxFit.cover),
                   title: Text(item['name']),
-                  subtitle: item['songs'] == 'saved' ? null : Text(item['songs']),
-                  trailing: Radio<int>(
-                    value: index,
-                    groupValue: selectedIndex,
-                    onChanged: (value) {
+                  subtitle:
+                      item['songs'] == 'saved' ? null : Text(item['songs']),
+                  trailing: GestureDetector(
+                    onTap: () {
                       setState(() {
-                        selectedIndex = value;
+                        if (isSelected) {
+                          selectedIndexes.remove(index);
+                        } else {
+                          selectedIndexes.add(index);
+                        }
                       });
                     },
-                    activeColor: Colors.orange,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                            color:
+                                isSelected ? Colors.orange : Colors.grey[400]!,
+                                width: 2.2),
+                        color: isSelected ? Colors.orange : Colors.transparent,
+                      ),
+                      child: isSelected
+                          ? const Icon(Icons.check,
+                              size: 16, color: Colors.white)
+                          : null,
+                    ),
                   ),
                 );
               },
@@ -123,17 +153,17 @@ class _AddToPlaylistPageState extends State<AddToPlaylistPage> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: selectedIndexes.isNotEmpty ? () {} : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.primary,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30)),
               ),
-              child: const Text('Done',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16
-              ),),
+              child: const Text(
+                'Done',
+                style: TextStyle(color: Colors.white, fontSize: 16),
+              ),
             ),
           )
         ],

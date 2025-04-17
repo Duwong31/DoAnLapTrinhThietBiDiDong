@@ -10,5 +10,6 @@ class PlayListBinding extends Bindings {
           () => PlayListController(),
           fenix: true,
     );
+    Get.lazyPut<PlayListController>(() => PlayListController());
   }
 }

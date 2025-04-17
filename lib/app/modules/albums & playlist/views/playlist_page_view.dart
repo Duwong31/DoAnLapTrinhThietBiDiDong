@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 // Import style, routes, controller và model
 import '../../../core/styles/style.dart';       // <-- Điều chỉnh đường dẫn
 import '../../../routes/app_pages.dart';      // <-- Điều chỉnh đường dẫn
+import '../../../widgets/playlist_cover_widget.dart';
 import '../controllers/playlist_page_controller.dart'; // <-- Điều chỉnh đường dẫn
 import '../../../data/models/playlist.dart';      // <-- Điều chỉnh đường dẫn
 
@@ -43,7 +44,7 @@ class PlayListView extends GetView<PlayListController> {
         // Sử dụng Obx để lắng nghe thay đổi state trong controller
         child: Obx(() {
           // Hiển thị loading indicator khi đang fetch dữ liệu
-          if (controller.isLoading.value) {
+          if (controller.isLoadingPlaylists.value) {
             return const Center(child: CircularProgressIndicator());
           }
           // Hiển thị thông báo nếu không có playlist
@@ -97,22 +98,23 @@ class PlayListView extends GetView<PlayListController> {
                 Expanded( // Cho phép ảnh chiếm không gian còn lại theo chiều dọc
                   child: ClipRRect(
                     borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                    child: Image.network(
-                      item.imageUrl,
-                      fit: BoxFit.cover, // Đảm bảo ảnh cover hết vùng
-                       // Placeholder và error builder cho Image.network
-                       loadingBuilder: (context, child, loadingProgress) {
-                         if (loadingProgress == null) return child;
-                         return Container( // Giữ đúng kích thước khi loading
-                           color: Colors.grey[300],
-                           child: const Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
-                         );
-                       },
-                       errorBuilder: (context, error, stackTrace) => Container(
-                         color: Colors.grey[300],
-                         child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
-                       ),
-                    ),
+                    child: PlaylistCoverWidget(firstTrackId: item.firstTrackId),
+                    // child: Image.network(
+                    //   item.imageUrl,
+                    //   fit: BoxFit.cover, // Đảm bảo ảnh cover hết vùng
+                    //    // Placeholder và error builder cho Image.network
+                    //    loadingBuilder: (context, child, loadingProgress) {
+                    //      if (loadingProgress == null) return child;
+                    //      return Container( // Giữ đúng kích thước khi loading
+                    //        color: Colors.grey[300],
+                    //        child: const Center(child: CircularProgressIndicator(strokeWidth: 2.0)),
+                    //      );
+                    //    },
+                    //    errorBuilder: (context, error, stackTrace) => Container(
+                    //      color: Colors.grey[300],
+                    //      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
+                    //    ),
+                    // ),
                   ),
                 ),
                 // Sử dụng const SizedBox hoặc Dimes từ style
@@ -120,7 +122,7 @@ class PlayListView extends GetView<PlayListController> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: Text(
-                    item.title,
+                    item.name,
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600), // Style chữ
                     maxLines: 2, // Giới hạn 2 dòng

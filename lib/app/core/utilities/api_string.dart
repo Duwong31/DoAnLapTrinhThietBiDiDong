@@ -93,4 +93,8 @@ class ApiUrl {
   static deleteRecipient(id) => '$receipt/recipients/$id';
   static const String restoreRecipient = '$receipt/recipients/restore';
   static const String getDashboard = '$receipt/home';
+
+  //Playlist
+  static const String createPlaylist = '$receipt/playlists';
+  static const String getPlaylists = '$receipt/playlists';
 }

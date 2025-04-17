@@ -3,6 +3,7 @@ import '../modules/ songs/bindings/songs_binding.dart';
 import '../modules/ songs/view/all_songs_view.dart';
 import '../modules/ songs/view/songs_view.dart';
 import '../modules/albums & playlist/addToPlaylist/bindings/add_to_playlist_binding.dart';
+import '../modules/albums & playlist/addToPlaylist/bindings/create_new_playlist_binding.dart';
 import '../modules/albums & playlist/addToPlaylist/views/create_new_playlist.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
@@ -167,6 +168,7 @@ class AppPages {
     GetPage(
       name: _Paths.createNewPlaylist,
       page: () => const CreateNewPlaylist(),
+      binding: CreateNewPlaylistBinding()
     )
   ];
 }
