@@ -5,7 +5,10 @@ import '../modules/ songs/view/songs_view.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
+import '../modules/albums & playlist/views/albumnow_view.dart';
 import '../modules/albums & playlist/views/playlist_page_view.dart';
+import '../modules/artists/bindings/artist_binding.dart';
+import '../modules/artists/views/artist_view.dart';
 import '../modules/change-password/bindings/change_password_binding.dart';
 import '../modules/change-password/views/change_password_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
@@ -67,7 +70,7 @@ class AppPages {
     GetPage(
       name: _Paths.splash,
       page: () => const SplashView(),
-      binding: SplashBinding(),
+      // binding: SplashBinding(),
     ),
     GetPage(
       name: _Paths.welcome,
@@ -142,6 +145,12 @@ class AppPages {
     GetPage(
         name: _Paths.songs_view,
         page: () => NowPlaying.fromRoute(),
-        binding: NowPlayingBinding())
+        binding: NowPlayingBinding()
+    ),
+    GetPage(
+        name: _Paths.artist,
+        page: () => const ArtistView(),
+        binding: ArtistBinding()
+    )
   ];
 }

@@ -1,5 +1,5 @@
 class AlbumModel {
-  final int id;
+  final String id;
   final String title;
   final String imageUrl;
   final String artist;
@@ -11,12 +11,16 @@ class AlbumModel {
     required this.artist,
   });
 
-  factory AlbumModel.fromJson(Map<String, dynamic> json) {
+  factory AlbumModel.fromSpotifyJson(Map<String, dynamic> json) {
     return AlbumModel(
-      id: json['id'],
-      title: json['title'],
-      imageUrl: json['cover_medium'],
-      artist: json['artist']['name'],
+      id: json['id'] ?? '',
+      title: json['name'] ?? '',
+      imageUrl: (json['images'] != null && json['images'].isNotEmpty)
+          ? json['images'][0]['url'] ?? ''
+          : '',
+      artist: (json['artists'] != null && json['artists'].isNotEmpty)
+          ? json['artists'][0]['name'] ?? ''
+          : '',
     );
   }
 }
