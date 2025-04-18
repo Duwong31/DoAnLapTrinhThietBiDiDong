@@ -14,5 +14,4 @@ import '../controllers/profile_controller.dart';
 
 part 'address_item.dart';
 part 'box_container.dart';
-part 'edit_profile.dart';
 part '../../../widgets/profile_avatar.dart';

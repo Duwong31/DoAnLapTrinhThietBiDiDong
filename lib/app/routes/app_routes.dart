@@ -26,9 +26,14 @@ abstract class Routes {
   static const albumnow = _Paths.albumnow;
   static const playlist = _Paths.playlist;
   static const playlistnow = _Paths.playlistnow;
+  static const editProfile = _Paths.editProfile;
+  static const addToPlaylist = _Paths.addToPlaylist;
+  static const premium = _Paths.premium;
+  static var songs = _Paths.songs;
   static var songs_view = _Paths.songs_view;
   static const all_song_view = _Paths.all_song_view;
   static const artist = _Paths.artist;
+  static const createNewPlaylist = _Paths.createNewPlaylist;
 }
 
 abstract class _Paths {
@@ -54,8 +59,12 @@ abstract class _Paths {
   static const albumnow = '/albumnow';
   static const playlist = '/playlist';
   static const playlistnow = '/playlistnow';
+  static const songs = '/songs';
+  static const premium = '/premium';
+  static const editProfile = '/editProfile';
   static const all_song_view = '/all_song_view';
   static const songs_view = '/songs_view';
   static const artist = '/artist';
-
+  static const addToPlaylist = '/add-to-playlist';
+  static const createNewPlaylist = '/create-new-playlist';
 }

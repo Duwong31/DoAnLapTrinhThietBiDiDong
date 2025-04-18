@@ -27,7 +27,7 @@ class AppImage {
   static const String worker = 'assets/images/worker.png';
   static const String joinStore = 'assets/images/join_store.png';
   static const String calendar = 'assets/images/calendar.png';
-  static const String camera = 'assets/images/camera on.png';
+  static const String camera = 'assets/images/camera_on.png';
   static const String menu = 'assets/images/menu.png';
   static const String map = 'assets/images/map.png';
   static const String empty = 'assets/images/empty.png';
@@ -61,4 +61,7 @@ class AppImage {
       'assets/images/primary_background.png';
   static const String otpPhone = 'assets/images/otp_phone.png';
   static const String resetPassword = 'assets/images/reset_password.png';
+  static const String upload = 'assets/images/upload.png';
+  static const String more = 'assets/images/more.png';
+  static const String testImage = 'assets/images/lovelydog.jpg';
 }

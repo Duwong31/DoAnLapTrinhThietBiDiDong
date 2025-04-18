@@ -7,7 +7,7 @@ import '../../../data/services/firebase_analytics_service.dart';
 import '../../../widgets/widgets.dart';
 import '../../home/views/home_view.dart';
 import '../../library/views/library_view.dart';
-import '../../profile/views/profile_view.dart';
+import '../../premium/views/premium_view.dart';
 import '../../search/views/search_view.dart';
 import '../controllers/dashboard_controller.dart';
 
@@ -22,7 +22,7 @@ class DashboardView extends GetView<DashboardController> {
       appBar: AppBar(
           elevation: .1,
           centerTitle: true,
-          backgroundColor: AppTheme.appBar,
+          backgroundColor: Colors.white,
           leading: IconButton(
             icon: const UserAvatar(),
             onPressed: () {
@@ -32,15 +32,30 @@ class DashboardView extends GetView<DashboardController> {
               );
             },
           ),
-          title: Obx(() {
-            String title =
-                'Welcome, ${controller.profile.user.value?.fullName}!';
-            return (controller.currentIndex.value == 0
-                ? title
-                : controller.titleAppBar)
-                .text
-                .make();
-          })),
+          actions: [
+            Obx(() {
+              // Chỉ hiện nút dấu cộng nếu đang ở tab Library (index = 2)
+              if (controller.currentIndex.value == 2) {
+                return IconButton(
+                  icon: const Icon(Icons.add,size: 32, color: AppTheme.primary),
+                  onPressed: () {
+                    controller.showCreatePlaylistDialog();
+                  },
+                );
+              }
+              return const SizedBox.shrink(); // không hiển thị gì nếu không phải tab Library
+            }),
+          ],
+          // title: Obx(() {
+          //   String title =
+          //       'Welcome, ${controller.profile.user.value?.fullName}!';
+          //   return (controller.currentIndex.value == 0
+          //           ? title
+          //           : controller.titleAppBar)
+          //       .text
+          //       .make();
+          // })
+          ),
       drawer: DrawerView(drawerKey: controller.drawerKey),
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),
@@ -51,7 +66,7 @@ class DashboardView extends GetView<DashboardController> {
           LibraryView(),
           // MessagesView(),
           // NotificationsView(),
-          ProfileView(),
+          PremiumView(),
         ],
       ),
       bottomNavigationBar: const _BottomNavigator(),

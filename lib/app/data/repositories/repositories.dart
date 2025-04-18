@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import '../models/dashboard_model.dart';
 import '../models/models.dart';
+import '../models/playlist.dart';
 import '../providers/providers.dart';
 
 part 'auth_repository.dart';

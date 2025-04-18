@@ -44,6 +44,7 @@ class ApiUrl {
   //User
   static detailUser() => '$receipt/';
   static const String userRecipient = '$receipt/auth/me';
+  static const String updateUserProfile = '$receipt/user/profile';
   static const String verifyInformation = '$receipt/kyc/submit';
   static const String uploadFile = '$receipt/media/store';
   static const String userBookingHistory= '$receipt/user/booking-history';
@@ -92,4 +93,8 @@ class ApiUrl {
   static deleteRecipient(id) => '$receipt/recipients/$id';
   static const String restoreRecipient = '$receipt/recipients/restore';
   static const String getDashboard = '$receipt/home';
+
+  //Playlist
+  static const String createPlaylist = '$receipt/playlists';
+  static const String getPlaylists = '$receipt/playlists';
 }

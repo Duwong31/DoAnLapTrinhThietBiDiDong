@@ -26,20 +26,14 @@ class ProfileController extends GetxController with ScrollMixin {
       // user.value = null;
     }
   }
-  void changeAvatar() {
-    FirebaseAnalyticService.logEvent('Profile_Edit_Avatar');
-    AppUtils.pickerImage(onTap: (bytes) async {
-      try {} catch (e) {
-        AppUtils.toast(e.toString());
-      }
-    });
-  }
+  
 
   Future<ProfileController> getUserDetail({bool isLogin = false}) async {
     try {
     debugPrint(">>> [ProfileController] Bắt đầu gọi Repo.user.getDetail()");
     user.value = await Repo.user.getDetail();
-    // debugPrint(">>> [ProfileController] Gọi Repo.user.getDetail() thành công. User: ${user.value?.toJson()}"); 
+    debugPrint(">>> AFTER getUserDetail - User ID: ${user.value?.id}, Avatar URL: ${user.value?.avatar}, Avatar ID: ${user.value?.avatarId}");
+    
 
     if (isLogin) {
       FirebaseAnalyticService.logEvent('Login');
@@ -47,11 +41,6 @@ class ProfileController extends GetxController with ScrollMixin {
     } catch (e, stack) { // Thêm stack trace để debug dễ hơn
       debugPrint(">>> [ProfileController] LỖI trong getUserDetail: $e\nStack: $stack");
       FirebaseCrashlytics.instance.recordError(e, stack, reason: 'Failed in getUserDetail');
-
-      // --- THAY ĐỔI QUAN TRỌNG ---
-      // KHÔNG XÓA PREFERENCES Ở ĐÂY
-      // Preferences.clear(); // <<--- XÓA HOẶC COMMENT DÒNG NÀY
-
       // Chỉ hiển thị thông báo lỗi
       AppUtils.toast("Không thể tải thông tin người dùng: ${e.toString()}");
 
@@ -81,10 +70,9 @@ class ProfileController extends GetxController with ScrollMixin {
   }
 
     Future<void> logout() async {
-    Get.dialog(Center(child: CircularProgressIndicator()), barrierDismissible: false); // Show loading indicator
+    Get.dialog(Center(child: CircularProgressIndicator()), barrierDismissible: false); 
 
     final token = Preferences.getString(StringUtils.token);
-    // Không cần kiểm tra token ở đây nữa vì nếu vào được profile thì thường là có token
 
     try {
       // Gọi API logout (nếu có và cần thiết)
@@ -92,7 +80,7 @@ class ProfileController extends GetxController with ScrollMixin {
          debugPrint(">>> [ProfileController.logout] Gọi API logout...");
          var dio = Dio();
          await dio.post(
-           'https://soundflow.click/api/auth/logout', // Thay bằng URL đúng
+           'https://soundflow.click/api/auth/logout', 
            options: Options(headers: {'Authorization': 'Bearer $token'}),
          ).timeout(Duration(seconds: 10)); // Thêm timeout
           debugPrint(">>> [ProfileController.logout] Gọi API logout thành công (hoặc không quan trọng kết quả).");
@@ -102,9 +90,9 @@ class ProfileController extends GetxController with ScrollMixin {
 
     } catch (e) {
        debugPrint(">>> [ProfileController.logout] Lỗi khi gọi API logout (không nghiêm trọng, tiếp tục xóa local): $e");
-       // Không cần dừng lại nếu API lỗi, cứ tiếp tục xóa local data
+
     } finally {
-       // Luôn xóa dữ liệu local quan trọng
+
        debugPrint(">>> [ProfileController.logout] Bắt đầu xóa dữ liệu local...");
        await GetStorage().erase();
        await Preferences.remove(StringUtils.token);
@@ -149,6 +137,16 @@ class ProfileController extends GetxController with ScrollMixin {
         arguments: {}, binding: DeleteAccountBinding());
   }
 
+  void goToEditProfileView(){
+    if (user.value != null) {
+      Get.toNamed(
+        Routes.editProfile,
+        arguments: user.value, // Truyền UserModel làm arguments
+      );
+    } else {
+      Get.snackbar('Thông báo', 'Đang tải dữ liệu người dùng, vui lòng thử lại sau.');
+    }
+  }
   @override
   Future<void> onEndScroll() async {}
 
