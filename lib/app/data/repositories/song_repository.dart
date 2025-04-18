@@ -6,7 +6,7 @@ abstract interface class Repository {
 }
 
 class DefaultRepository implements Repository {
-  final _localDataSource = LocalDataSource();
+  // final _localDataSource = LocalDataSource();
   final _remoteDataSource = RemoteDataSource();
 
   @override

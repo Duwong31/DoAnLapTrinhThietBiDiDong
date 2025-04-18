@@ -45,5 +45,41 @@ class LocalDataSource implements DataSource{
   }
 }
 
+
+// class RemoteDataSource implements DataSource {
+//   @override
+//   Future<List<Song>?> loadData({required int page, required int perPage}) async {
+//     const url = 'https://68013ea281c7e9fbcc41ff1b.mockapi.io/api/songs';
+//     final uri = Uri.parse(url);
+//
+//     final response = await http.get(uri);
+//
+//     if (response.statusCode == 200) {
+//       final bodyContent = utf8.decode(response.bodyBytes);
+//
+//       final jsonList = jsonDecode(bodyContent) as List;
+//
+//       final allSongs = <Song>[];
+//
+//       for (final item in jsonList) {
+//         if (item['songs'] != null) {
+//           final songList = item['songs'] as List;
+//           allSongs.addAll(songList.map((song) => Song.fromJson(song)).toList());
+//         }
+//       }
+//
+//       final start = (page - 1) * perPage;
+//       final end = start + perPage;
+//
+//       if (start >= allSongs.length) return [];
+//
+//       return allSongs.sublist(start, end > allSongs.length ? allSongs.length : end);
+//     } else {
+//       return null;
+//     }
+//   }
+// }
+
+
 // phân trang (pagination) => (page và perPage) – thường dùng khi bạn có nhiều dữ liệu (ví dụ: danh sách bài hát, bài viết, sản phẩm,...)
 // không muốn tải hết tất cả dữ liệu

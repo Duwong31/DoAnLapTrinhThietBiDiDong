@@ -5,6 +5,7 @@ import '../../../../models/duration_state.dart';
 import '../../../../models/song.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
+import '../bindings/audio_service.dart';
 import '../controllers/songs_controller.dart';
 
 class NowPlaying extends StatelessWidget {
@@ -17,7 +18,6 @@ class NowPlaying extends StatelessWidget {
     required this.songs,
   });
 
-  //
   factory NowPlaying.fromRoute() {
     final arguments = Get.arguments as Map<String, dynamic>? ?? {};
 
@@ -60,11 +60,12 @@ class NowPlayingPage extends StatefulWidget {
 }
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
-  final NowPlayingController _controller = Get.find();
+  late NowPlayingController _controller = Get.find();
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.initAudioPlayer().then((_) {
         _controller.playRotationAnim();
@@ -94,19 +95,14 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                       leading: Icon(Icons.download),
                       title: Text("Download"),
                     ),
-                    onTap: () {},
+                    onTap: () {
+
+                    },
                   ),
                   PopupMenuItem(
                     child: const ListTile(
                       leading: Icon(Icons.playlist_add),
                       title: Text("Add to playlist"),
-                    ),
-                    onTap: () {},
-                  ),
-                  PopupMenuItem(
-                    child: const ListTile(
-                      leading: Icon(Icons.comment),
-                      title: Text("Comment"),
                     ),
                     onTap: () {},
                   ),
@@ -156,6 +152,8 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         decoration: BoxDecoration(
           gradient: Themes(),
         ),
+
+        // Đĩa hình tròn cho nền
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
@@ -165,28 +163,35 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    RotationTransition(
-                      turns: controller.imageAnimController.drive(
-                        Tween(begin: 0.0, end: 1.0),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(radius),
-                        child: FadeInImage(
-                          placeholder: const AssetImage("assets/image/img.png"),
-                          image: controller.song.image.startsWith('http')
-                              ? NetworkImage(controller.song.image)
-                              : const AssetImage("assets/image/img.png") as ImageProvider,
-                          width: screenWidth - delta,
-                          height: screenWidth - delta,
-                          fit: BoxFit.cover,
-                          imageErrorBuilder: (context, error, stackTrace) => Image.asset(
-                            "assets/image/img.png",
-                            width: screenWidth - delta,
-                            height: screenWidth - delta,
-                            fit: BoxFit.cover,
+                    StreamBuilder<Song>(            // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
+                      stream: controller.currentSongStream,
+                      initialData: controller.song,
+                      builder: (context, snapshot) {
+                        final song = snapshot.data!;
+                        return RotationTransition(
+                          turns: controller.imageAnimController.drive(
+                            Tween(begin: 0.0, end: 1.0),
                           ),
-                        ),
-                      ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(radius),
+                            child: FadeInImage(
+                              placeholder: const AssetImage("assets/image/img.png"),
+                              image: song.image.startsWith('http')
+                                  ? NetworkImage(song.image)
+                                  : const AssetImage("assets/image/img.png") as ImageProvider,
+                              width: screenWidth - delta,
+                              height: screenWidth - delta,
+                              fit: BoxFit.cover,
+                              imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+                                "assets/image/img.png",
+                                width: screenWidth - delta,
+                                height: screenWidth - delta,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                     const SizedBox(height: 40),
                     Padding(
@@ -204,33 +209,41 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                children: <Widget>[
-                                  Text(
-                                    controller.song.title,
-                                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                      color: Theme.of(context).textTheme.bodyMedium!.color,
-                                      fontFamily: 'Roboto',
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Center(
-                                    child: Text(
-                                      controller.song.artist,
-                                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                        color: Theme.of(context).textTheme.bodyMedium!.color,
-                                        fontFamily: 'Roboto',
+                            StreamBuilder<Song>(
+                              stream: _controller.currentSongStream,
+                              initialData: _controller.song,
+                              builder: (context, snapshot) {
+                                final song = snapshot.data!;
+                                return Expanded(
+                                  child: Column(
+                                    children: <Widget>[
+                                      Text(
+                                        song.title,
+                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                          color: Theme.of(context).textTheme.bodyMedium!.color,
+                                          fontFamily: 'Roboto',
+                                        ),
+                                        maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                       ),
-                                      maxLines: 1,
-                                    ),
+                                      const SizedBox(height: 5),
+                                      Center(
+                                        child: Text(
+                                          song.artist,
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                                            fontFamily: 'Roboto',
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          maxLines: 1,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             ),
+
                             const SizedBox(width: 10),
                             IconButton(
                               onPressed: () {},
@@ -246,7 +259,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 30, left: 30, right: 30, bottom: 20),
-                      child: StreamBuilder<DurationState>(
+                      child: StreamBuilder<DurationState>(                // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
                         stream: Stream.periodic(const Duration(milliseconds: 100), (_) => DurationState(
                           progress: controller.player.position,
                           buffered: controller.player.bufferedPosition,
@@ -348,7 +361,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                     iconSize: 48,
                                   );
                                 }
-
                                 return IconButton(
                                   icon: Icon(
                                     playing ? Icons.pause : Icons.play_arrow_sharp,
@@ -367,6 +379,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 );
                               },
                             ),
+
                             IconButton(
                               icon: const Icon(
                                 Icons.skip_next_outlined,
