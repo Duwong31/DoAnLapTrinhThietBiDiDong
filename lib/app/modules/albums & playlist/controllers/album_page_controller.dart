@@ -1,10 +1,7 @@
 import 'dart:convert';
-
-import 'package:extended_image/extended_image.dart' as http;
 import 'package:get/get.dart';
-
+import 'package:http/http.dart' as http;
 import '../../../../models/album.dart';
-import '../../../../models/song.dart';
 
 class AlbumController extends GetxController {
   var playlists = <AlbumModel>[].obs;
@@ -12,53 +9,47 @@ class AlbumController extends GetxController {
 
   @override
   void onInit() {
-    fetchAlbums();
     super.onInit();
+    fetchAlbums();
   }
 
   void fetchAlbums() async {
     try {
       isLoading(true);
-      final res = await http.get(Uri.parse('https://api.deezer.com/chart/0/albums'));
+
+      final albumIds = [
+        '62Xr5p6185023RWu1KzhcP',
+        '3IBcauSj5M2A6lTeffJzdv',
+        '2XGEyGU76kj55OdHWynX0S',
+        '3OxfaVgvTxUTy7276t7SPU',
+        '1OARrXe5sB0gyy3MhQ8h92',
+        '7tzVd1fwkxsorytCBjEJkU',
+        '3p4vOm7XU41jAEMtDZHiJT',
+        '0P3oVJBFOv3TDXlYRhGL7s',
+        '3iv1Dt4wzwNecgtK5rc0n1',
+        '7zCODUHkfuRxsUjtuzNqbd',
+        '2nLOHgzXzwFEpl62zAgCEC',
+      ];
+
+      final idsString = albumIds.join(',');
+
+      final res = await http.get(
+        Uri.parse('https://spotify23.p.rapidapi.com/albums/?ids=$idsString'),
+        headers: {
+          'X-RapidAPI-Key': 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7',
+          'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
+        },
+      );
+
       if (res.statusCode == 200) {
-        final jsonData = json.decode(res.body);
-        final List albums = jsonData['data'];
-        playlists.value = albums.map((e) => AlbumModel.fromJson(e)).toList();
+        final data = json.decode(res.body)['albums'] as List;
+        playlists.value =
+            data.map((e) => AlbumModel.fromSpotifyJson(e)).toList();
+      } else {
+        print("Failed to fetch albums: ${res.statusCode}");
       }
     } catch (e) {
       print("Error fetching albums: $e");
-    } finally {
-      isLoading(false);
-    }
-  }
-}
-
-class AlbumNowController extends GetxController {
-  var album = {}.obs;
-  var songs = <SongModel>[].obs;
-  var isLoading = true.obs;
-
-  @override
-  void onInit() {
-    fetchAlbum();
-    super.onInit();
-  }
-
-  void fetchAlbum() async {
-    try {
-      isLoading(true);
-      final response = await http.get(Uri.parse('https://api.deezer.com/album/302127'));
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(utf8.decode(response.bodyBytes));
-        album.value = jsonData;
-
-        final trackList = jsonData['tracks']['data'] as List<dynamic>;
-        songs.value = trackList.map((e) => SongModel.fromJson(e)).toList();
-      } else {
-        print('Failed to load album');
-      }
-    } catch (e) {
-      print('Error: $e');
     } finally {
       isLoading(false);
     }
