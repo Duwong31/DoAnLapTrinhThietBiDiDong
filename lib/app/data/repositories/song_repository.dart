@@ -14,15 +14,15 @@ class DefaultRepository implements Repository {
     List<Song> songs = [];
 
     final remoteSongs = await _remoteDataSource.loadData(page: page, perPage: perPage);
-    final localSongs = await _localDataSource.loadData(page: page, perPage: perPage);
+    // final localSongs = await _localDataSource.loadData(page: page, perPage: perPage);
 
     if (remoteSongs != null) {
       songs.addAll(remoteSongs);
     }
 
-    if (localSongs != null) {
-      songs.addAll(localSongs);
-    }
+    // if (localSongs != null) {
+    //   songs.addAll(localSongs);
+    // }
 
     return songs;
   }
