@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
+import '../../../routes/app_pages.dart';
 import '../bindings/audio_service.dart';
 import '../bindings/songs_binding.dart';
 import 'songs_view.dart';
@@ -23,141 +24,24 @@ class MiniPlayer extends StatefulWidget {
   State<MiniPlayer> createState() => _MiniPlayerState();
 }
 
-class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateMixin {
-  late final AudioPlayer _player;
-  late int _selectedItemIndex;
-  late Song _song;
-  late AnimationController _imageAnimController;
-  double _currentAnimationPosition = 0.0;
-  bool _isShuffle = false;
-  late LoopMode _loopMode;
+class _MiniPlayerState extends State<MiniPlayer> {
+  late final AudioService _audioService;
 
   @override
   void initState() {
     super.initState();
-    _player = Get.find<AudioPlayer>();
-    _song = widget.song;
-    _selectedItemIndex = widget.songs.indexWhere((s) => s.id == _song.id);
-    _loopMode = _player.loopMode;
-    _isShuffle = _player.shuffleModeEnabled;
-
-    _imageAnimController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 0),
-    );
-
-    // đồng bộ phát âm thanh giữa audioService và _player
-    final audioService = AudioService();
-    if (audioService.currentPosition != null) {
-      _player.seek(audioService.currentPosition!);
-    }
-
-    _setupPlayerListeners();
+    _audioService = AudioService();
   }
 
-  void _setupPlayerListeners() {
-    _player.playerStateStream.listen((state) {
-      if (state.playing) {
-        _playRotationAnim();
-      } else {
-        _pauseRotationAnim();
-      }
-
-      if (state.processingState == ProcessingState.completed) {
-        _setNextSong();
-      }
-    });
-  }
-
+  // hàm chuyển sang trang songs_view
   Future<void> _navigateToNowPlaying() async {
-    final returnedSong = await Get.to<Song>(
-          () => NowPlaying(playingSong: _song, songs: widget.songs),
-      binding: NowPlayingBinding(),
+    await Get.toNamed(
+      Routes.songs_view,
       arguments: {
         'songs': widget.songs,
-        'currentSong': _song,
+        'playingSong': widget.song,
       },
     );
-
-    if (returnedSong != null) {
-      setState(() {
-        _song = returnedSong;
-        _selectedItemIndex = widget.songs.indexWhere((s) => s.id == _song.id);
-      });
-    }
-  }
-
-  void _setNextSong() {
-    if (_isShuffle) {
-      _selectedItemIndex = _getRandomIndex(widget.songs.length);
-    } else {
-      _selectedItemIndex = (_selectedItemIndex + 1) % widget.songs.length;
-    }
-
-    _updateCurrentSong(widget.songs[_selectedItemIndex]);
-  }
-
-  void _setPreviousSong() {
-    if (_isShuffle) {
-      _selectedItemIndex = _getRandomIndex(widget.songs.length);
-    } else {
-      _selectedItemIndex = (_selectedItemIndex - 1) % widget.songs.length;
-      if (_selectedItemIndex < 0) _selectedItemIndex = widget.songs.length - 1;
-    }
-
-    _updateCurrentSong(widget.songs[_selectedItemIndex]);
-  }
-
-  int _getRandomIndex(int length) {
-    if (length <= 1) return 0;
-    int newIndex;
-    do {
-      newIndex = Random().nextInt(length);
-    } while (newIndex == _selectedItemIndex);
-    return newIndex;
-  }
-
-  void _updateCurrentSong(Song newSong) async {
-    try {
-      await _player.setUrl(newSong.source);
-      setState(() {
-        _song = newSong;
-      });
-      Get.find<AudioService>().currentSong = newSong;
-      _resetRotationAnim();
-      await _player.play();
-    } catch (e) {
-      print('Error updating song: $e');
-    }
-  }
-
-  void _togglePlayPause() async {
-    if (_player.playing) {
-      await _player.pause();
-    } else {
-      await _player.play();
-    }
-  }
-
-  void _playRotationAnim() {
-    _imageAnimController.forward(from: _currentAnimationPosition);
-    _imageAnimController.repeat();
-  }
-
-  void _pauseRotationAnim() {
-    _imageAnimController.stop();
-    _currentAnimationPosition = _imageAnimController.value;
-  }
-
-  void _resetRotationAnim() {
-    _currentAnimationPosition = 0.0;
-    _imageAnimController.value = _currentAnimationPosition;
-  }
-
-  @override
-  void dispose() {
-    _imageAnimController.dispose();
-    super.dispose();
   }
 
   @override
@@ -185,21 +69,29 @@ class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateM
         ),
         child: Row(
           children: [
-            RotationTransition(
-              turns: _imageAnimController,
-              child: Container(
-                width: isSmallScreen ? 20 : 35,
-                height: isSmallScreen ? 20 : 35,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  image: DecorationImage(
-                    image: _song.image.startsWith('http')
-                        ? NetworkImage(_song.image) as ImageProvider
-                        : const AssetImage("assets/image/img.png"),
-                    fit: BoxFit.cover,
+            StreamBuilder<bool>(
+              stream: _audioService.playerStateStream.map((state) => state.playing),
+              builder: (context, snapshot) {
+                final isPlaying = snapshot.data ?? false;
+                return RotationTransition(
+                  turns: isPlaying
+                      ? AlwaysStoppedAnimation(0)
+                      : AlwaysStoppedAnimation(0), // Bạn có thể thêm animation nếu cần
+                  child: Container(
+                    width: isSmallScreen ? 20 : 35,
+                    height: isSmallScreen ? 20 : 35,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                        image: widget.song.image.startsWith('http')
+                            ? NetworkImage(widget.song.image) as ImageProvider
+                            : const AssetImage("assets/image/img.png"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
             SizedBox(width: isSmallScreen ? 8 : 12),
             Expanded(
@@ -208,7 +100,7 @@ class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateM
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _song.title,
+                    widget.song.title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: isSmallScreen ? 10 : 13,
@@ -217,7 +109,7 @@ class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateM
                     overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    _song.artist,
+                    widget.song.artist,
                     style: TextStyle(
                       color: Colors.grey[700],
                       fontSize: isSmallScreen ? 8 : 10,
@@ -229,25 +121,25 @@ class _MiniPlayerState extends State<MiniPlayer> with SingleTickerProviderStateM
               ),
             ),
             IconButton(
-              onPressed: _setPreviousSong,
+              onPressed: () => _audioService.playPreviousSong(),
               icon: const Icon(Icons.skip_previous_outlined),
               iconSize: 30,
             ),
-            StreamBuilder<PlayerState>(
-              stream: _player.playerStateStream,
+            StreamBuilder<bool>(
+              stream: _audioService.playerStateStream.map((state) => state.playing),
               builder: (context, snapshot) {
-                final playing = snapshot.data?.playing ?? false;
+                final isPlaying = snapshot.data ?? false;
                 return IconButton(
                   icon: Icon(
-                    playing ? Icons.pause : Icons.play_arrow,
+                    isPlaying ? Icons.pause : Icons.play_arrow,     // Nếu đang phát nhạc (isPlaying == true) → hiển thị nút pause (Icons.pause) và ngược lại
                     size: 33,
                   ),
-                  onPressed: _togglePlayPause,
+                  onPressed: () => _audioService.togglePlayPause(),
                 );
               },
             ),
             IconButton(
-              onPressed: _setNextSong,
+              onPressed: () => _audioService.playNextSong(),
               icon: const Icon(Icons.skip_next_outlined),
               iconSize: 30,
             ),
