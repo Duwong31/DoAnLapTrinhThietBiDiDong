@@ -13,7 +13,7 @@ import 'app/data/providers/notification_provider.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
-import 'app/widgets/messages.dart'; // ✅ thêm dòng này
+import 'app/widgets/messages.dart';
 import 'root.dart';
 
 Future<void> initServices() async {

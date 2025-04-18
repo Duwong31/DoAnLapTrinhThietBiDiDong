@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../ songs/view/songs_view.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
@@ -175,6 +173,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             SectionHeader(
               title: "we_think_you_like".tr,
               textColor: textColor,
+              routeName: Routes.all_song_view,
             ),
             SizedBox(
               height: 225,
@@ -184,6 +183,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             SectionHeader(
               title: "music_genre".tr,
               textColor: textColor,
+              routeName: Routes.albumnow,
             ),
             SizedBox(
               height: 122,
@@ -207,6 +207,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             SectionHeader(
               title: "artists".tr,
               textColor: textColor,
+              routeName: Routes.artist,
             ),
             SizedBox(
               height: 122,
@@ -230,6 +231,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             SectionHeader(
               title: "you_might_want_to_hear".tr,
               textColor: textColor,
+              routeName: Routes.albumnow,
             ),
             SizedBox(
               height: 122,
@@ -247,6 +249,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             SectionHeader(
               title: "chill".tr,
               textColor: textColor,
+              routeName: Routes.playlistnow,
             ),
             SizedBox(
               height: 122,
@@ -275,10 +278,12 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
 class SectionHeader extends StatelessWidget {
   final String title;
   final Color? textColor;
+  final String routeName;
 
   const SectionHeader({
     super.key,
     required this.title,
+    required this.routeName,
     this.textColor,
   });
 
@@ -300,7 +305,7 @@ class SectionHeader extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              Get.toNamed(Routes.all_song_view);
+              Get.toNamed(routeName);
             },
             child: Center(
               child: Text(

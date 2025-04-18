@@ -142,7 +142,7 @@ class SearchView extends GetView<SearchPageController> {
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.music_note),
+                // errorBuilder: (context, error, stackTrace) => Icon(Icons.music_note),jj
               ),
             ),
             title: Text(song.title),
