@@ -97,4 +97,6 @@ class ApiUrl {
   //Playlist
   static const String createPlaylist = '$receipt/playlists';
   static const String getPlaylists = '$receipt/playlists';
+  static String removeTrackFromPlaylist(int playlistId, String trackId) =>
+      '$receipt/playlists/$playlistId/tracks/$trackId';
 }

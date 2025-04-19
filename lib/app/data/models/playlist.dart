@@ -2,9 +2,9 @@
 import 'package:flutter/foundation.dart'; // Cho listEquals
 
 class Playlist {
-  final int id;         // ID của playlist (nên có từ API)
-  final String name;       // Tên playlist (thay vì title cho nhất quán với API)
-  final List<dynamic> trackIds; // Lưu danh sách track ID từ metadata
+  final int id;         
+  final String name;       
+  final List<dynamic> trackIds;
 
   Playlist({
     required this.id,

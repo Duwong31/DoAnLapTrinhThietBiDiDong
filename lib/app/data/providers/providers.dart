@@ -1,4 +1,4 @@
-library providers;
+// C:\work\SoundFlow\lib\app\data\providers\providers.dart
 
 import 'dart:io';
 import 'dart:typed_data';
@@ -22,7 +22,10 @@ import '../models/dashboard_model.dart';
 import '../models/models.dart';
 import '../models/review_listing_model.dart';
 import '../models/voucher_model/voucher.dart';
+// *** BỎ IMPORT providers.dart KHỎI CHÍNH NÓ ***
+// import 'providers.dart'; // <-- XÓA DÒNG NÀY
 
+// ... (BaseApiService giữ nguyên) ...
 abstract class BaseApiService {
   final Dio _dio;
   final GetStorage _storage = GetStorage();
@@ -129,7 +132,12 @@ abstract class BaseApiService {
   // Execute DELETE request with error handling
   Future<Response<T>> delete<T>(String endpoint,
       {dynamic data, Map<String, dynamic>? query, Options? options}) {
-    return handleApiError(() => dio.delete<T>(endpoint,
+    // *** Sửa lỗi ở đây: GỌI ĐÚNG HÀM DELETE CỦA BASEAPISERVICE ***
+     debugPrint("DELETE");
+     debugPrint(endpoint.toString());
+     debugPrint(data?.toString() ?? "No data");
+     debugPrint(query.toString());
+    return handleApiError(() => dio.delete<T>(endpoint, // <-- Gọi dio.delete
         data: data, queryParameters: query, options: options ?? getOptions()));
   }
 
@@ -141,9 +149,11 @@ abstract class BaseApiService {
   }
 }
 
+
 // UserApiService handles all user-related API operations
 class UserApiService extends BaseApiService {
-  Future<bool> sendOtp(String phone, String countryCode) async {
+  // ... (các hàm sendOtp, verify, register, login, getPlaylists, etc. giữ nguyên) ...
+    Future<bool> sendOtp(String phone, String countryCode) async {
     try {
       final res = await ApiClient.connect(
         ApiUrl.sendOtp,
@@ -599,8 +609,8 @@ class UserApiService extends BaseApiService {
       debugPrint(">>> [UserApiService.uploadFile] Uploading avatar...");
       final response = await post(ApiUrl.uploadFile,
           data: FormData.fromMap(
-              {'file': file, 
-              // "folder_id": folderId, 
+              {'file': file,
+              // "folder_id": folderId,
               "type": "image"
           }),
           options: Options(
@@ -755,14 +765,36 @@ class UserApiService extends BaseApiService {
     }
   });
 }
-}
 
-// Trong providers.dart, class UserApiService
+  // --- HÀM removeTrackFromPlaylist ĐÃ ĐƯỢC ĐẶT ĐÚNG CHỖ ---
+  Future<bool> removeTrackFromPlaylist(int playlistId, String trackId) async {
+    // Gọi hàm delete từ BaseApiService đã bao gồm handleApiError và auth headers
+    // Sử dụng this.delete hoặc delete đều được vì nó kế thừa từ BaseApiService
+    final response = await delete<dynamic>(
+      ApiUrl.removeTrackFromPlaylist(playlistId, trackId),
+      // options: getOptions() // Không cần thiết vì delete đã tự gọi getOptions
+    );
+
+    // Kiểm tra status code thành công (200 hoặc 204)
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      AppUtils.log('Successfully removed track $trackId from playlist $playlistId');
+      return true;
+    } else {
+      // Lỗi đã được handleApiError log, nhưng vẫn trả về false ở đây
+      AppUtils.log('Failed to remove track, status: ${response.statusCode}');
+      // Bạn có thể throw Exception ở đây nếu muốn Repository bắt lỗi cụ thể hơn
+      // throw Exception(response.data['message'] ?? 'Failed to remove track');
+      return false;
+    }
+    // handleApiError sẽ tự động xử lý DioException và lỗi 401
+  }
+}
 
 
 // NotificationApiService handles all notification-related API operations
 class NotificationApiService extends BaseApiService {
-  Future<List<NotificationModel>> getNotifications({Map<String, dynamic>? query}) async {
+    // ... (code của NotificationApiService giữ nguyên) ...
+    Future<List<NotificationModel>> getNotifications({Map<String, dynamic>? query}) async {
     return handleApiError(() async {
       final res = await get(ApiUrl.notifications, query: query);
       final data = res.data['data'] as List;
@@ -810,7 +842,8 @@ class NotificationApiService extends BaseApiService {
 
 // CarApiService handles all car-related API operations
 class CarApiService extends BaseApiService {
-  Future<List<CarModel>> getListCar({Map<String, dynamic>? params}) async {
+   // ... (code của CarApiService giữ nguyên) ...
+     Future<List<CarModel>> getListCar({Map<String, dynamic>? params}) async {
     return handleApiError(() async {
       // Log the API call for debugging
       AppUtils.log('Calling /api/cars with params: $params');
@@ -917,26 +950,19 @@ class CarApiService extends BaseApiService {
 
 // VoucherApiService handles all voucher-related API operations
 class VoucherApiService extends BaseApiService {
-  Future<VoucherResponse> getVoucher() async {
+    // ... (code của VoucherApiService giữ nguyên) ...
+    Future<VoucherResponse> getVoucher() async {
     return handleApiError(() async {
       final response = await get(ApiUrl.voucher);
       return VoucherResponse.fromJson(response.data);
     });
   }
 }
-// VoucherApiService handles all voucher-related API operations
-// class FeedbackApiService extends BaseApiService {
-//   Future<bool> sendFeedback(Map<String,dynamic> body) async {
-//     return handleApiError(() async {
-//       final response = await post(ApiUrl.addFeedback,data: body);
-//       return response.data['status']==1;
-//     });
-//   }
-// }
 
 // BookingApiService handles all booking-related API operations
 class BookingApiService extends BaseApiService {
-  Future<Map<String,dynamic>?> checkCarAvailability(Map<String, dynamic> body) async {
+   // ... (code của BookingApiService giữ nguyên) ...
+     Future<Map<String,dynamic>?> checkCarAvailability(Map<String, dynamic> body) async {
     return handleApiError(() async {
       final response = await post(
         ApiUrl.checkCarAvailability,
@@ -971,6 +997,7 @@ class BookingApiService extends BaseApiService {
 }
 
 class ApiProvider {
+  // ... (code của ApiProvider giữ nguyên) ...
   // Private constructor for singleton
   ApiProvider._internal();
 
@@ -1005,7 +1032,7 @@ class ApiProvider {
 
   static Future<UserModel?> updateUser(Map<String, dynamic> data) =>
       _userService.updateUser(data);
-      
+
    static Future<UserModel> updateUserProfile(Map<String, dynamic> data) =>
       _userService.updateUserProfile(data);
 
@@ -1168,5 +1195,8 @@ class ApiProvider {
     _userService.createPlaylist(name);
 
   static Future<Map<String, dynamic>> getPlaylists() => _userService.getPlaylists();
-}
 
+  // Đảm bảo dòng này gọi đúng hàm trong _userService
+  static Future<bool> removeTrackFromPlaylist(int playlistId, String trackId) =>
+      _userService.removeTrackFromPlaylist(playlistId, trackId);
+}

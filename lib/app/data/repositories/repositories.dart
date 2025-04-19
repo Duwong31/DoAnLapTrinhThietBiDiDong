@@ -8,6 +8,7 @@ import '../models/dashboard_model.dart';
 import '../models/models.dart';
 import '../models/playlist.dart';
 import '../providers/providers.dart';
+import 'song_repository.dart';
 
 part 'auth_repository.dart';
 part 'user_repository.dart';
@@ -38,6 +39,7 @@ class Repo {
   // static final _address = AddressRepository();
   // static final _booking = BookingRepository();
   // static final _feedback = FeedbackRepository();
+   static final _song = DefaultRepository();
 
   // Getters
   static AuthRepository get auth => _auth;
@@ -49,4 +51,5 @@ class Repo {
   // static AddressRepository get address => _address;
   // static BookingRepository get booking => _booking;
   // static FeedbackRepository get feedback => _feedback;
+  static DefaultRepository get song => _song;
 }
