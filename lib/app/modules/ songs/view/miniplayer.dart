@@ -75,8 +75,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 final isPlaying = snapshot.data ?? false;
                 return RotationTransition(
                   turns: isPlaying
-                      ? AlwaysStoppedAnimation(0)
-                      : AlwaysStoppedAnimation(0), // Bạn có thể thêm animation nếu cần
+                      ? const AlwaysStoppedAnimation(0)
+                      : const AlwaysStoppedAnimation(0), // Bạn có thể thêm animation nếu cần
                   child: Container(
                     width: isSmallScreen ? 20 : 35,
                     height: isSmallScreen ? 20 : 35,

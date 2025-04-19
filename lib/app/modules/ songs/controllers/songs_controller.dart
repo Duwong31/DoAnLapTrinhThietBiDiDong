@@ -66,7 +66,13 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
 
   Future<void> initAudioPlayer() async {
     try {
-      await _audioService.setPlaylist(songs, startIndex: songs.indexOf(currentSong));
+      final isSameSong = _audioService.currentSong?.id == currentSong.id;           // kiểm tra nếu bài hát hiện tại đã đúng rồi thì không cần set lại playlist
+      if (!isSameSong) {
+        await _audioService.setPlaylist(songs, startIndex: songs.indexOf(currentSong));
+      } else {
+        await _audioService.player.seek(_audioService.currentPosition ?? Duration.zero);
+      }
+
       await _audioService.player.play();
       _playRotationAnim();
       update();

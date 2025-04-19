@@ -97,6 +97,7 @@ class _AllSongsViewState extends State<AllSongsView> {
   // hàm sẽ chuyển qua màn NowPlaying
   Future<void> _navigateToNowPlaying(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+    await _audioService.player.play();
     _songs = allSongs;
     final returnedSong = await Get.toNamed(
       Routes.songs_view,
@@ -192,6 +193,7 @@ class _AllSongsViewState extends State<AllSongsView> {
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.only(bottom: 90),
+              itemExtent: 70, // Đặt chiều cao cố định cho mỗi item
               itemCount: _songs.length + 1,
               itemBuilder: (context, index) {
                 if (index < _songs.length) {
@@ -212,7 +214,7 @@ class _AllSongsViewState extends State<AllSongsView> {
                 right: 8,
                 bottom: 8,
                 child: MiniPlayer(
-                  key: ValueKey(current.id),
+                  key: ValueKey('${current.id}-${_audioService.player.playing}'),
                   song: current,
                   songs: _songs,
                   onTap: () async {
