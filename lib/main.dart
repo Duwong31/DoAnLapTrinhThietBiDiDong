@@ -25,7 +25,7 @@ Future<void> initServices() async {
   EncryptData.init();
   if (Preferences.isAuth()) {
     await Get.putAsync(
-          () => ProfileController().getUserDetail(),
+      () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }
@@ -58,7 +58,7 @@ void main() async {
 
   if (Preferences.isAuth()) {
     await Get.putAsync(
-          () => ProfileController().getUserDetail(),
+      () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }
