@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,41 +18,37 @@ class ProfileController extends GetxController with ScrollMixin {
   @override
   void onInit() {
     super.onInit();
-    // Khởi tạo mock data ở đây thay vì trong initState của View
-    _initializeMockData();
-    // Hoặc gọi hàm fetch dữ liệu thật nếu bạn muốn
-    // getUserDetail();
+    if (Preferences.isAuth()) {
+      debugPrint(">>> [ProfileController.onInit] User is authenticated, calling getUserDetail...");
+      getUserDetail();
+    } else {
+      debugPrint(">>> [ProfileController.onInit] User is not authenticated.");
+      // user.value = null;
+    }
   }
-   // Hàm helper để khởi tạo mock data (hoặc dữ liệu thật)
-  void _initializeMockData() {
-     user.value = UserModel(
-        fullName: "John Doe",
-        dateOfBirth: DateTime.parse("1990-01-01"),
-        email: "johndoe@example.com",
-        phone: "123456789",
-        gender: "Male");
-     // Có thể gọi update() nếu cần thiết, nhưng gán trực tiếp thường đủ
-     // update();
-  }
-  void changeAvatar() {
-    FirebaseAnalyticService.logEvent('Profile_Edit_Avatar');
-    AppUtils.pickerImage(onTap: (bytes) async {
-      try {} catch (e) {
-        AppUtils.toast(e.toString());
-      }
-    });
-  }
+  
 
   Future<ProfileController> getUserDetail({bool isLogin = false}) async {
     try {
-      user.value = await Repo.user.getDetail();
-      
-      if (isLogin) {
-        FirebaseAnalyticService.logEvent('Login');
-      }
-    } catch (e) {
-      Preferences.clear();
-      AppUtils.toast(e.toString());
+    debugPrint(">>> [ProfileController] Bắt đầu gọi Repo.user.getDetail()");
+    user.value = await Repo.user.getDetail();
+    debugPrint(">>> AFTER getUserDetail - User ID: ${user.value?.id}, Avatar URL: ${user.value?.avatar}, Avatar ID: ${user.value?.avatarId}");
+    
+
+    if (isLogin) {
+      FirebaseAnalyticService.logEvent('Login');
+    }
+    } catch (e, stack) { // Thêm stack trace để debug dễ hơn
+      debugPrint(">>> [ProfileController] LỖI trong getUserDetail: $e\nStack: $stack");
+      FirebaseCrashlytics.instance.recordError(e, stack, reason: 'Failed in getUserDetail');
+      // Chỉ hiển thị thông báo lỗi
+      AppUtils.toast("Không thể tải thông tin người dùng: ${e.toString()}");
+
+      // Cân nhắc: Nếu lỗi nghiêm trọng (vd: token hết hạn), có thể gọi hàm logout() ở đây
+      // if (e is DioError && e.response?.statusCode == 401) {
+      //    debugPrint(">>> [ProfileController] Lỗi 401, tiến hành đăng xuất...");
+      //    await logout();
+      // }
     }
     return this;
   }
@@ -72,61 +69,45 @@ class ProfileController extends GetxController with ScrollMixin {
     );
   }
 
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    final rememberMe = prefs.getBool('rememberMe') ?? false;
+    Future<void> logout() async {
+    Get.dialog(Center(child: CircularProgressIndicator()), barrierDismissible: false); 
+
     final token = Preferences.getString(StringUtils.token);
-    if (token == null || token.isEmpty) {
-      Get.snackbar("Lỗi", "Bạn chưa đăng nhập!");
-      return;
-    }
 
     try {
-      var dio = Dio();
-      var response = await dio.post(
-        'https://soundflow.click/api/auth/logout',
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
-      );
-  
-      if (response.statusCode == 200) {
-        // Clear session storage
-        await GetStorage().erase();
-
-        // Always remove the authentication tokens
-        await Preferences.remove(StringUtils.token);
-        await Preferences.remove(StringUtils.refreshToken);
-        await Preferences.remove(StringUtils.currentId);
-
-        if (!rememberMe) {
-          // If "Remember Me" is not enabled, clear all preferences
-          await Preferences.clear();
-        } else {
-          // If "Remember Me" is enabled, keep the remember me setting
-          // but remove other session data
-          await prefs.setBool('rememberMe', true);
-        }
-
-        Get.offAllNamed(Routes.login);
+      // Gọi API logout (nếu có và cần thiết)
+      if (token != null && token.isNotEmpty) {
+         debugPrint(">>> [ProfileController.logout] Gọi API logout...");
+         var dio = Dio();
+         await dio.post(
+           'https://soundflow.click/api/auth/logout', 
+           options: Options(headers: {'Authorization': 'Bearer $token'}),
+         ).timeout(Duration(seconds: 10)); // Thêm timeout
+          debugPrint(">>> [ProfileController.logout] Gọi API logout thành công (hoặc không quan trọng kết quả).");
+      } else {
+         debugPrint(">>> [ProfileController.logout] Không có token để gọi API logout.");
       }
+
     } catch (e) {
-      // On error, still attempt to clear local data
-      await GetStorage().erase();
+       debugPrint(">>> [ProfileController.logout] Lỗi khi gọi API logout (không nghiêm trọng, tiếp tục xóa local): $e");
 
-      // Always remove auth tokens even on error
-      await Preferences.remove(StringUtils.token);
-      await Preferences.remove(StringUtils.refreshToken);
-      await Preferences.remove(StringUtils.currentId);
+    } finally {
 
-      if (!rememberMe) {
-        await Preferences.clear();
-      }
+       debugPrint(">>> [ProfileController.logout] Bắt đầu xóa dữ liệu local...");
+       await GetStorage().erase();
+       await Preferences.remove(StringUtils.token);
+       await Preferences.remove(StringUtils.refreshToken);
+       await Preferences.remove(StringUtils.currentId);
+       await Preferences.remove(StringUtils.email); // Xóa cả email đã lưu nếu có
+       // Không cần clear() toàn bộ trừ khi đó là yêu cầu
+       // await Preferences.clear();
+       debugPrint(">>> [ProfileController.logout] Đã xóa dữ liệu local.");
 
-      Get.offAllNamed(Routes.login);
+       if (Get.isDialogOpen ?? false) {
+         Get.back(); // Close loading dialog
+       }
+       Get.offAllNamed(Routes.login); // Điều hướng về login
+       debugPrint(">>> [ProfileController.logout] Đã điều hướng về trang Login.");
     }
   }
 
@@ -156,6 +137,16 @@ class ProfileController extends GetxController with ScrollMixin {
         arguments: {}, binding: DeleteAccountBinding());
   }
 
+  void goToEditProfileView(){
+    if (user.value != null) {
+      Get.toNamed(
+        Routes.editProfile,
+        arguments: user.value, // Truyền UserModel làm arguments
+      );
+    } else {
+      Get.snackbar('Thông báo', 'Đang tải dữ liệu người dùng, vui lòng thử lại sau.');
+    }
+  }
   @override
   Future<void> onEndScroll() async {}
 

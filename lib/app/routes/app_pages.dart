@@ -2,9 +2,14 @@ import 'package:get/get.dart';
 import '../modules/ songs/bindings/songs_binding.dart';
 import '../modules/ songs/view/all_songs_view.dart';
 import '../modules/ songs/view/songs_view.dart';
+import '../modules/albums & playlist/addToPlaylist/bindings/add_to_playlist_binding.dart';
+import '../modules/albums & playlist/addToPlaylist/bindings/create_new_playlist_binding.dart';
+import '../modules/albums & playlist/addToPlaylist/views/create_new_playlist.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
+import '../modules/albums & playlist/addToPlaylist/views/add_to_playlist.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
+import '../modules/albums & playlist/views/playlist_detail_view.dart';
 import '../modules/albums & playlist/views/playlist_page_view.dart';
 import '../modules/change-password/bindings/change_password_binding.dart';
 import '../modules/change-password/views/change_password_view.dart';
@@ -19,7 +24,11 @@ import '../modules/library/views/library_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/notifications/views/notifications_view.dart';
+import '../modules/premium/views/premium_view.dart';
+import '../modules/profile/bindings/edit_profile_binding.dart';
+import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
+import '../modules/profile/views/edit_profile.dart';
 import '../modules/register/bindings/otp_binding.dart';
 import '../modules/register/bindings/register_binding.dart';
 import '../modules/register/views/otp_view.dart';
@@ -125,7 +134,7 @@ class AppPages {
         binding: AlbumBinding()),
     GetPage(
         name: _Paths.albumnow,
-        page: () => const AlbumNow(),
+        page: () => AlbumNow(),
         binding: AlbumBinding()),
     GetPage(
         name: _Paths.playlist,
@@ -142,6 +151,24 @@ class AppPages {
     GetPage(
         name: _Paths.songs_view,
         page: () => NowPlaying.fromRoute(),
-        binding: NowPlayingBinding())
+        binding: NowPlayingBinding()),
+    GetPage(
+      name: _Paths.editProfile,
+      page: () => EditProfilePage(),
+      binding: EditProfileBinding()),
+    GetPage(
+      name: _Paths.addToPlaylist,
+      page: () => const AddToPlaylistPage(),
+      binding: AddToPlaylistBinding()
+    ),
+    GetPage(
+      name: _Paths.premium,
+      page: () => const PremiumView(),
+    ),
+    GetPage(
+      name: _Paths.createNewPlaylist,
+      page: () => const CreateNewPlaylist(),
+      binding: CreateNewPlaylistBinding()
+    )
   ];
 }

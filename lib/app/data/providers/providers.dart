@@ -526,7 +526,20 @@ class UserApiService extends BaseApiService {
   Future<UserModel> getDetail() async {
     return handleApiError(() async {
       final response = await get(ApiUrl.userRecipient);
-      return UserModel.fromMap(response.data['data']);
+      debugPrint(">>> [UserApiService.getDetail] RAW API Response Data: ${response.data}");
+      try {
+        // Giả sử API trả về {'data': { ... user data ... }}
+        if (response.data != null && response.data['data'] is Map<String, dynamic>) {
+           return UserModel.fromMap(response.data['data'] as Map<String, dynamic>);
+        } else {
+           debugPrint(">>> [UserApiService.getDetail] LỖI: API response không chứa key 'data' hoặc 'data' không phải là Map.");
+           throw Exception("Invalid API response structure for user details.");
+        }
+      } catch (e, stack) {
+         debugPrint(">>> [UserApiService.getDetail] LỖI trong quá trình parsing UserModel.fromMap: $e\nStack: $stack");
+         // Ném lại lỗi để ProfileController có thể bắt và hiển thị thông báo (nhưng không clear Prefs)
+         rethrow;
+      }
     });
   }
 
@@ -538,6 +551,25 @@ class UserApiService extends BaseApiService {
         return UserModel.fromMap(response.data['data']);
       } else {
         throw Exception(response.data['message'] ?? 'Lỗi không xác định.');
+      }
+    });
+  }
+  Future<UserModel> updateUserProfile(Map<String, dynamic> updatedData) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.updateUserProfile} with data: $updatedData');
+
+      // Sử dụng phương thức post (hoặc put nếu bạn định nghĩa route là PUT)
+      final response = await post(ApiUrl.updateUserProfile, data: updatedData);
+
+      AppUtils.log('API Response from update profile: ${response.data}');
+
+      // Kiểm tra response thành công và có data user trả về
+      if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] is Map<String, dynamic>) {
+        // Giả sử API trả về thông tin user đã cập nhật trong key 'data'
+        return UserModel.fromMap(response.data['data']);
+      } else {
+        // Ném lỗi với message từ API nếu có, hoặc lỗi chung
+        throw Exception(response.data['message'] ?? 'Failed to update profile');
       }
     });
   }
@@ -560,18 +592,32 @@ class UserApiService extends BaseApiService {
     });
   }
 
-  Future<int?> uploadFile(File newFile,int folderId) async {
-    final file = MultipartFile.fromBytes(newFile.readAsBytesSync(), filename: '${DateTime.now().microsecondsSinceEpoch}${newFile.path.split("/").last.split(".").first}.png');
+  Future<int?> uploadFile(File newFile,{int? folderId}) async {
+    final fileName = newFile.path.split('/').last;
+    final file = await MultipartFile.fromFile(newFile.path, filename: fileName);
     return handleApiError(() async {
+      debugPrint(">>> [UserApiService.uploadFile] Uploading avatar...");
       final response = await post(ApiUrl.uploadFile,
           data: FormData.fromMap(
-              {'file': file, "folder_id": folderId, "type": "image"}));
+              {'file': file, 
+              // "folder_id": folderId, 
+              "type": "image"
+          }),
+          options: Options(
+            headers: getAuthHeaders()..addAll({'Content-Type': 'multipart/form-data'}),
+            validateStatus: (status) => status != null && status < 500,
+        )
+      );
+        debugPrint(">>> [UserApiService.uploadFile] Response: ${response.data}");
 
-      if (response.statusCode == 200) {
-        return response.data['data']['id'];
-      } else {
-        throw Exception(response.data['message'] ?? 'Lỗi không xác định.');
-      }
+        if (response.statusCode == 200 && response.data['uploaded'] == 1 && response.data['data']?['id'] != null) {
+           debugPrint(">>> [UserApiService.uploadFile] Upload success, file ID: ${response.data['data']['id']}");
+           return response.data['data']['id'] as int?;
+        } else {
+           String errorMsg = response.data['error']?['message'] ?? 'Failed to upload avatar.';
+           debugPrint(">>> [UserApiService.uploadFile] Upload failed: $errorMsg");
+           throw Exception(errorMsg);
+        }
     });
   }
 
@@ -665,7 +711,54 @@ class UserApiService extends BaseApiService {
       return response.data['status'] == 1;
     });
   }
+
+  Future<dynamic> createPlaylist(String name) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.createPlaylist} with data: {"name": "$name"}');
+
+      final response = await post(
+        ApiUrl.createPlaylist,
+        data: {'name': name}, // Gửi tên playlist trong body
+        // options: getOptions() // getOptions đã bao gồm header Authorization
+      );
+
+      AppUtils.log('API Response from create playlist: ${response.data}');
+
+      // Kiểm tra response thành công từ backend
+      // Backend của bạn đang trả về status=1 và data của playlist mới
+      if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] != null) {
+        // Có thể trả về dữ liệu playlist mới nếu cần
+        return response.data; // Hoặc response.data['data']
+      } else {
+        // Ném lỗi với message từ API hoặc lỗi chung
+        throw Exception(response.data['message'] ?? 'Failed to create playlist');
+      }
+    });
+  }
+
+  Future<Map<String, dynamic>> getPlaylists() async {
+  return handleApiError(() async {
+    AppUtils.log('API Request to ${ApiUrl.getPlaylists}');
+    // Gọi API GET, không cần data body
+    final response = await get(ApiUrl.getPlaylists /* options: getOptions() đã bao gồm */);
+    print("<<<--- API GetPlaylists Response ---");
+    print("Status Code: ${response.statusCode}");
+    print("Response Data: ${response.data}"); // In toàn bộ data
+    print("--- API GetPlaylists Response --->>>");
+
+    // Kiểm tra cấu trúc response chuẩn từ backend của bạn
+    if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] is List) {
+      // Trả về toàn bộ map để Repository xử lý parsing
+      return response.data;
+    } else {
+      throw Exception(response.data['message'] ?? 'Failed to fetch playlists');
+    }
+  });
 }
+}
+
+// Trong providers.dart, class UserApiService
+
 
 // NotificationApiService handles all notification-related API operations
 class NotificationApiService extends BaseApiService {
@@ -912,12 +1005,15 @@ class ApiProvider {
 
   static Future<UserModel?> updateUser(Map<String, dynamic> data) =>
       _userService.updateUser(data);
+      
+   static Future<UserModel> updateUserProfile(Map<String, dynamic> data) =>
+      _userService.updateUserProfile(data);
 
   static Future<bool> verifyInformation(Map<String, dynamic> data) =>
       _userService.verifyInformation(data);
 
-  static Future<int?> uploadFile(File file, int folderId) =>
-      _userService.uploadFile(file, folderId);
+  static Future<int?> uploadFile(File file, {int? folderId}) =>
+      _userService.uploadFile(file, folderId: folderId);
 
   static Future<UserModel> uploadAvatar(Uint8List bytes) =>
       _userService.uploadAvatar(bytes);
@@ -1067,5 +1163,10 @@ class ApiProvider {
 
   // static Future<bool> sendFeedback(Map<String, dynamic> body) =>
   //     _feedbackService.sendFeedback(body);
+
+  static Future<dynamic> createPlaylist(String name) =>
+    _userService.createPlaylist(name);
+
+  static Future<Map<String, dynamic>> getPlaylists() => _userService.getPlaylists();
 }
 

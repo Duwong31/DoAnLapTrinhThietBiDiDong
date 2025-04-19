@@ -1,5 +1,10 @@
 part of 'models.dart';
-
+int? _parseInt(dynamic value) {
+  if (value == null) return null;
+  if (value is int) return value;
+  if (value is String) return int.tryParse(value);
+  return null; // Return null for other types or parse failures
+}
 class UserModel {
   UserModel({
     this.id,
@@ -11,6 +16,7 @@ class UserModel {
     this.dateOfBirth,
     this.phone,
     this.avatar,
+    this.avatarId,
     this.insuranceCard,
     this.address = const [],
     this.defaultStore,
@@ -30,6 +36,7 @@ class UserModel {
   String? phone;
   String fullName;
   String? avatar;
+  int? avatarId;
   String? insuranceCard;
   List<Address> address;
   EmergencyContact? emergencyContact;
@@ -53,16 +60,17 @@ class UserModel {
   final UserStoreModel? userStoreModel;
 
   factory UserModel.fromMap(Map<dynamic, dynamic> json) => UserModel(
-        id: json["id"],
+        id: json["id"]?.toString(),
         email: json["email"],
         firstName: json["first_name"] ?? '',
         lastName: json["last_name"] ?? '',
         dateOfBirth: json['date_of_birth'] != null
             ? DateTime.parse(json['date_of_birth'])
             : null,
-        phone: json['phone_number'],
-        insuranceCard: json["insurance_card"],
-        avatar: json['avatar'],
+        phone: json['phone_number'].toString(),
+        insuranceCard: json["insurance_card"].toString(),
+        avatar: json['avatar_url'] as String?,
+        avatarId: _parseInt(json['avatar_id']),
         address: json['addresses'] == null
             ? []
             : (json['addresses'] as List)
@@ -93,6 +101,7 @@ class UserModel {
         "last_name": lastName,
         "date_of_birth": dateOfBirth?.toString(),
         "phone_number": phone,
+        "avatar_id": avatarId,
         'gender': gender?.toLowerCase(),
         "medical_record_number": medicalRecordNumber,
         "emergency_contact_attributes": emergencyContact?.toMap(),

@@ -8,6 +8,8 @@ class PlayListBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<PlayListController>(
           () => PlayListController(),
+          fenix: true,
     );
+    Get.lazyPut<PlayListController>(() => PlayListController());
   }
 }
