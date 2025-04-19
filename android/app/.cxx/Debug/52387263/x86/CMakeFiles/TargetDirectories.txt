@@ -1,2 +1,0 @@
-C:/work/SoundFlow/android/app/.cxx/Debug/52387263/x86/CMakeFiles/edit_cache.dir
-C:/work/SoundFlow/android/app/.cxx/Debug/52387263/x86/CMakeFiles/rebuild_cache.dir
