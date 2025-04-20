@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
@@ -17,7 +16,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final AudioService _audioService = AudioService();
-  late List<Song> _songs = [];
+  late final List<Song> _songs = [];
   Song? _currentlyPlaying;
 
   @override
