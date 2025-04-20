@@ -788,6 +788,26 @@ class UserApiService extends BaseApiService {
     }
     // handleApiError sẽ tự động xử lý DioException và lỗi 401
   }
+
+  Future<bool> deletePlaylist(int playlistId) async {
+    // Gọi hàm delete từ BaseApiService đã bao gồm handleApiError và auth headers
+    final response = await delete<dynamic>(
+      ApiUrl.deletePlaylist(playlistId),
+    );
+
+    // Kiểm tra status code thành công (200 hoặc 204 No Content là chuẩn)
+    if (response.statusCode == 200 || response.statusCode == 204) {
+      AppUtils.log('Successfully deleted playlist $playlistId');
+      return true; // Trả về true nếu thành công
+    } else {
+      // Lỗi đã được handleApiError log, nhưng vẫn trả về false ở đây
+      AppUtils.log('Failed to delete playlist $playlistId, status: ${response.statusCode}, message: ${response.data?['message']}');
+      // Bạn có thể throw Exception ở đây nếu muốn Repository bắt lỗi cụ thể hơn
+      // throw Exception(response.data?['message'] ?? 'Failed to delete playlist');
+      return false; // Trả về false nếu thất bại
+    }
+    // handleApiError sẽ tự động xử lý DioException và lỗi 401
+  }
 }
 
 
@@ -1199,4 +1219,7 @@ class ApiProvider {
   // Đảm bảo dòng này gọi đúng hàm trong _userService
   static Future<bool> removeTrackFromPlaylist(int playlistId, String trackId) =>
       _userService.removeTrackFromPlaylist(playlistId, trackId);
+  
+  static Future<bool> deletePlaylist(int playlistId) =>
+      _userService.deletePlaylist(playlistId);
 }

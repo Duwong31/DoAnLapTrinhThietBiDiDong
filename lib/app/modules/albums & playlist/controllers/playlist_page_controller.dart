@@ -7,7 +7,9 @@ import '../../../../models/song.dart';
 import '../../../data/models/playlist.dart';
 import '../../../data/repositories/repositories.dart'; // Đảm bảo import đúng repo (DefaultRepository hoặc SongDetailRepository)
 import '../../../data/repositories/song_repository.dart';
-import '../../../widgets/bottom_song_options.dart';
+import '../../../routes/app_pages.dart';
+import '../../../widgets/bottom_playlist_options.dart';
+import '../../../widgets/bottom_song_options.dart'; 
 
 class PlayListController extends GetxController {
 
@@ -22,6 +24,7 @@ class PlayListController extends GetxController {
   final isSongListLoading = false.obs; 
   Playlist? _currentViewingPlaylist;
   final isRemovingSong = false.obs;
+  final isDeletingPlaylist = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -157,6 +160,111 @@ class PlayListController extends GetxController {
     } finally {
       isRemovingSong(false);
     }
+  }
+
+  Future<void> deletePlaylist(Playlist playlistToDelete) async {
+    // --- Hiển thị dialog xác nhận ---
+    final confirm = await Get.dialog<bool>(
+      AlertDialog(
+        title: const Text('Confirm Deletion'),
+        content: Text('Are you sure you want to delete the playlist "${playlistToDelete.name}"?\nThis action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(result: false), // Đóng dialog, trả về false
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Get.back(result: true), // Đóng dialog, trả về true
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    // Nếu người dùng không xác nhận (nhấn Cancel hoặc đóng dialog)
+    if (confirm != true) {
+      return; // Dừng hàm
+    }
+
+    // --- Nếu xác nhận ---
+    if (isDeletingPlaylist.value) return; // Ngăn chặn nhấn nhiều lần
+
+    isDeletingPlaylist(true); // Bắt đầu trạng thái loading
+    print("Controller: Attempting to delete playlist '${playlistToDelete.name}' (ID: ${playlistToDelete.id})");
+
+    try {
+      // Gọi hàm xóa từ repository
+      bool success = await _userRepository.deletePlaylist(playlistToDelete.id);
+
+      if (success) {
+        print("Controller: Playlist deleted successfully from backend.");
+        // 1. Đóng Bottom Sheet (nếu đang mở) - không cần thiết nếu gọi từ dialog
+        // Get.back();
+        // 2. Quay lại màn hình trước đó (ví dụ: màn hình danh sách playlist)
+        Get.back();
+        // 3. Hiển thị Snackbar thành công
+        Get.snackbar(
+          'Success',
+          'Playlist "${playlistToDelete.name}" deleted.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+        // 4. (Quan trọng) Cập nhật lại danh sách playlist trên màn hình trước đó
+        // Giả sử bạn có một controller quản lý danh sách playlist chính (ví dụ: LibraryController)
+        // Cần tìm và gọi lại hàm fetch của controller đó.
+        // Ví dụ:
+        // try {
+        //   final libraryController = Get.find<LibraryController>(); // Thay LibraryController bằng tên đúng
+        //   libraryController.fetchPlaylists(); // Gọi hàm fetch lại list
+        // } catch (e) {
+        //    print("Could not find LibraryController to refresh playlists: $e");
+        // }
+        // Hoặc bạn có thể cập nhật trực tiếp list playlists trong controller này nếu nó quản lý cả list chính
+         playlists.removeWhere((p) => p.id == playlistToDelete.id);
+
+
+      } else {
+        print("Controller: Backend indicated failure during playlist deletion.");
+        // Hiển thị Snackbar lỗi (Backend trả về false nhưng không phải exception)
+        Get.snackbar(
+          'Error',
+          'Failed to delete playlist. Please try again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.redAccent,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      // Lỗi bắt được từ handleCall trong Repository hoặc lỗi mạng, 403,...
+      print("Controller: Error during deletePlaylist: $e");
+      // Hiển thị Snackbar lỗi chung
+      Get.snackbar(
+        'Error',
+        'An error occurred while deleting the playlist.', // Có thể hiển thị e.toString() nhưng thường không thân thiện
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } finally {
+      isDeletingPlaylist(false); // Kết thúc trạng thái loading
+    }
+  }
+
+  void addSongToPlaylist() {
+    Get.toNamed(Routes.search); 
+  }
+
+  void showPlaylistOptionsBottomSheet(BuildContext context, {required Playlist playlist}) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => PlaylistOptionsSheet(playlist: playlist),
+    );
   }
 
   // Hàm hiển thị bottom sheet tùy chọn bài hát

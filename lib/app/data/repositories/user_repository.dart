@@ -15,6 +15,7 @@ abstract class UserBase {
   Future<dynamic> createPlaylist(String name);
   Future<List<Playlist>> getPlaylists();
   Future<bool> removeTrackFromPlaylist(int playlistId, String trackId);
+  Future<bool> deletePlaylist(int playlistId);
 }
 
 class UserRepository extends BaseRepository implements UserBase {
@@ -101,5 +102,10 @@ class UserRepository extends BaseRepository implements UserBase {
   @override
   Future<bool> removeTrackFromPlaylist(int playlistId, String trackId) {
     return handleCall(() => ApiProvider.removeTrackFromPlaylist(playlistId, trackId));
+  }
+
+  @override
+  Future<bool> deletePlaylist(int playlistId) {
+    return handleCall(() => ApiProvider.deletePlaylist(playlistId));
   }
 }

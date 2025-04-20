@@ -85,8 +85,6 @@ class _PlayListNowState extends State<PlayListNow> {
   @override
   void dispose() {
     scrollController.dispose();
-    // *** Quan trọng: Clear danh sách bài hát khi rời màn hình ***
-    // Để tránh hiển thị bài hát của playlist cũ khi mở playlist mới
     _controller.songsInCurrentPlaylist.clear();
     _controller.isSongListLoading(false); // Reset trạng thái loading
     super.dispose();
@@ -94,7 +92,9 @@ class _PlayListNowState extends State<PlayListNow> {
 
   @override
   Widget build(BuildContext context) {
-    // Nếu _playlistData vẫn là null sau initState (do lỗi), hiển thị màn hình lỗi
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     if (_playlistData == null) {
       return Scaffold(
         appBar: AppBar(
@@ -108,7 +108,6 @@ class _PlayListNowState extends State<PlayListNow> {
       );
     }
 
-    // Sử dụng dữ liệu playlist đã được xác thực là không null
     final playlist = _playlistData!;
 
     return Scaffold(
@@ -152,43 +151,65 @@ class _PlayListNowState extends State<PlayListNow> {
                  : IconButton(
                      icon: const Icon(Icons.refresh, color: Colors.black),
                      tooltip: 'Refresh Songs',
-                     // Gọi lại hàm fetch bài hát khi nhấn refresh
                      onPressed: () => _controller.fetchSongsForPlaylist(playlist),
                    ),
                ),
              ],
           ),
           // SliverToBoxAdapter cho các nút action (giữ nguyên)
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Column(
                 children: [
-                  SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // Nhóm bên trái
                       Row(
                         children: [
-                          Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.blue),
+                          IconButton(
+                            icon: Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
+                            onPressed: () {
+                            },
+                          ),
                           SizedBox(width: 10),
-                          Icon(Icons.more_horiz_outlined, size: 30, color: Colors.blue),
+                          IconButton(
+                            icon: Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
+                            onPressed: () {
+                              _controller.showPlaylistOptionsBottomSheet(context, playlist: playlist);
+
+                            },
+                          ),
                         ],
                       ),
+                      // Nhóm bên phải
                       Row(
                         children: [
-                          Icon(Icons.shuffle, size: 30, color: Colors.blue),
+                          IconButton(
+                            icon: Icon(Icons.shuffle, size: 30, color: Colors.black),
+                            onPressed: () {
+                              // TODO: Kích hoạt phát ngẫu nhiên
+                              print("Shuffle icon pressed");
+                            },
+                          ),
                           SizedBox(width: 10),
-                          Icon(Icons.play_circle_outline, size: 30, color: Colors.blue),
+                          IconButton(
+                            icon: Icon(Icons.play_circle_outline, size: 60, color: Colors.black),
+                            onPressed: () {
+                              // TODO: Phát tất cả bài hát
+                              print("Play icon pressed");
+                            },
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                  SizedBox(height: 16),
                 ],
               ),
             ),
           ),
+
 
           // *** Sử dụng Obx để hiển thị trạng thái loading, lỗi hoặc danh sách bài hát ***
           Obx(() {
@@ -217,8 +238,41 @@ class _PlayListNowState extends State<PlayListNow> {
               return SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
+                    if (index == 0) {
+                      return Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 16, bottom: 8),
+                          child: SizedBox(
+                            width: screenWidth * 0.2, // 👈 chỉnh width tùy ý
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _controller.addSongToPlaylist(); // Gọi hàm thêm bài hát vào playlist
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                                elevation: 2,
+                              ),
+                              child: const Row(
+                                mainAxisSize: MainAxisSize.min, // Để giữ mọi thứ gọn lại
+                                children: [
+                                  Icon(Icons.add, size: 26),
+                                  SizedBox(width: 2), // Điều chỉnh khoảng cách giữa icon và text
+                                  Text(
+                                    'Add',
+                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
                     // Lấy dữ liệu bài hát thật từ controller
-                    final Song song = _controller.songsInCurrentPlaylist[index];
+                    final Song song = _controller.songsInCurrentPlaylist[index - 1];
 
                     // Sử dụng ListTile gốc, nhưng với dữ liệu thật
                     return ListTile(
@@ -255,18 +309,16 @@ class _PlayListNowState extends State<PlayListNow> {
                         icon: const Icon(Icons.more_vert),
                         tooltip: 'Song options',
                         onPressed: () {
-                          // Gọi hàm show bottom sheet từ controller, truyền dữ liệu bài hát
                           _controller.showSongOptionsBottomSheet(context, songData: song);
                         },
                       ),
                     );
                   },
-                  // Số lượng bài hát thật từ controller
-                  childCount: _controller.songsInCurrentPlaylist.length,
+                  childCount: _controller.songsInCurrentPlaylist.length + 1,
                 ),
               );
             }
-          }), // Đóng Obx
+          }),
         ],
       ),
     );
@@ -278,15 +330,9 @@ class _PlayListNowState extends State<PlayListNow> {
     final String? displayImageUrl = imageUrl;
 
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 40, 20, 20), // Giữ padding gốc
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0), // Giữ padding gốc
       decoration: const BoxDecoration( // Thêm decoration để có thể làm gradient nếu muốn
          color: Colors.white, // Màu nền gốc
-         // Ví dụ Gradient:
-         // gradient: LinearGradient(
-         //   begin: Alignment.topCenter,
-         //   end: Alignment.bottomCenter,
-         //   colors: [Colors.blue.shade100, Colors.white],
-         // ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end, // Căn dưới cùng cho dễ nhìn khi collapse
