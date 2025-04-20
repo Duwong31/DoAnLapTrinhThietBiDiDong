@@ -23,20 +23,10 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   @override
   bool get wantKeepAlive => true;
 
-  // hàm sẽ chuyển qua màn NowPlaying
-  Future<void> _navigateToNowPlaying(Song song, List<Song> allSongs) async {
+  // Khởi tạo và tải dữ liệu
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-    _songs = allSongs;
-    final returnedSong = await Get.toNamed(
-      Routes.songs_view,
-      arguments: {
-        'songs': allSongs,
-        'playingSong': song,
-      },
-    );
-    setState(() {
-      _currentlyPlaying = returnedSong ?? _audioService.currentSong;
-    });
+    await _audioService.player.play();
   }
 
   Widget _buildSongGrid(BuildContext context, List<Song> songs) {
@@ -113,7 +103,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
         ),
         onTap: () {
           if (controller.songs.isNotEmpty) {
-            _navigateToNowPlaying(song, controller.songs);
+            _navigateToMiniPlayer(song, controller.songs);
           } else {
             Get.snackbar('Error', 'No songs available to play');
           }
@@ -266,11 +256,11 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             ),
           ),
 
-          // MiniPlayer overlay
-          StreamBuilder<PlayerState>(
-            stream: AudioService().playerStateStream,
+          // MiniPlayer
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = AudioService().currentSong;
+              final current = snapshot.data ?? AudioService().currentSong;
               if (current == null) return const SizedBox.shrink();
               return Positioned(
                 left: 8,

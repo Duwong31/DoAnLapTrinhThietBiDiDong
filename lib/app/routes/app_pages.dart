@@ -171,8 +171,7 @@ class AppPages {
     GetPage(
       name: _Paths.createNewPlaylist,
       page: () => const CreateNewPlaylist(),
-      binding: CreateNewPlaylistBinding()
-        binding: NowPlayingBinding()
+      binding: CreateNewPlaylistBinding(),
     ),
     GetPage(
         name: _Paths.artist,

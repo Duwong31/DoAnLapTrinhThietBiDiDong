@@ -21,9 +21,9 @@ class NowPlayingBinding implements Bindings {
     }
 
     Get.lazyPut<NowPlayingController>(() => NowPlayingController(
-      songs: songs,                               // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
+      songs: songs,                        // 	Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
       currentSong: playingSong,           // Lấy bài hát hiện tại
-      player: audioPlayer,                          // Lấy một instance của AudioPlayer đã được đăng ký trước (ở nơi khác)
+      player: audioPlayer,                // Lấy một instance của AudioPlayer đã được đăng ký trước (ở nơi khác)
     ));
   }
 }

@@ -94,21 +94,21 @@ class _AllSongsViewState extends State<AllSongsView> {
     await _loadMoreSongs();
   }
 
-  // hàm sẽ chuyển qua màn NowPlaying
-  Future<void> _navigateToNowPlaying(Song song, List<Song> allSongs) async {
+  // Khởi tạo và tải dữ liệu
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
-    _songs = allSongs;
-    final returnedSong = await Get.toNamed(
-      Routes.songs_view,
-      arguments: {
-        'songs': allSongs,
-        'playingSong': song,
-      },
-    );
-    setState(() {
-      _currentlyPlaying = returnedSong ?? _audioService.currentSong;
-    });
+    // _songs = allSongs;
+    // final returnedSong = await Get.toNamed(
+    //   Routes.songs_view,
+    //   arguments: {
+    //     'songs': allSongs,
+    //     'playingSong': song,
+    //   },
+    // );
+    // setState(() {
+    //   _currentlyPlaying = returnedSong ?? _audioService.currentSong;
+    // });
   }
 
   Widget _buildSongItem(Song song, List<Song> allSongs) {
@@ -142,7 +142,7 @@ class _AllSongsViewState extends State<AllSongsView> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      onTap: () => _navigateToNowPlaying(song, allSongs),
+      onTap: () => _navigateToMiniPlayer(song, allSongs),
     );
   }
 
@@ -204,17 +204,18 @@ class _AllSongsViewState extends State<AllSongsView> {
               },
             ),
           ),
-          StreamBuilder<PlayerState>(
-            stream: AudioService().playerStateStream,
+
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = AudioService().currentSong;
+              final current = snapshot.data ?? AudioService().currentSong;
               if (current == null) return const SizedBox.shrink();
               return Positioned(
                 left: 8,
                 right: 8,
                 bottom: 8,
                 child: MiniPlayer(
-                  key: ValueKey('${current.id}-${_audioService.player.playing}'),
+                  key: ValueKey(current.id),
                   song: current,
                   songs: _songs,
                   onTap: () async {
