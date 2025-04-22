@@ -15,9 +15,10 @@ class AlbumNowController extends GetxController {
   void onInit() {
     super.onInit();
     final albumId = Get.arguments as String?;
-    if (albumId != null) {
+    if (albumId != null && albumId.isNotEmpty) {
       fetchAlbum(albumId);
     } else {
+      print("⚠️ Không có albumId được truyền!");
       isLoading(false);
     }
   }
@@ -25,11 +26,10 @@ class AlbumNowController extends GetxController {
   void fetchAlbum(String id) async {
     try {
       isLoading(true);
-
       final res = await http.get(
         Uri.parse('$baseUrl/albums/?ids=$id'),
         headers: {
-          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Key': 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7',
           'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
         },
       );
@@ -39,7 +39,7 @@ class AlbumNowController extends GetxController {
         final albums = data['albums'];
 
         if (albums == null || albums.isEmpty) {
-          print('No album data found');
+          print("⚠️ Không có dữ liệu album từ API");
           return;
         }
 

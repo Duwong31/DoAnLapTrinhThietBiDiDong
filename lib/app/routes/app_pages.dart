@@ -6,6 +6,7 @@ import '../modules/albums & playlist/addToPlaylist/bindings/add_to_playlist_bind
 import '../modules/albums & playlist/addToPlaylist/bindings/create_new_playlist_binding.dart';
 import '../modules/albums & playlist/addToPlaylist/views/create_new_playlist.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
+import '../modules/albums & playlist/bindings/albumnow_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
 import '../modules/albums & playlist/addToPlaylist/views/add_to_playlist.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
@@ -136,7 +137,9 @@ class AppPages {
         page: () => const AlbumView(),
         binding: AlbumBinding()),
     GetPage(
-        name: _Paths.albumnow, page: () => AlbumNow(), binding: AlbumBinding()),
+        name: _Paths.albumnow,
+        page: () => const AlbumNow(),
+        binding: AlbumNowBinding()),
     GetPage(
         name: _Paths.playlist,
         page: () => const PlayListView(),

@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart' as album;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
@@ -14,12 +15,26 @@ class AlbumView extends GetView<AlbumController> {
       appBar: AppBar(
         elevation: .1,
         centerTitle: true,
-        backgroundColor: AppTheme.appBar,
+        backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined),
-          onPressed: () => Get.toNamed(Routes.dashboard),
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          onPressed: () {
+            // Quyết định nên back hay về dashboard
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard); // Thay thế stack nếu không có trang trước
+            }
+          },
         ),
-        title: const Text('Albums'),
+        title: const Text('Album', style: TextStyle(color: Colors.black, fontSize: 20),),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh, color: Colors.black),
+            tooltip: 'Refresh',
+            onPressed: () => controller.fetchAlbums(), // Gọi hàm refresh từ controller
+          ),
+        ],
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -62,7 +77,9 @@ class AlbumView extends GetView<AlbumController> {
 
   Widget _buildAlbumCard(BuildContext context, AlbumModel item) {
     return GestureDetector(
-      onTap: () => Get.toNamed(Routes.albumnow, arguments: item.id),
+      onTap: () {
+        Get.toNamed(Routes.albumnow , arguments: item.id);
+      },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
@@ -73,8 +90,7 @@ class AlbumView extends GetView<AlbumController> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
-              borderRadius:
-              const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Image.network(
@@ -84,7 +100,7 @@ class AlbumView extends GetView<AlbumController> {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            Dimes.height8,
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -106,7 +122,7 @@ class AlbumView extends GetView<AlbumController> {
                     ?.copyWith(color: Colors.grey),
               ),
             ),
-            const SizedBox(height: 8),
+            Dimes.height8
           ],
         ),
       ),
