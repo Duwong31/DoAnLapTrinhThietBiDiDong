@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:dio/dio.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,8 @@ import 'app/core/utilities/encry_data.dart';
 import 'app/core/utilities/utilities.dart';
 import 'app/data/http_client/http_client.dart';
 import 'app/data/providers/notification_provider.dart';
+import 'app/data/repositories/repositories.dart';
+import 'app/data/sources/source_songs.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
@@ -48,6 +51,17 @@ void main() async {
   }
 
   await GetStorage.init();
+  Get.lazyPut<Dio>(() {
+    final options = BaseOptions(
+      // Bạn có thể cấu hình thêm timeout, interceptor ở đây nếu cần
+      connectTimeout: const Duration(seconds: 15),
+      receiveTimeout: const Duration(seconds: 15),
+    );
+    return Dio(options);
+  }, fenix: true);
+  Get.lazyPut<RemoteDataSource>(() => RemoteDataSource(), fenix: true);
+  // Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
+
   Get.put(ThemeController());
 
   AudioService();
