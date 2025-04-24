@@ -29,7 +29,6 @@ class PlaylistCoverWidget extends StatelessWidget {
     // --- Trường hợp 2: Có track ID -> Tạo URL và hiển thị ảnh ---
     // Tạo URL ảnh trực tiếp từ ID
     final String imageUrl = 'https://thantrieu.com/resources/arts/$firstTrackId.webp';
-    print("PlaylistCoverWidget: Generated image URL: $imageUrl");
 
     // Hiển thị ảnh bằng Image.network
     return Image.network(
