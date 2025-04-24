@@ -142,7 +142,7 @@ class SongModel {
 
   factory SongModel.fromJson(Map<String, dynamic> json) {
     return SongModel(
-      id: json['id']?.toString() ?? '',
+      id: json['id']?.int() ?? '',
       title: json['title'] ?? '',
       duration: json['duration'] ?? 0,
       source: json['preview'] ?? '',

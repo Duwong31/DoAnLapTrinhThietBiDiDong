@@ -4,6 +4,7 @@ import '../controllers/albumnow_controller.dart';
 class AlbumNowBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<AlbumNowController>(() => AlbumNowController());
+    Get.lazyPut<AlbumNowController>(
+            () => AlbumNowController());
   }
 }

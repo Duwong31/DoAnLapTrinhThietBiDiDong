@@ -6,11 +6,12 @@ import '../modules/albums & playlist/addToPlaylist/bindings/add_to_playlist_bind
 import '../modules/albums & playlist/addToPlaylist/bindings/create_new_playlist_binding.dart';
 import '../modules/albums & playlist/addToPlaylist/views/create_new_playlist.dart';
 import '../modules/albums & playlist/bindings/album_page_binding.dart';
+import '../modules/albums & playlist/bindings/albumnow_binding.dart';
 import '../modules/albums & playlist/bindings/playlist_page_binding.dart';
 import '../modules/albums & playlist/addToPlaylist/views/add_to_playlist.dart';
 import '../modules/albums & playlist/views/album_page_view.dart';
-import '../modules/albums & playlist/views/playlist_detail_view.dart';
 import '../modules/albums & playlist/views/albumnow_view.dart';
+import '../modules/albums & playlist/views/playlist_detail_view.dart';
 import '../modules/albums & playlist/views/playlist_page_view.dart';
 import '../modules/artists/bindings/artist_binding.dart';
 import '../modules/artists/views/artist_view.dart';
@@ -137,8 +138,8 @@ class AppPages {
         binding: AlbumBinding()),
     GetPage(
         name: _Paths.albumnow,
-        page: () => AlbumNow(),
-        binding: AlbumBinding()),
+        page: () => const AlbumNow(),
+        binding: AlbumNowBinding()),
     GetPage(
         name: _Paths.playlist,
         page: () => const PlayListView(),
@@ -148,27 +149,31 @@ class AppPages {
         page: () => const PlayListNow(),
         binding: PlayListBinding()),
     GetPage(
-        name: _Paths.all_song_view,
-        page: () => const AllSongsView(),
-        ),
+      name: _Paths.all_song_view,
+      page: () => const AllSongsView(),
+    ),
     GetPage(
         name: _Paths.songs_view,
         page: () => NowPlaying.fromRoute(),
         binding: NowPlayingBinding()),
     GetPage(
-      name: _Paths.editProfile,
-      page: () => EditProfilePage(),
-      binding: EditProfileBinding()),
+        name: _Paths.artist,
+        page: () => const ArtistView(),
+        binding: ArtistBinding()),
     GetPage(
-      name: _Paths.addToPlaylist,
-      page: () => const AddToPlaylistPage(),
-      binding: AddToPlaylistBinding()
-    ),
+        name: _Paths.editProfile,
+        page: () => EditProfilePage(),
+        binding: EditProfileBinding()),
+    GetPage(
+        name: _Paths.addToPlaylist,
+        page: () => const AddToPlaylistPage(),
+        binding: AddToPlaylistBinding()),
     GetPage(
       name: _Paths.premium,
       page: () => const PremiumView(),
     ),
     GetPage(
+<<<<<<< HEAD
       name: _Paths.createNewPlaylist,
       page: () => const CreateNewPlaylist(),
       binding: CreateNewPlaylistBinding(),
@@ -178,5 +183,10 @@ class AppPages {
         page: () => const ArtistView(),
         binding: ArtistBinding()
     )
+=======
+        name: _Paths.createNewPlaylist,
+        page: () => const CreateNewPlaylist(),
+        binding: CreateNewPlaylistBinding())
+>>>>>>> 757bdb21856bc793a776020b85cdf3c3d51b7155
   ];
 }

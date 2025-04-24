@@ -16,7 +16,7 @@ import 'app/data/sources/source_songs.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
-import 'app/widgets/messages.dart'; // ✅ thêm dòng này
+import 'app/widgets/messages.dart';
 import 'root.dart';
 
 Future<void> initServices() async {

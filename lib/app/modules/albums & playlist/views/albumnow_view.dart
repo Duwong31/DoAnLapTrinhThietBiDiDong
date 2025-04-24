@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/albumnow_controller.dart';
 
 class AlbumNow extends GetView<AlbumNowController> {
@@ -19,15 +20,38 @@ class AlbumNow extends GetView<AlbumNowController> {
         final album = controller.album;
         final songs = controller.songs;
 
+        // Kiểm tra album rỗng
+        if (album.isEmpty) {
+          return const Scaffold(
+            body: Center(
+              child: Text("Không tìm thấy thông tin album."),
+            ),
+          );
+        }
+
         return Scaffold(
+          // appBar: AppBar(
+          //   title: Text(album['name'] ?? 'Album'),
+          // ),
           appBar: AppBar(
-            title: Text(album['name'] ?? 'Album'),
+            elevation: .1,
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+              onPressed: () {
+                Get.back();
+              },
+            ),
+            title: Text(
+              album['name'] ?? 'Album',
+              style: const TextStyle(color: AppTheme.labelColor, fontSize: 20),
+            ),
           ),
           body: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Album Info
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(
@@ -44,7 +68,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                           errorBuilder: (_, __, ___) => const Icon(Icons.error),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      Dimes.width10,
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,16 +76,16 @@ class AlbumNow extends GetView<AlbumNowController> {
                             Text(album['name'] ?? '',
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
+                            Dimes.height8,
                             Text(
                               (album['artists'] != null && album['artists'].isNotEmpty)
                                   ? album['artists'][0]['name'] ?? 'Unknown Artist'
                                   : 'Unknown Artist',
                               style: const TextStyle(fontSize: 16),
                             ),
-                            const SizedBox(height: 8),
+                            Dimes.height8,
                             Text(
-                              '${album['total_tracks']} tracks • ${album['release_date']}',
+                              '${album['total_tracks'] ?? 0} tracks • ${album['release_date'] ?? 'N/A'}',
                               style: const TextStyle(fontSize: 14, color: Colors.grey),
                             ),
                           ],
@@ -70,10 +94,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                     ],
                   ),
                 ),
-
                 const Divider(),
-
-                // Songs List
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
@@ -89,8 +110,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                           width: 50,
                           height: 50,
                           fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.music_note),
+                          errorBuilder: (_, __, ___) => const Icon(Icons.music_note),
                         ),
                       ),
                       title: Text(song.title),
@@ -100,8 +120,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       onTap: () {
-                        print('Tapped on: ${song.title}');
-                        // TODO: Play preview or navigate
+                        Get.toNamed(Routes.songs_view);
                       },
                     );
                   },
