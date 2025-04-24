@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:marquee/marquee.dart';
 import '../../../../models/song.dart';
 import '../../../routes/app_pages.dart';
 import '../bindings/audio_service.dart';
@@ -102,14 +103,42 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        song.title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: isSmallScreen ? 10 : 13,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      StreamBuilder<bool>(
+                        stream: _audioService.playerStateStream.map((state) => state.playing),
+                        builder: (context, snapshot) {
+                          final isPlaying = snapshot.data ?? false;
+
+                          return isPlaying
+                              ? SizedBox(
+                            height: isSmallScreen ? 14 : 18,
+                            width: double.infinity,
+                            child: Marquee(
+                              text: song.title,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: isSmallScreen ? 10 : 13,
+                              ),
+                              scrollAxis: Axis.horizontal,
+                              blankSpace: 20.0,
+                              velocity: 30.0,
+                              pauseAfterRound: const Duration(seconds: 0),
+                              startPadding: 10.0,
+                              accelerationDuration: const Duration(seconds: 0),
+                              accelerationCurve: Curves.linear,
+                              decelerationDuration: const Duration(milliseconds: 1000),
+                              decelerationCurve: Curves.easeOut,
+                            ),
+                          )
+                              : Text(
+                            song.title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: isSmallScreen ? 10 : 13,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          );
+                        },
                       ),
                       Text(
                         song.artist,

@@ -158,5 +158,4 @@ class AudioService {
   Stream<Song> get currentSongStream => _currentSongController.stream;
   Future<void> playNextSong() => _playNextSong();
   Future<void> playPreviousSong() => _playPreviousSong();
-
 }

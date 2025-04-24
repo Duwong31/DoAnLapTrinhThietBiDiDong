@@ -265,7 +265,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                 left: 8,
                 right: 8,
                 bottom: 8,
-                child: MiniPlayer(          // MiniPlayer được hiện ra, và nó hiện ra tự động là nhờ lắng nghe stream từ player và build lại khi có bài mới được phát
+                child: MiniPlayer(
                   key: ValueKey(current.id),
                   song: current,
                   songs: _songs,
@@ -278,7 +278,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                       },
                     );
                     setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;     // cập nhật lại bài hát hiện tại đang phát
+                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
                     });
                   },
                 ),
