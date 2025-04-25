@@ -14,14 +14,24 @@ class ArtistView extends StatelessWidget {
       appBar: AppBar(
         elevation: .1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Get.back();
           },
         ),
-        title: const Text('Artist', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Artist',
+          style: Theme.of(context).appBarTheme.titleTextStyle ??
+              TextStyle(
+                color: Theme.of(context).textTheme.titleLarge?.color,
+                fontSize: 20,
+              ),
+        ),
       ),
       body: GetX<ArtistController>(
         builder: (controller) {
@@ -35,7 +45,6 @@ class ArtistView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(controller.errorMessage.value),
-                  // Dimes.height20,
                   ElevatedButton(
                     onPressed: controller.fetchArtists,
                     child: const Text('Retry'),
@@ -67,7 +76,7 @@ class ArtistCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.appBarTintColor,
+      color: Theme.of(context).cardColor,
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8),
       child: InkWell(
@@ -83,7 +92,11 @@ class ArtistCard extends StatelessWidget {
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.music_note, size: 80),
+                  errorBuilder: (_, __, ___) => Icon(
+                    Icons.music_note,
+                    size: 80,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
                 ),
               ),
               Dimes.width10,
@@ -114,19 +127,20 @@ class ArtistCard extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4),
                         child: Wrap(
                           spacing: 4,
-                          children: artist.genres
-                              .take(3)
-                              .map((genre) => Chip(
-                            label: Text(genre),
-                            visualDensity: VisualDensity.compact,
-                          ))
-                              .toList(),
+                          children: artist.genres.take(3).map((genre) {
+                            return Chip(
+                              label: Text(genre),
+                              visualDensity: VisualDensity.compact,
+                              backgroundColor: Theme.of(context).chipTheme.backgroundColor,
+                              labelStyle: Theme.of(context).chipTheme.labelStyle,
+                            );
+                          }).toList(),
                         ),
                       ),
                   ],
                 ),
               ),
-              const Icon(Icons.open_in_new, color: AppTheme.primary),
+              Icon(Icons.open_in_new, color: Theme.of(context).iconTheme.color),
             ],
           ),
         ),
