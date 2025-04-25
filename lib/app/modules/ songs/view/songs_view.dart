@@ -60,7 +60,7 @@ class NowPlayingPage extends StatefulWidget {
 }
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
-  late NowPlayingController _controller = Get.find();
+  late final NowPlayingController _controller = Get.find();
 
   @override
   void initState() {

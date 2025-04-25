@@ -6,8 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 // Import models, controller, style và widget bottom sheet
+import '../../ songs/bindings/audio_service.dart';
+import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart'; // <-- Import model Song chính
 import '../../../data/models/playlist.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/playlist_page_controller.dart';
 import '../../../core/styles/style.dart'; // <-- Cho Dimes (nếu dùng)
 // import '../../../widgets/bottom_song_options.dart'; // Đảm bảo import đúng nếu dùng SongOptionsSheet
@@ -21,6 +24,7 @@ class PlayListNow extends StatefulWidget {
 
 class _PlayListNowState extends State<PlayListNow> {
   final scrollController = ScrollController();
+  final AudioService _audioService = AudioService();
   bool showTitle = false;
   // *** Lấy instance của PlayListController ***
   final PlayListController _controller = Get.find<PlayListController>();
@@ -82,6 +86,11 @@ class _PlayListNowState extends State<PlayListNow> {
     });
   }
 
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
+    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+    await _audioService.player.play();
+  }
+
   @override
   void dispose() {
     scrollController.dispose();
@@ -111,214 +120,245 @@ class _PlayListNowState extends State<PlayListNow> {
     final playlist = _playlistData!;
 
     return Scaffold(
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          SliverAppBar(
-            pinned: true,
-            expandedHeight: 300,
-            backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
-              onPressed: () => Get.back(),
-            ),
-            title: showTitle
-                ? Text(
-                    playlist.name, // Sử dụng tên playlist từ data
-                    style: const TextStyle(color: Colors.black),
-                  )
-                : null,
-            centerTitle: true,
-            flexibleSpace: FlexibleSpaceBar(
-              // *** Sử dụng Obx để cập nhật header khi có ảnh ***
-              background: Obx(() => _buildHeader(
+      body: Stack(
+        children: [
+          CustomScrollView(
+            controller: scrollController,
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                expandedHeight: 300,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+                  onPressed: () => Get.back(),
+                ),
+                title: showTitle
+                    ? Text(
+                  playlist.name,
+                  style: const TextStyle(color: Colors.black),
+                )
+                    : null,
+                centerTitle: true,
+                flexibleSpace: FlexibleSpaceBar(
+                  background: Obx(() => _buildHeader(
                     context,
                     playlist,
-                    // Lấy ảnh của bài hát đầu tiên làm ảnh playlist nếu có
                     _controller.songsInCurrentPlaylist.isNotEmpty
                         ? _controller.songsInCurrentPlaylist.first.image
-                        : null, // Hoặc ảnh mặc định nếu muốn
+                        : null,
                   )),
-              collapseMode: CollapseMode.parallax,
-            ),
-            // *** Thêm nút Refresh vào actions ***
-             actions: [
-               Obx(() => _controller.isSongListLoading.value
-                 ? const Padding( // Hiển thị loading nhỏ thay cho nút refresh khi đang tải
-                     padding: EdgeInsets.only(right: 16.0),
-                     child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.0))))
-                 : IconButton(
-                     icon: const Icon(Icons.refresh, color: Colors.black),
-                     tooltip: 'Refresh Songs',
-                     onPressed: () => _controller.fetchSongsForPlaylist(playlist),
-                   ),
-               ),
-             ],
-          ),
-          // SliverToBoxAdapter cho các nút action (giữ nguyên)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  collapseMode: CollapseMode.parallax,
+                ),
+                actions: [
+                  Obx(() => _controller.isSongListLoading.value
+                      ? const Padding(
+                      padding: EdgeInsets.only(right: 16.0),
+                      child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.0))))
+                      : IconButton(
+                    icon: const Icon(Icons.refresh, color: Colors.black),
+                    tooltip: 'Refresh Songs',
+                    onPressed: () => _controller.fetchSongsForPlaylist(playlist),
+                  ),
+                  ),
+                ],
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
                     children: [
-                      // Nhóm bên trái
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
-                            onPressed: () {
-                            },
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
+                                onPressed: () {},
+                              ),
+                              SizedBox(width: 10),
+                              IconButton(
+                                icon: Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
+                                onPressed: () {
+                                  _controller.showPlaylistOptionsBottomSheet(context, playlist: playlist);
+                                },
+                              ),
+                            ],
                           ),
-                          SizedBox(width: 10),
-                          IconButton(
-                            icon: Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
-                            onPressed: () {
-                              _controller.showPlaylistOptionsBottomSheet(context, playlist: playlist);
-
-                            },
-                          ),
-                        ],
-                      ),
-                      // Nhóm bên phải
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(Icons.shuffle, size: 30, color: Colors.black),
-                            onPressed: () {
-                              // TODO: Kích hoạt phát ngẫu nhiên
-                              print("Shuffle icon pressed");
-                            },
-                          ),
-                          SizedBox(width: 10),
-                          IconButton(
-                            icon: Icon(Icons.play_circle_outline, size: 60, color: Colors.black),
-                            onPressed: () {
-                              // TODO: Phát tất cả bài hát
-                              print("Play icon pressed");
-                            },
+                          Row(
+                            children: [
+                              StreamBuilder<bool>(
+                                stream: _audioService.shuffleStream,
+                                initialData: _audioService.isShuffle,
+                                builder: (context, snapshot) {
+                                  final isShuffle = snapshot.data ?? false;
+                                  return IconButton(
+                                    icon: Icon(
+                                      Icons.shuffle,
+                                      size: 30,
+                                      color: isShuffle ? AppTheme.primary : AppTheme.labelColor,
+                                    ),
+                                    onPressed: () {
+                                      _audioService.setShuffle(!_audioService.isShuffle);
+                                    },
+                                  );
+                                },
+                              ),
+                              const SizedBox(width: 10),
+                              StreamBuilder<bool>(
+                                stream: _audioService.playerStateStream
+                                    .map((state) => state.playing),
+                                builder: (context, snapshot) {
+                                  final isPlaying = snapshot.data ?? false;
+                                  return IconButton(
+                                    icon: Icon(
+                                      isPlaying ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                                      size: 60,
+                                        color: isPlaying ? Colors.orange : Colors.black,
+                                    ),
+                                    onPressed: () => _audioService.togglePlayPause(),
+                                  );
+                                },
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
-
-
-          // *** Sử dụng Obx để hiển thị trạng thái loading, lỗi hoặc danh sách bài hát ***
-          Obx(() {
-            // --- Trường hợp đang loading ---
-            if (_controller.isSongListLoading.value) {
-              return const SliverFillRemaining( // Sử dụng SliverFillRemaining để chiếm không gian còn lại
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            // --- Trường hợp load xong nhưng không có bài hát ---
-            else if (_controller.songsInCurrentPlaylist.isEmpty) {
-              // Kiểm tra xem playlist gốc có trackIds không
-              if (playlist.trackIds.isEmpty) {
-                return const SliverFillRemaining(
-                  child: Center(child: Text("This playlist is empty.")),
-                );
-              } else {
-                // Có trackIds nhưng không load được bài hát (lỗi API, ID sai, ...)
-                return const SliverFillRemaining(
-                  child: Center(child: Text("Couldn't load songs for this playlist.")),
-                );
-              }
-            }
-            // --- Trường hợp load thành công và có bài hát ---
-            else {
-              return SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    if (index == 0) {
-                      return Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(left: 16, bottom: 8),
-                          child: SizedBox(
-                            width: screenWidth * 0.2, // 👈 chỉnh width tùy ý
-                            child: ElevatedButton(
-                              onPressed: () {
-                                _controller.addSongToPlaylist(); // Gọi hàm thêm bài hát vào playlist
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                foregroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-                                elevation: 2,
-                              ),
-                              child: const Row(
-                                mainAxisSize: MainAxisSize.min, // Để giữ mọi thứ gọn lại
-                                children: [
-                                  Icon(Icons.add, size: 26),
-                                  SizedBox(width: 2), // Điều chỉnh khoảng cách giữa icon và text
-                                  Text(
-                                    'Add',
-                                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              Obx(() {
+                if (_controller.isSongListLoading.value) {
+                  return const SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+                else if (_controller.songsInCurrentPlaylist.isEmpty) {
+                  if (playlist.trackIds.isEmpty) {
+                    return const SliverFillRemaining(
+                      child: Center(child: Text("This playlist is empty.")),
+                    );
+                  } else {
+                    return const SliverFillRemaining(
+                      child: Center(child: Text("Couldn't load songs for this playlist.")),
+                    );
+                  }
+                }
+                else {
+                  return SliverList(
+                    delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                        if (index == 0) {
+                          return Align(
+                            alignment: Alignment.centerLeft,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 16, bottom: 8),
+                              child: SizedBox(
+                                width: screenWidth * 0.2,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    _controller.addSongToPlaylist();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.black,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                                    elevation: 2,
                                   ),
-                                ],
+                                  child: const Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.add, size: 26),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        'Add',
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
+                          );
+                        }
+                        final Song song = _controller.songsInCurrentPlaylist[index - 1];
+                        return ListTile(
+                          leading: ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.network(
+                              song.image,
+                              width: 50, height: 50, fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Container(
+                                width: 50, height: 50,
+                                color: Colors.grey[200],
+                                child: const Icon(Icons.music_note, color: Colors.grey),
+                              ),
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Container(
+                                  width: 50, height: 50,
+                                  color: Colors.grey[200],
+                                  child: Center(child: CircularProgressIndicator(
+                                      strokeWidth: 2.0,
+                                      value: loadingProgress.expectedTotalBytes != null
+                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                          : null)),
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                      );
-                    }
-                    // Lấy dữ liệu bài hát thật từ controller
-                    final Song song = _controller.songsInCurrentPlaylist[index - 1];
-
-                    // Sử dụng ListTile gốc, nhưng với dữ liệu thật
-                    return ListTile(
-                      leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(4),
-                        child: Image.network(
-                          song.image, // Ảnh của bài hát
-                          width: 50, height: 50, fit: BoxFit.cover,
-                          // Error builder cho ảnh bài hát
-                          errorBuilder: (c, e, s) => Container(
-                            width: 50, height: 50,
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.music_note, color: Colors.grey),
+                          title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis),
+                          onTap: () => _navigateToMiniPlayer(song, _controller.songsInCurrentPlaylist),
+                          trailing: IconButton(
+                            icon: const Icon(Icons.more_vert),
+                            tooltip: 'Song options',
+                            onPressed: () {
+                              _controller.showSongOptionsBottomSheet(context, songData: song);
+                            },
                           ),
-                          // Loading builder cho ảnh bài hát
-                          loadingBuilder: (context, child, loadingProgress) {
-                            if (loadingProgress == null) return child;
-                            return Container(
-                              width: 50, height: 50,
-                              color: Colors.grey[200],
-                              child: Center(child: CircularProgressIndicator(strokeWidth: 2.0, value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null)),
-                            );
-                          },
-                        ),
-                      ),
-                      title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                      subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis), // Giả sử artist không null theo model Song
-                      onTap: () {
-                        // TODO: Implement logic phát nhạc khi nhấn vào bài hát
-                        print('Play song: ${song.title} (ID: ${song.id})');
-                        // Ví dụ: Get.find<AudioPlayerController>().playSong(song, _controller.songsInCurrentPlaylist);
+                        );
                       },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.more_vert),
-                        tooltip: 'Song options',
-                        onPressed: () {
-                          _controller.showSongOptionsBottomSheet(context, songData: song);
-                        },
-                      ),
+                      childCount: _controller.songsInCurrentPlaylist.length + 1,
+                    ),
+                  );
+                }
+              }),
+            ],
+          ),
+
+          StreamBuilder<Song>(
+            stream: _audioService.currentSongStream,
+            builder: (context, snapshot) {
+              final current = snapshot.data ?? _audioService.currentSong;
+              if (current == null) return const SizedBox.shrink();
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: MiniPlayer(
+                  key: ValueKey(current.id),
+                  song: current,
+                  songs: _controller.songsInCurrentPlaylist,
+                  onTap: () async {
+                    final returnedSong = await Get.toNamed(
+                      Routes.songs_view,
+                      arguments: {
+                        'playingSong': current,
+                        'songs': _controller.songsInCurrentPlaylist,
+                      },
                     );
+                    if (returnedSong != null) {
+                      _audioService.currentSong = returnedSong;
+                    }
                   },
-                  childCount: _controller.songsInCurrentPlaylist.length + 1,
                 ),
               );
-            }
-          }),
+            },
+          ),
         ],
       ),
     );

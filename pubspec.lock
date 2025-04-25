@@ -30,6 +30,7 @@ packages:
     description:
       name: asn1lib
 <<<<<<< HEAD
+<<<<<<< HEAD
       sha256: e8953f3698626f6f40c32da22c3348b2c6383e0db224402c53c8b8f3215b1e85
       url: "https://pub.dev"
     source: hosted
@@ -40,6 +41,12 @@ packages:
     source: hosted
     version: "1.6.2"
 >>>>>>> 35a1119de72a3cc7732ad4f48defb032c6c54031
+=======
+      sha256: e8953f3698626f6f40c32da22c3348b2c6383e0db224402c53c8b8f3215b1e85
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.3"
+>>>>>>> 7cd7cfe5ed05c6bd374cca34aec888a7eb494f0a
   async:
     dependency: transitive
     description:
@@ -297,6 +304,7 @@ packages:
     source: hosted
     version: "4.0.6"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
       sha256: "9a94ec9314aa206cfa35f16145c3cd6e2c924badcc670eaaca8a3a8063a68cd7"
@@ -304,6 +312,8 @@ packages:
     source: hosted
     version: "4.0.5"
 <<<<<<< HEAD
+=======
+>>>>>>> 7cd7cfe5ed05c6bd374cca34aec888a7eb494f0a
   fading_edge_scrollview:
     dependency: transitive
     description:
@@ -312,10 +322,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.1"
+<<<<<<< HEAD
 =======
 >>>>>>> 02f255691c90cfcaf64fca2665058eb32387dad1
 >>>>>>> 757bdb21856bc793a776020b85cdf3c3d51b7155
 >>>>>>> 35a1119de72a3cc7732ad4f48defb032c6c54031
+=======
+>>>>>>> 7cd7cfe5ed05c6bd374cca34aec888a7eb494f0a
   fake_async:
     dependency: transitive
     description:

@@ -5,9 +5,7 @@ import '../../../../models/song.dart';
 import '../../../data/sources/source_songs.dart';
 import '../../../routes/app_pages.dart';
 import '../bindings/audio_service.dart';
-import '../bindings/songs_binding.dart';
 import 'MiniPlayer.dart';
-import 'songs_view.dart';
 
 class AllSongsView extends StatefulWidget {
   const AllSongsView({super.key});
@@ -98,17 +96,6 @@ class _AllSongsViewState extends State<AllSongsView> {
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
-    // _songs = allSongs;
-    // final returnedSong = await Get.toNamed(
-    //   Routes.songs_view,
-    //   arguments: {
-    //     'songs': allSongs,
-    //     'playingSong': song,
-    //   },
-    // );
-    // setState(() {
-    //   _currentlyPlaying = returnedSong ?? _audioService.currentSong;
-    // });
   }
 
   Widget _buildSongItem(Song song, List<Song> allSongs) {

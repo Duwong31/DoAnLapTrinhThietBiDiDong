@@ -102,7 +102,6 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
     _imageAnimController.repeat();
     update();
   }
-
   void _pauseRotationAnim() {
     _imageAnimController.stop();
     _currentAnimationPosition = _imageAnimController.value;
