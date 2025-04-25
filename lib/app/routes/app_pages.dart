@@ -158,7 +158,7 @@ class AppPages {
         binding: NowPlayingBinding()),
     GetPage(
         name: _Paths.artist,
-        page: () => const ArtistView(),
+        page: () =>  ArtistView(),
         binding: ArtistBinding()),
     GetPage(
         name: _Paths.editProfile,

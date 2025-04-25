@@ -28,13 +28,7 @@ class AlbumView extends GetView<AlbumController> {
           },
         ),
         title: const Text('Album', style: TextStyle(color: Colors.black, fontSize: 20),),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black),
-            tooltip: 'Refresh',
-            onPressed: () => controller.fetchAlbums(), // Gọi hàm refresh từ controller
-          ),
-        ],
+
       ),
       body: Obx(() {
         if (controller.isLoading.value) {

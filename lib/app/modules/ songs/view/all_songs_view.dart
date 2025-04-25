@@ -172,18 +172,16 @@ class _AllSongsViewState extends State<AllSongsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colors.black,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 80),
-          child: Text(
-            "Songs",
-            style: TextStyle(
-              color: Colors.orange[500],
-              fontWeight: FontWeight.bold,
-              fontSize: 20
-            ),
-          ),
+        elevation: .1,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          onPressed: () {
+            Get.back();
+          },
         ),
+        title: const Text('Songs', style: TextStyle(color: Colors.black, fontSize: 20),),
       ),
       body: Stack(
         children: [
