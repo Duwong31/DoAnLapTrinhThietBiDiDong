@@ -173,7 +173,6 @@ class AppPages {
       page: () => const PremiumView(),
     ),
     GetPage(
-<<<<<<< HEAD
       name: _Paths.createNewPlaylist,
       page: () => const CreateNewPlaylist(),
       binding: CreateNewPlaylistBinding(),
@@ -182,11 +181,10 @@ class AppPages {
         name: _Paths.artist,
         page: () => const ArtistView(),
         binding: ArtistBinding()
-    )
-=======
+    ),
+    GetPage(
         name: _Paths.createNewPlaylist,
         page: () => const CreateNewPlaylist(),
         binding: CreateNewPlaylistBinding())
->>>>>>> 757bdb21856bc793a776020b85cdf3c3d51b7155
   ];
 }

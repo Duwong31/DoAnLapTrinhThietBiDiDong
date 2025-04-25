@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:rxdart/rxdart.dart';
 import '../../../../models/song.dart';
 import '../controllers/songs_controller.dart';
 
@@ -16,8 +17,12 @@ class AudioService {
   bool _isShuffle = false;
   LoopMode _loopMode = LoopMode.off;
   final _currentSongController = StreamController<Song>.broadcast();      // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
+  final _shuffleSubject = BehaviorSubject<bool>.seeded(false);            // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
 
-
+  Stream<bool> get shuffleStream => _shuffleSubject.stream;
+  Stream<Song> get currentSongStream => _currentSongController.stream;
+  Future<void> playNextSong() => _playNextSong();
+  Future<void> playPreviousSong() => _playPreviousSong();
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
   bool get isPlaying => player.playing;
   bool get isShuffle => _isShuffle;
@@ -39,6 +44,8 @@ class AudioService {
           _playNextSong();
         }
       }
+
+      _shuffleSubject.add(_isShuffle);
     });
 
     // Đồng bộ dữ liệu từ AudioService sang NowPlayingController
@@ -142,6 +149,7 @@ class AudioService {
   void setShuffle(bool isShuffle) {
     _isShuffle = isShuffle;
     player.setShuffleModeEnabled(isShuffle);
+    _shuffleSubject.add(isShuffle); // Cập nhật giá trị vào stream
   }
 
   void setLoopMode(LoopMode loopMode) {
@@ -152,10 +160,7 @@ class AudioService {
   // Hủy bỏ Stream và giải phóng tài nguyên
   Future<void> dispose() async {
     await _currentSongController.close();
+    await _shuffleSubject.close(); // Đóng stream khi dispose
     await player.dispose();
   }
-
-  Stream<Song> get currentSongStream => _currentSongController.stream;
-  Future<void> playNextSong() => _playNextSong();
-  Future<void> playPreviousSong() => _playPreviousSong();
 }
