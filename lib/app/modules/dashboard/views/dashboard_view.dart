@@ -20,42 +20,41 @@ class DashboardView extends GetView<DashboardController> {
       backgroundColor: Colors.white,
       key: controller.drawerKey,
       appBar: AppBar(
-          elevation: .1,
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          leading: IconButton(
-            icon: const UserAvatar(),
-            onPressed: () {
-              controller.drawerKey.currentState?.openDrawer();
-              FirebaseAnalyticService.logEvent(
-                'BTN_Show_Left_Menu',
+        elevation: .1,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).scaffoldBackgroundColor,
+        leading: IconButton(
+          icon: const UserAvatar(),
+          onPressed: () {
+            controller.drawerKey.currentState?.openDrawer();
+            FirebaseAnalyticService.logEvent('BTN_Show_Left_Menu');
+          },
+        ),
+        actions: [
+          Obx(() {
+            if (controller.currentIndex.value == 2) {
+              return IconButton(
+                icon: const Icon(Icons.add, size: 32, color: AppTheme.primary),
+                onPressed: () {
+                  controller.showCreatePlaylistDialog();
+                },
               );
-            },
-          ),
-          actions: [
-            Obx(() {
-              // Chỉ hiện nút dấu cộng nếu đang ở tab Library (index = 2)
-              if (controller.currentIndex.value == 2) {
-                return IconButton(
-                  icon: const Icon(Icons.add,size: 32, color: AppTheme.primary),
-                  onPressed: () {
-                    controller.showCreatePlaylistDialog();
-                  },
-                );
-              }
-              return const SizedBox.shrink(); // không hiển thị gì nếu không phải tab Library
-            }),
-          ],
-          // title: Obx(() {
-          //   String title =
-          //       'Welcome, ${controller.profile.user.value?.fullName}!';
-          //   return (controller.currentIndex.value == 0
-          //           ? title
-          //           : controller.titleAppBar)
-          //       .text
-          //       .make();
-          // })
-          ),
+            }
+            return const SizedBox.shrink();
+          }),
+        ],
+        // title: Obx(() {
+        //   return Text(
+        //     controller.currentIndex.value == 0
+        //         ? 'Welcome, ${controller.profile.user.value?.fullName ?? ''}!'
+        //         : controller.titleAppBar,
+        //     style: Theme.of(context).textTheme.titleLarge?.copyWith(
+        //       color: Theme.of(context).textTheme.titleLarge?.color,
+        //     ),
+        //   );
+        // }),
+      ),
       drawer: DrawerView(drawerKey: controller.drawerKey),
       body: TabBarView(
         physics: const NeverScrollableScrollPhysics(),

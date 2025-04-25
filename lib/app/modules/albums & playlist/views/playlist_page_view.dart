@@ -18,24 +18,29 @@ class PlayListView extends GetView<PlayListController> {
       appBar: AppBar(
         elevation: .1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            // Quyết định nên back hay về dashboard
             if (Get.previousRoute.isNotEmpty) {
               Get.back();
             } else {
-              Get.offAllNamed(Routes.dashboard); // Thay thế stack nếu không có trang trước
+              Get.offAllNamed(Routes.dashboard);
             }
           },
         ),
-        title: const Text('PlayList', style: TextStyle(color: Colors.black),),
-         actions: [
+        title: Text(
+          'PlayList',
+          style: TextStyle(color: Theme.of(context).textTheme.titleLarge?.color),
+        ),
+        actions: [
           IconButton(
-            icon: const Icon(Icons.refresh, color: Colors.black),
+            icon: Icon(Icons.refresh, color: Theme.of(context).iconTheme.color),
             tooltip: 'Refresh',
-            onPressed: () => controller.fetchPlaylists(), // Gọi hàm refresh từ controller
+            onPressed: () => controller.fetchPlaylists(),
           ),
         ],
       ),

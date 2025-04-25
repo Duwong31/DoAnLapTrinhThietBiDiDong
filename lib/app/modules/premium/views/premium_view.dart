@@ -22,24 +22,17 @@ class PremiumView extends StatefulWidget {
 }
 
 class _PremiumViewState extends State<PremiumView> {
-  // final AudioService _audioService = AudioService();
   final List<Song> _songs = []; // Danh sách bài hát
   Song? _currentlyPlaying;
 
   @override
   Widget build(BuildContext context) {
-    // RxBool isYearlySelected = true.obs; // Keep if you plan to add plan selection back
+    // Get the background color from appBarTheme or scaffoldBackgroundColor
+    Color backgroundColor = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      // appBar: AppBar( // Uncomment if you want a close button
-      //   backgroundColor: Colors.white,
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: Icon(Icons.close, color: Colors.black54),
-      //     onPressed: () => Get.back(), // Needs Get package
-      //   ),
-      // ),
+      backgroundColor: backgroundColor, // Set background dynamically
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -71,14 +64,16 @@ class _PremiumViewState extends State<PremiumView> {
                   ],
                 ),
                 Dimes.height15,
-                const Text(
-                  "Elevate Your Music Experience", // Translated
+                Text(
+                  "Elevate Your Music Experience",
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,
                     fontFamily: 'Noto Sans',
                     fontWeight: FontWeight.bold,
-                    color: darkTextColor,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 25),
@@ -88,8 +83,8 @@ class _PremiumViewState extends State<PremiumView> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start, // Căn chỉnh nội dung
                     children: [
-                      const Text('Why Premium?', style: TextStyle(fontSize: 18, fontFamily: 'Noto Sans', fontWeight:FontWeight.w800)),
-                      Divider(color: lightGrey, thickness: 1,),
+                      const Text('Why Premium?', style: TextStyle(color: AppTheme.labelColor, fontSize: 18, fontFamily: 'Noto Sans', fontWeight: FontWeight.w800)),
+                      const Divider(color: lightGrey, thickness: 1),
                       _buildBenefitItem(Icons.headset_off_outlined, "Ad-Free Listening"),
                       _buildBenefitItem(Icons.download_for_offline_outlined, "Download & Offline Playback"),
                       _buildBenefitItem(Icons.volume_up_outlined, "Highest Audio Quality"),
@@ -109,9 +104,7 @@ class _PremiumViewState extends State<PremiumView> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
-                  onPressed: () {
-
-                  },
+                  onPressed: () {},
                   child: const Text(
                     "GET PREMIUM NOW", // Translated
                     style: TextStyle(
@@ -124,20 +117,13 @@ class _PremiumViewState extends State<PremiumView> {
                 ),
                 const SizedBox(height: 15),
 
-                // --- Optional: Free Trial ---
-                // TextButton(
-                //   onPressed: () { /* Handle free trial */ },
-                //   child: Text("Or try free for 7 days", style: TextStyle(color: AppTheme.primary)), // Example English text
-                // ),
-                // const SizedBox(height: 20),
-
                 // --- Footer Links ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextButton(onPressed: () { /* Handle Restore */}, child: const Text("Restore", style: TextStyle(color: mediumTextColor, fontSize: 12))), // Translated
-                    TextButton(onPressed: () { /* Handle Terms */}, child: const Text("Terms", style: TextStyle(color: mediumTextColor, fontSize: 12))), // Translated
-                    TextButton(onPressed: () { /* Handle Privacy */}, child: const Text("Privacy", style: TextStyle(color: mediumTextColor, fontSize: 12))), // Translated
+                    TextButton(onPressed: () { /* Handle Restore */}, child: const Text("Restore", style: TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(onPressed: () { /* Handle Terms */}, child: const Text("Terms", style: TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(onPressed: () { /* Handle Privacy */}, child: const Text("Privacy", style: TextStyle(color: mediumTextColor, fontSize: 12))),
                   ],
                 ),
                 const SizedBox(height: 30),

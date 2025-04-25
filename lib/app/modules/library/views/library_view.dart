@@ -51,8 +51,8 @@ class _LibraryViewState extends State<LibraryView> {
                     ],
                   ),
 
-                  const Divider(
-                    color: Colors.black,
+                  Divider(
+                    color: Theme.of(context).dividerColor,
                     height: 1,
                     thickness: 0.5,
                     indent: 15,

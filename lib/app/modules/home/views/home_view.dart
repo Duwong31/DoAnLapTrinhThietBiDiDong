@@ -37,28 +37,31 @@ class _HomeViewState extends State<HomeView>
     return SizedBox(
       height: 120,
       child: Obx(() => GridView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.3,
-              mainAxisSpacing: 30,
-            ),
-            itemCount:
-                controller.songs.length > 6 ? 6 : controller.songs.length,
-            itemBuilder: (context, index) {
-              return _buildSongCard(context, controller.songs[index]);
-            },
-          )),
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.3,
+          mainAxisSpacing: 30,
+        ),
+        itemCount: controller.songs.length > 6 ? 6 : controller.songs.length,
+        itemBuilder: (context, index) {
+          return _buildSongCard(context, controller.songs[index]);
+        },
+      )),
     );
   }
 
   Widget _buildSongCard(BuildContext context, Song song) {
+    final backgroundColor = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+
     return Container(
       width: 200,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: backgroundColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: ListTile(
@@ -71,36 +74,34 @@ class _HomeViewState extends State<HomeView>
             color: Colors.grey[200],
             child: song.image.isNotEmpty
                 ? Image.network(
-                    song.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                      Icons.music_note,
-                      size: 24,
-                      color: Colors.grey,
-                    ),
-                  )
+              song.image,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                Icons.music_note,
+                size: 24,
+                color: Colors.grey,
+              ),
+            )
                 : const Icon(
-                    Icons.music_note,
-                    size: 24,
-                    color: Colors.grey,
-                  ),
+              Icons.music_note,
+              size: 24,
+              color: Colors.grey,
+            ),
           ),
         ),
         title: Text(
           song.title,
-          style: const TextStyle(
-            fontSize: 14,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: textColor,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           song.artist,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[600],
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: textColor?.withOpacity(0.7),
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -189,7 +190,7 @@ class _HomeViewState extends State<HomeView>
                 SectionHeader(
                     title: "music_genre".tr,
                     textColor: textColor,
-                    route: Routes.album),
+                    route: Routes.genre),
                 SizedBox(
                     height: 122,
                     child:
@@ -256,7 +257,8 @@ class _HomeViewState extends State<HomeView>
                 SectionHeader(
                     title: "you_might_want_to_hear".tr,
                     textColor: textColor,
-                    route: Routes.playlist),
+                    route: Routes.playlist
+                ),
                 SizedBox(
                     height: 122,
                     child:

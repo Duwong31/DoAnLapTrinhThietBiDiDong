@@ -12,18 +12,28 @@ class SettingView extends GetView<SettingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.toNamed(Routes.dashboard);
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text(
-          'Settings',
-          style: TextStyle(color: Color(0XFF000000), fontSize: 20, fontFamily: 'Noto Sans'),
+        title: Text(
+          'Setting',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
         ),
       ),
       body: ListView(
@@ -66,16 +76,29 @@ class ThemesView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('Themes', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Themes',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: Center(
         child: Obx(() {
@@ -110,17 +133,31 @@ class AudioQualityView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('Audio Quality', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Audio Quality',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
+
       body: const Center(child: Text('Audio Quality settings here')),
     );
   }
@@ -133,16 +170,29 @@ class VideoQualityView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('Video Quality', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Video Quality',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: const Center(child: Text('Video Quality settings here')),
     );
@@ -156,17 +206,31 @@ class AppsDevicesView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('Apps and Devices', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Apps and Devices',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
+
       body: const Center(child: Text('Apps and Devices settings here')),
     );
   }
@@ -179,16 +243,29 @@ class LanguageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('Languages', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'Languages',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -242,16 +319,29 @@ class AboutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
-        title: const Text('About', style: TextStyle(color: Colors.black, fontSize: 20),),
+        title: Text(
+          'About',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
+        ),
       ),
       body: const Center(child: Text('About app information here')),
     );
