@@ -1,68 +1,123 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../ songs/bindings/audio_service.dart';
+import '../../ songs/view/MiniPlayer.dart';
+import '../../../../models/song.dart';
+import '../../../routes/app_pages.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/search_page_controller.dart';
 
-class SearchView extends GetView<SearchPageController> {
-  const SearchView({Key? key}) : super(key: key);
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
+
+  @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView>  {
+  final SearchPageController controller = Get.put(SearchPageController());
+  // final AudioService _audioService = AudioService();
+  late List<Song> _songs = [];
+  Song? _currentlyPlaying;                    // Bài hát hiện tại đang phát
+
+  // Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
+  //   await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+  //   await _audioService.player.play();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              Obx(
-                    () => Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).inputDecorationTheme.fillColor ??
-                        Theme.of(context).colorScheme.surfaceVariant,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          controller.isSearching.value
-                              ? Icons.arrow_back
-                              : Icons.search,
-                          color: Theme.of(context).iconTheme.color,
-                        ),
-                        onPressed: () {
-                          controller.isSearching.value
-                              ? controller.stopSearch()
-                              : controller.startSearch();
-                        },
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  Obx(
+                        () => Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).inputDecorationTheme.fillColor ??
+                            Theme.of(context).colorScheme.surfaceVariant,
+                        borderRadius: BorderRadius.circular(30),
                       ),
-                      Expanded(
-                        child: TextField(
-                          controller: controller.searchTextController,
-                          autofocus: controller.isSearching.value,
-                          onTap: controller.startSearch,
-                          onChanged: controller.onSearchChanged,
-                          decoration: InputDecoration(
-                            hintText: "Search for songs, artists...",
-                            hintStyle: TextStyle(
-                                color: Theme.of(context).hintColor),
-                            border: InputBorder.none,
+                      child: Row(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              controller.isSearching.value
+                                  ? Icons.arrow_back
+                                  : Icons.search,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
+                            onPressed: () {
+                              controller.isSearching.value
+                                  ? controller.stopSearch()
+                                  : controller.startSearch();
+                            },
                           ),
-                        ),
+                          Expanded(
+                            child: TextField(
+                              controller: controller.searchTextController,
+                              autofocus: controller.isSearching.value,
+                              onTap: controller.startSearch,
+                              onChanged: controller.onSearchChanged,
+                              decoration: InputDecoration(
+                                hintText: "Search for songs, artists...",
+                                hintStyle: TextStyle(
+                                    color: Theme.of(context).hintColor),
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  Obx(() => Expanded(
+                    child: controller.isSearching.value
+                        ? _buildSearchResultView()
+                        : _buildDefaultView(),
+                  )),
+                ],
               ),
-              const SizedBox(height: 20),
-              Obx(() => Expanded(
-                child: controller.isSearching.value
-                    ? _buildSearchResultView()
-                    : _buildDefaultView(),
-              )),
-            ],
+            ),
           ),
-        ),
+
+          // MiniPlayer
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
+            builder: (context, snapshot) {
+              final current = snapshot.data ?? AudioService().currentSong;
+              if (current == null) return const SizedBox.shrink();
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: MiniPlayer(
+                  key: ValueKey(current.id),
+                  song: current,
+                  songs: _songs,
+                  onTap: () async {
+                    final returnedSong = await Get.toNamed(
+                      Routes.songs_view,
+                      arguments: {
+                        'playingSong': current,
+                        'songs': _songs,
+                      },
+                    );
+                    setState(() {
+                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
+                    });
+                  },
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
@@ -76,7 +131,7 @@ class SearchView extends GetView<SearchPageController> {
           children: [
             Text(
               "Recent searches",
-              style: Theme.of(Get.context!)
+              style: Theme.of(context)
                   .textTheme
                   .titleMedium
                   ?.copyWith(fontWeight: FontWeight.bold),
@@ -151,7 +206,10 @@ class SearchView extends GetView<SearchPageController> {
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();
-              // TODO: navigate to detail or play screen
+              // TODO: Thêm xử lý khi chọn bài hát
+              // Có thể thêm vào playlist hoặc phát ngay
+              _songs = results; // Cập nhật danh sách bài hát
+              AudioService().setPlaylist(results, startIndex: index);
             },
           );
         },

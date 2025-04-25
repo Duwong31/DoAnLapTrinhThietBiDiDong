@@ -3,30 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
-class Song {
-  final String id;
-  final String title;
-  final String artist;
-  final String image;
-
-  Song({
-    required this.id,
-    required this.title,
-    required this.artist,
-    required this.image,
-  });
-
-  factory Song.fromJson(Map<String, dynamic> json) {
-    return Song(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      artist: json['artist'] ?? '',
-      image: json['image'] ?? '',
-    );
-  }
-}
-
+import '../../../../models/song.dart';
 
 class SearchPageController extends GetxController {
   final searchTextController = TextEditingController();

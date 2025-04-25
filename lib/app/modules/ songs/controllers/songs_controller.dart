@@ -13,17 +13,15 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
   late List<Song> songs;
   late Song currentSong;
 
-  // Stream để đồng bộ dữ liệu
-  // NowPlayingController lắng nghe thay đổi từ AudioService thông qua các Stream
-  final _currentSongStream = StreamController<Song>.broadcast();
-  Stream<Song> get currentSongStream => _currentSongStream.stream;
+  // Đồng bộ với AudioService
+  Stream<Song> get currentSongStream => _audioService.currentSongStream;
 
   Song get song => _audioService.currentSong!;
   bool get isPlayerReady => _audioService.player.processingState == ProcessingState.ready;
   bool get isShuffle => _audioService.isShuffle;
   LoopMode get loopMode => _audioService.loopMode;
   AudioPlayer get player => _audioService.player;
-  AnimationController get imageAnimController => _imageAnimController;
+  AnimationController get imageAnimController => _imageAnimController;    // Tạo animation controller cho hiệu ứng xoay
 
   NowPlayingController({
     required this.songs,
@@ -40,15 +38,6 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
       duration: const Duration(seconds: 10),
     )..repeat();
 
-    // Lắng nghe thay đổi từ AudioService
-    _audioService.player.currentIndexStream.listen((index) {
-      if (index != null && _audioService.songs.isNotEmpty) {
-        final newSong = _audioService.songs[index];
-        _currentSongStream.add(newSong);
-        update();
-      }
-    });
-
     _audioService.playerStateStream.listen((state) {
       if (state.playing) {
         _playRotationAnim();
@@ -64,9 +53,15 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
     super.onClose();
   }
 
-  Future<void> initAudioPlayer() async {
+  Future<void> initAudioPlayer() async {        // Xử lý phát nhạc
     try {
-      await _audioService.setPlaylist(songs, startIndex: songs.indexOf(currentSong));
+      final isSameSong = _audioService.currentSong?.id == currentSong.id;           // kiểm tra nếu bài hát hiện tại đã đúng rồi thì không cần set lại playlist
+      if (!isSameSong) {
+        await _audioService.setPlaylist(songs, startIndex: songs.indexOf(currentSong));
+      } else {
+        await _audioService.player.seek(_audioService.currentPosition ?? Duration.zero);
+      }
+
       await _audioService.player.play();
       _playRotationAnim();
       update();

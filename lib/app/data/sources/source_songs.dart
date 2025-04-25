@@ -20,20 +20,42 @@ class RemoteDataSource implements DataSource{
   
   @override
   Future<List<Song>?> loadData({required int page, required int perPage}) async {
-    const url = ('https://thantrieu.com/resources/braniumapis/songs.json');
+    const url = 'https://6802849e0a99cb7408e9d276.mockapi.io/api/songs';
     final uri = Uri.parse(url);
 
-    final response = await http.get(uri);
+    try {
+      final response = await http.get(uri);
 
-    if(response.statusCode == 200){
-      final bodyContent = utf8.decode(response.bodyBytes);
+      if (response.statusCode == 200) {
+        final bodyContent = utf8.decode(response.bodyBytes);
+        final jsonData = jsonDecode(bodyContent);
 
-      var SongWrapper = jsonDecode(bodyContent) as Map;
+        List<Song> allSongs = [];
 
-      var songList = SongWrapper['songs'] as List;
-      List<Song> songs = songList.map((song) => Song.fromJson(song)).toList();
-      return songs;
-    }else{
+        if (jsonData is List) {
+          // API trả về mảng các object có 'songs'
+          if (jsonData.isNotEmpty && jsonData[0]['songs'] != null) {
+            for (var item in jsonData) {
+              allSongs.addAll((item['songs'] as List).map((s) => Song.fromJson(s)));
+            }
+          }
+          // API trả về mảng bài hát trực tiếp
+          else {
+            allSongs = jsonData.map((s) => Song.fromJson(s)).toList();
+          }
+        }
+
+        // Phân trang
+        final start = (page - 1) * perPage;
+        final end = start + perPage;
+        return (start >= allSongs.length)
+            ? []
+            : allSongs.sublist(start, end.clamp(0, allSongs.length));
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error loading remote data: $e');
       return null;
     }
   }
@@ -123,6 +145,7 @@ class RemoteDataSource implements DataSource{
   }
 }
 
+
 class LocalDataSource implements DataSource{
   @override
   Future<List<Song>?> loadData({required int page, required int perPage}) async{
@@ -135,40 +158,6 @@ class LocalDataSource implements DataSource{
   }
 }
 
-
-// class RemoteDataSource implements DataSource {
-//   @override
-//   Future<List<Song>?> loadData({required int page, required int perPage}) async {
-//     const url = 'https://68013ea281c7e9fbcc41ff1b.mockapi.io/api/songs';
-//     final uri = Uri.parse(url);
-//
-//     final response = await http.get(uri);
-//
-//     if (response.statusCode == 200) {
-//       final bodyContent = utf8.decode(response.bodyBytes);
-//
-//       final jsonList = jsonDecode(bodyContent) as List;
-//
-//       final allSongs = <Song>[];
-//
-//       for (final item in jsonList) {
-//         if (item['songs'] != null) {
-//           final songList = item['songs'] as List;
-//           allSongs.addAll(songList.map((song) => Song.fromJson(song)).toList());
-//         }
-//       }
-//
-//       final start = (page - 1) * perPage;
-//       final end = start + perPage;
-//
-//       if (start >= allSongs.length) return [];
-//
-//       return allSongs.sublist(start, end > allSongs.length ? allSongs.length : end);
-//     } else {
-//       return null;
-//     }
-//   }
-// }
 
 
 // phân trang (pagination) => (page và perPage) – thường dùng khi bạn có nhiều dữ liệu (ví dụ: danh sách bài hát, bài viết, sản phẩm,...)

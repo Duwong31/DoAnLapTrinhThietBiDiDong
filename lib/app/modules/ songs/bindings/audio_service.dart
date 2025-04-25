@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ class AudioService {
   int currentIndex = 0;
   bool _isShuffle = false;
   LoopMode _loopMode = LoopMode.off;
+  final _currentSongController = StreamController<Song>.broadcast();      // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
 
 
   Stream<PlayerState> get playerStateStream => player.playerStateStream;
@@ -27,6 +29,7 @@ class AudioService {
       currentPosition = position;
     });
 
+    // Xử lý sự kiện khi bài hát kết thúc
     player.playerStateStream.listen((state) {
       if (state.processingState == ProcessingState.completed) {
         if (_loopMode == LoopMode.one) {
@@ -37,22 +40,31 @@ class AudioService {
         }
       }
     });
+
+    // Đồng bộ dữ liệu từ AudioService sang NowPlayingController
+    player.currentIndexStream.listen((index) {
+      if (index != null && index < songs.length) {
+        currentSong = songs[index];
+        _currentSongController.add(currentSong!);
+      }
+    });
   }
 
   factory AudioService() => _instance;
 
+  // Khởi tạo danh sách bài hát và phát bài hát đầu tiên
   Future<void> setPlaylist(List<Song> songs, {int startIndex = 0}) async {
     this.songs = songs;
     currentIndex = startIndex;
     currentSong = songs.isNotEmpty ? songs[startIndex] : null;
 
     final audioSources = songs
-        .map((song) => AudioSource.uri(Uri.parse(song.source)))
+        .map((song) => AudioSource.uri(Uri.parse(song.source)))   // Chuyển đổi danh sách bài hát thành AudioSource
         .toList();
 
     await player.setAudioSource(
       ConcatenatingAudioSource(children: audioSources),
-      initialIndex: startIndex,
+      initialIndex: startIndex,     // Lưu vị trí bài hát hiện tại và index
     );
 
     if (currentPosition != null) {
@@ -60,6 +72,7 @@ class AudioService {
     }
   }
 
+  // Phát bài hát tiếp theo
   Future<void> _playNextSong() async {
     if (songs.isEmpty) return;
 
@@ -76,6 +89,7 @@ class AudioService {
     Get.find<NowPlayingController>().update();
   }
 
+  // Phát bài hát trước đó
   Future<void> _playPreviousSong() async {
     if (songs.isEmpty) return;
 
@@ -93,6 +107,7 @@ class AudioService {
     Get.find<NowPlayingController>().update();
   }
 
+  // Lấy chỉ số ngẫu nhiên
   int _getRandomIndex() {
     if (songs.length <= 1) return 0;
     int newIndex;
@@ -102,6 +117,7 @@ class AudioService {
     return newIndex;
   }
 
+  // Đặt bài hát mới
   Future<void> setSong(String url, {required Song song}) async {
     if (url.isEmpty) throw Exception('Invalid URL');
     if (currentSong?.id != song.id) {
@@ -113,6 +129,7 @@ class AudioService {
     }
   }
 
+  // Tắt chế độ shuffle
   Future<void> togglePlayPause() async {
     if (player.playing) {
       await player.pause();
@@ -121,6 +138,7 @@ class AudioService {
     }
   }
 
+  // Đặt chế độ shuffle
   void setShuffle(bool isShuffle) {
     _isShuffle = isShuffle;
     player.setShuffleModeEnabled(isShuffle);
@@ -131,8 +149,13 @@ class AudioService {
     player.setLoopMode(loopMode);
   }
 
+  // Hủy bỏ Stream và giải phóng tài nguyên
+  Future<void> dispose() async {
+    await _currentSongController.close();
+    await player.dispose();
+  }
+
+  Stream<Song> get currentSongStream => _currentSongController.stream;
   Future<void> playNextSong() => _playNextSong();
   Future<void> playPreviousSong() => _playPreviousSong();
-
-  Future<void> dispose() async => await player.dispose();
 }

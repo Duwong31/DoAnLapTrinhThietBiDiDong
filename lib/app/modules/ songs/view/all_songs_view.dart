@@ -94,20 +94,21 @@ class _AllSongsViewState extends State<AllSongsView> {
     await _loadMoreSongs();
   }
 
-  // hàm sẽ chuyển qua màn NowPlaying
-  Future<void> _navigateToNowPlaying(Song song, List<Song> allSongs) async {
+  // Khởi tạo và tải dữ liệu
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-    _songs = allSongs;
-    final returnedSong = await Get.toNamed(
-      Routes.songs_view,
-      arguments: {
-        'songs': allSongs,
-        'playingSong': song,
-      },
-    );
-    setState(() {
-      _currentlyPlaying = returnedSong ?? _audioService.currentSong;
-    });
+    await _audioService.player.play();
+    // _songs = allSongs;
+    // final returnedSong = await Get.toNamed(
+    //   Routes.songs_view,
+    //   arguments: {
+    //     'songs': allSongs,
+    //     'playingSong': song,
+    //   },
+    // );
+    // setState(() {
+    //   _currentlyPlaying = returnedSong ?? _audioService.currentSong;
+    // });
   }
 
   Widget _buildSongItem(Song song, List<Song> allSongs) {
@@ -141,7 +142,7 @@ class _AllSongsViewState extends State<AllSongsView> {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      onTap: () => _navigateToNowPlaying(song, allSongs),
+      onTap: () => _navigateToMiniPlayer(song, allSongs),
     );
   }
 
@@ -190,6 +191,7 @@ class _AllSongsViewState extends State<AllSongsView> {
             child: ListView.builder(
               controller: _scrollController,
               padding: const EdgeInsets.only(bottom: 90),
+              itemExtent: 70, // Đặt chiều cao cố định cho mỗi item
               itemCount: _songs.length + 1,
               itemBuilder: (context, index) {
                 if (index < _songs.length) {
@@ -200,10 +202,11 @@ class _AllSongsViewState extends State<AllSongsView> {
               },
             ),
           ),
-          StreamBuilder<PlayerState>(
-            stream: AudioService().playerStateStream,
+
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = AudioService().currentSong;
+              final current = snapshot.data ?? AudioService().currentSong;
               if (current == null) return const SizedBox.shrink();
               return Positioned(
                 left: 8,

@@ -64,7 +64,8 @@ abstract class _Paths {
   static const editProfile = '/editProfile';
   static const all_song_view = '/all_song_view';
   static const songs_view = '/songs_view';
-  static const artist = '/artist';
   static const addToPlaylist = '/add-to-playlist';
   static const createNewPlaylist = '/create-new-playlist';
+  static const artist = '/artist';
+
 }

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "499292540387",
-    "project_id": "soundflow-bb9bf",
-    "storage_bucket": "soundflow-bb9bf.firebasestorage.app"
+    "project_number": "570399798713",
+    "project_id": "soundflow-4fe40",
+    "storage_bucket": "soundflow-4fe40.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:499292540387:android:cd9313eac67c1cddf264d6",
+        "mobilesdk_app_id": "1:570399798713:android:e01cd79e85964a5b0eb268",
         "android_client_info": {
-          "package_name": "com.example.first_proj"
+          "package_name": "org.soundflow"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBUCf_MDULeDJawt0s59tdqC0R-Ds1hQ3w"
+          "current_key": "AIzaSyCjJJ840-Bh7FVqZjdU3kPkl0LRDHUZLPk"
         }
       ],
       "services": {

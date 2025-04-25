@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
@@ -16,48 +15,42 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
+class _HomeViewState extends State<HomeView>
+    with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
   final AudioService _audioService = AudioService();
-  late List<Song> _songs = [];
+  late final List<Song> _songs = [];
   Song? _currentlyPlaying;
 
   @override
   bool get wantKeepAlive => true;
 
-  Future<void> _navigateToNowPlaying(Song song, List<Song> allSongs) async {
-    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-    _songs = allSongs;
-    final returnedSong = await Get.toNamed(
-      Routes.songs_view,
-      arguments: {
-        'songs': allSongs,
-        'playingSong': song,
-      },
-    );
-    setState(() {
-      _currentlyPlaying = returnedSong ?? _audioService.currentSong;
-    });
+  // Khởi tạo và tải dữ liệu
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
+    await _audioService.setPlaylist(allSongs,
+        startIndex: allSongs.indexOf(song));
+    await _audioService.player.play();
   }
 
   Widget _buildSongGrid(BuildContext context, List<Song> songs) {
     return SizedBox(
       height: 120,
       child: Obx(() => GridView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 0.3,
-          mainAxisSpacing: 30,
-        ),
-        itemCount: controller.songs.length > 6 ? 6 : controller.songs.length,
-        itemBuilder: (context, index) {
-          return _buildSongCard(context, controller.songs[index]);
-        },
-      )),
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.3,
+              mainAxisSpacing: 30,
+            ),
+            itemCount:
+                controller.songs.length > 6 ? 6 : controller.songs.length,
+            itemBuilder: (context, index) {
+              return _buildSongCard(context, controller.songs[index]);
+            },
+          )),
     );
   }
 
@@ -78,19 +71,19 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             color: Colors.grey[200],
             child: song.image.isNotEmpty
                 ? Image.network(
-              song.image,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.music_note,
-                size: 24,
-                color: Colors.grey,
-              ),
-            )
+                    song.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.music_note,
+                      size: 24,
+                      color: Colors.grey,
+                    ),
+                  )
                 : const Icon(
-              Icons.music_note,
-              size: 24,
-              color: Colors.grey,
-            ),
+                    Icons.music_note,
+                    size: 24,
+                    color: Colors.grey,
+                  ),
           ),
         ),
         title: Text(
@@ -114,7 +107,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
         ),
         onTap: () {
           if (controller.songs.isNotEmpty) {
-            _navigateToNowPlaying(song, controller.songs);
+            _navigateToMiniPlayer(song, controller.songs);
           } else {
             Get.snackbar('Error', 'No songs available to play');
           }
@@ -123,7 +116,8 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, String imageUrl, String label, String routeName) {
+  Widget _buildCategoryItem(
+      BuildContext context, String imageUrl, String label, String routeName) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
     return Container(
       width: 100,
@@ -183,22 +177,56 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionHeader(title: "we_think_you_like".tr, textColor: textColor, route: Routes.all_song_view),
-                SizedBox(height: 225, child: _buildSongGrid(context, controller.songs)),
+                SectionHeader(
+                    title: "we_think_you_like".tr,
+                    textColor: textColor,
+                    route: Routes.all_song_view),
+                SizedBox(
+                    height: 225,
+                    child: _buildSongGrid(context, controller.songs)),
 
                 Dimes.height10,
-                SectionHeader(title: "music_genre".tr, textColor: textColor, route: Routes.album),
-                SizedBox(height: 122, child: ListView(scrollDirection: Axis.horizontal, children: [
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg', 'Pop', Routes.albumnow),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg', 'HipHop', Routes.albumnow),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg', 'EDM', Routes.albumnow),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg', 'Jazz', Routes.albumnow),
-                  _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg', 'Rock', Routes.albumnow),
-                ])),
+                SectionHeader(
+                    title: "music_genre".tr,
+                    textColor: textColor,
+                    route: Routes.album),
+                SizedBox(
+                    height: 122,
+                    child:
+                        ListView(scrollDirection: Axis.horizontal, children: [
+                      _buildCategoryItem(
+                          context,
+                          'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg',
+                          'Pop',
+                          Routes.albumnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg',
+                          'HipHop',
+                          Routes.albumnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg',
+                          'EDM',
+                          Routes.albumnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
+                          'Jazz',
+                          Routes.albumnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg',
+                          'Rock',
+                          Routes.albumnow),
+                    ])),
 
                 Dimes.height10,
                 // ARTIST LIST dynamic
-                SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
+                SectionHeader(
+                    title: "artists".tr,
+                    textColor: textColor,
+                    route: Routes.artist),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -209,40 +237,83 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: artistController.artistList.length >= 4 ? 4 : artistController.artistList.length,
+                      itemCount: artistController.artistList.length >= 4
+                          ? 4
+                          : artistController.artistList.length,
                       itemBuilder: (context, index) {
                         final artist = artistController.artistList[index];
-                        return _buildCategoryItem(context, artist.imageUrl ?? '', artist.name ?? '', Routes.albumnow);
+                        return _buildCategoryItem(
+                            context,
+                            artist.imageUrl ?? '',
+                            artist.name ?? '',
+                            Routes.albumnow);
                       },
                     );
                   }),
                 ),
 
                 Dimes.height10,
-                SectionHeader(title: "you_might_want_to_hear".tr, textColor: textColor, route: Routes.playlist),
-                SizedBox(height: 122, child: ListView(scrollDirection: Axis.horizontal, children: [
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg', 'For the Brokenhearted', Routes.playlistnow),
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg', 'The Other One', Routes.playlistnow),
-                ])),
+                SectionHeader(
+                    title: "you_might_want_to_hear".tr,
+                    textColor: textColor,
+                    route: Routes.playlist),
+                SizedBox(
+                    height: 122,
+                    child:
+                        ListView(scrollDirection: Axis.horizontal, children: [
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
+                          'For the Brokenhearted',
+                          Routes.playlistnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg',
+                          'The Other One',
+                          Routes.playlistnow),
+                    ])),
 
                 Dimes.height10,
-                SectionHeader(title: "chill".tr, textColor: textColor, route: Routes.playlist),
-                SizedBox(height: 122, child: ListView(scrollDirection: Axis.horizontal, children: [
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg', 'Mood Healer', Routes.playlistnow),
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg', 'Top Chill Vibes', Routes.playlistnow),
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg', 'Modern Chill', Routes.playlistnow),
-                  _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg', 'Addictive Lofi Vibes', Routes.playlistnow),
-                ])),
+                SectionHeader(
+                    title: "chill".tr,
+                    textColor: textColor,
+                    route: Routes.playlist),
+                SizedBox(
+                    height: 122,
+                    child:
+                        ListView(scrollDirection: Axis.horizontal, children: [
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg',
+                          'Mood Healer',
+                          Routes.playlistnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg',
+                          'Top Chill Vibes',
+                          Routes.playlistnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg',
+                          'Modern Chill',
+                          Routes.playlistnow),
+                      _buildCategoryItem(
+                          context,
+                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg',
+                          'Addictive Lofi Vibes',
+                          Routes.playlistnow),
+                    ])),
 
                 Dimes.height10,
               ],
             ),
           ),
 
-          StreamBuilder<PlayerState>(
-            stream: AudioService().playerStateStream,
+          // MiniPlayer
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = AudioService().currentSong;
+              final current = snapshot.data ?? AudioService().currentSong;
               if (current == null) return const SizedBox.shrink();
               return Positioned(
                 left: 8,
@@ -261,7 +332,8 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                       },
                     );
                     setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
+                      _currentlyPlaying =
+                          returnedSong ?? AudioService().currentSong;
                     });
                   },
                 ),
@@ -288,7 +360,8 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTextColor = textColor ?? Theme.of(context).textTheme.titleMedium?.color;
+    final effectiveTextColor =
+        textColor ?? Theme.of(context).textTheme.titleMedium?.color;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
@@ -297,10 +370,10 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: AppTheme.primary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: AppTheme.primary,
+                ),
           ),
           TextButton(
             onPressed: () => Get.toNamed(route),
