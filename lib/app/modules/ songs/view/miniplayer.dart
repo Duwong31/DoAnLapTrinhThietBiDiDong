@@ -63,7 +63,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               vertical: isSmallScreen ? 0 : 1,
             ),
             decoration: BoxDecoration(
-              color: Colors.orange[100],
+              color: const Color(0xFFFFE0B2), // Màu cố định (Orange Light)
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
@@ -117,6 +117,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: isSmallScreen ? 10 : 13,
+                                color: Colors.black, // Màu cố định cho tiêu đề
                               ),
                               scrollAxis: Axis.horizontal,
                               blankSpace: 20.0,
@@ -134,6 +135,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: isSmallScreen ? 10 : 13,
+                              color: Colors.black, // Màu cố định cho tiêu đề
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -143,7 +145,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       Text(
                         song.artist,
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          color: Colors.grey[700], // Màu cố định cho artist
                           fontSize: isSmallScreen ? 8 : 10,
                         ),
                         maxLines: 1,
@@ -158,13 +160,12 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   iconSize: 30,
                 ),
                 StreamBuilder<bool>(
-                  stream: _audioService.playerStateStream
-                      .map((state) => state.playing),
+                  stream: _audioService.playerStateStream.map((state) => state.playing),
                   builder: (context, snapshot) {
                     final isPlaying = snapshot.data ?? false;
                     return IconButton(
                       icon: Icon(
-                        isPlaying ? Icons.pause : Icons.play_arrow,           // Nếu đang phát nhạc (isPlaying == true) → hiển thị nút pause (Icons.pause) và ngược lại
+                        isPlaying ? Icons.pause : Icons.play_arrow, // Nếu đang phát nhạc (isPlaying == true) → hiển thị nút pause (Icons.pause) và ngược lại
                         size: 33,
                       ),
                       onPressed: () => _audioService.togglePlayPause(),

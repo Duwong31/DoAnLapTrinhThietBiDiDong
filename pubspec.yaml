@@ -13,8 +13,8 @@ dependencies:
   rxdart: ^0.28.0
   get_it:
   dartz:
-  google_sign_in: 
-  firebase_auth: 
+  google_sign_in:
+  firebase_auth:
   get: ^4.6.1
   flutter:
     sdk: flutter
