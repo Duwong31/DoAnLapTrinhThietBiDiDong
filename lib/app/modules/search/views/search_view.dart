@@ -14,16 +14,27 @@ class SearchView extends StatefulWidget {
   State<SearchView> createState() => _SearchViewState();
 }
 
-class _SearchViewState extends State<SearchView>  {
+class _SearchViewState extends State<SearchView> {
   final SearchPageController controller = Get.put(SearchPageController());
-  // final AudioService _audioService = AudioService();
   late List<Song> _songs = [];
-  Song? _currentlyPlaying;                    // Bài hát hiện tại đang phát
+  Song? _currentlyPlaying;
 
-  // Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-  //   await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-  //   await _audioService.player.play();
-  // }
+  Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
+    await AudioService().setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+    await AudioService().player.play();
+
+    final returnedSong = await Get.toNamed(
+      Routes.songs_view,
+      arguments: {
+        'playingSong': song,
+        'songs': allSongs,
+      },
+    );
+
+    setState(() {
+      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,9 +58,7 @@ class _SearchViewState extends State<SearchView>  {
                         children: [
                           IconButton(
                             icon: Icon(
-                              controller.isSearching.value
-                                  ? Icons.arrow_back
-                                  : Icons.search,
+                              controller.isSearching.value ? Icons.arrow_back : Icons.search,
                               color: Theme.of(context).iconTheme.color,
                             ),
                             onPressed: () {
@@ -66,8 +75,7 @@ class _SearchViewState extends State<SearchView>  {
                               onChanged: controller.onSearchChanged,
                               decoration: InputDecoration(
                                 hintText: "Search for songs, artists...",
-                                hintStyle: TextStyle(
-                                    color: Theme.of(context).hintColor),
+                                hintStyle: TextStyle(color: Theme.of(context).hintColor),
                                 border: InputBorder.none,
                               ),
                             ),
@@ -86,8 +94,6 @@ class _SearchViewState extends State<SearchView>  {
               ),
             ),
           ),
-
-          // MiniPlayer
           StreamBuilder<Song>(
             stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
@@ -131,10 +137,7 @@ class _SearchViewState extends State<SearchView>  {
           children: [
             Text(
               "Recent searches",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (controller.recentSearches.isNotEmpty)
               TextButton(
@@ -154,12 +157,10 @@ class _SearchViewState extends State<SearchView>  {
               itemBuilder: (context, index) {
                 final searchItem = controller.recentSearches[index];
                 return ListTile(
-                  leading: Icon(Icons.history,
-                      color: Theme.of(context).iconTheme.color),
+                  leading: Icon(Icons.history, color: Theme.of(context).iconTheme.color),
                   title: Text(searchItem),
                   trailing: IconButton(
-                    icon: Icon(Icons.close,
-                        color: Theme.of(context).iconTheme.color),
+                    icon: Icon(Icons.close, color: Theme.of(context).iconTheme.color),
                     onPressed: () => controller.removeSearch(index),
                   ),
                   onTap: () {
@@ -180,9 +181,7 @@ class _SearchViewState extends State<SearchView>  {
     return Obx(() {
       final results = controller.suggestions;
       if (results.isEmpty) {
-        return const Center(
-          child: Text("🔍 Nhập từ khóa để hiển thị gợi ý"),
-        );
+        return const Center(child: Text("🔍 Nhập từ khóa để hiển thị gợi ý"));
       }
       return ListView.separated(
         itemCount: results.length,
@@ -197,7 +196,6 @@ class _SearchViewState extends State<SearchView>  {
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
-                // errorBuilder: (context, error, stackTrace) => Icon(Icons.music_note),jj
               ),
             ),
             title: Text(song.title),
@@ -206,10 +204,8 @@ class _SearchViewState extends State<SearchView>  {
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();
-              // TODO: Thêm xử lý khi chọn bài hát
-              // Có thể thêm vào playlist hoặc phát ngay
-              _songs = results; // Cập nhật danh sách bài hát
-              AudioService().setPlaylist(results, startIndex: index);
+              _songs = results;
+              _navigateToMiniPlayer(song, _songs);
             },
           );
         },
