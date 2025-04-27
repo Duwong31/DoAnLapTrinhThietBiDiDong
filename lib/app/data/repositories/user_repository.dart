@@ -1,4 +1,9 @@
 part of 'repositories.dart';
+enum AddTrackResult {
+  success,
+  failure,
+  alreadyExists, 
+}
 
 abstract class UserBase {
   Future<bool> toggleNotify(bool val);
@@ -16,6 +21,7 @@ abstract class UserBase {
   Future<List<Playlist>> getPlaylists();
   Future<bool> removeTrackFromPlaylist(int playlistId, String trackId);
   Future<bool> deletePlaylist(int playlistId);
+  Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId);
 }
 
 class UserRepository extends BaseRepository implements UserBase {
@@ -107,5 +113,11 @@ class UserRepository extends BaseRepository implements UserBase {
   @override
   Future<bool> deletePlaylist(int playlistId) {
     return handleCall(() => ApiProvider.deletePlaylist(playlistId));
+  }
+
+  @override
+  Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) {
+    // Gọi đến ApiProvider, handleCall sẽ xử lý lỗi chung
+    return handleCall(() => ApiProvider.addTrackToPlaylist(playlistId, trackId));
   }
 }
