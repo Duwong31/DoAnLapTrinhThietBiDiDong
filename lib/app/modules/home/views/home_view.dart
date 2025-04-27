@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
@@ -15,8 +16,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView>
-    with AutomaticKeepAliveClientMixin {
+class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
   final AudioService _audioService = AudioService();
@@ -26,10 +26,17 @@ class _HomeViewState extends State<HomeView>
   @override
   bool get wantKeepAlive => true;
 
-  // Khởi tạo và tải dữ liệu
+  Future<void> _launchURL(String url) async {
+    Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-    await _audioService.setPlaylist(allSongs,
-        startIndex: allSongs.indexOf(song));
+    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
   }
 
@@ -54,8 +61,7 @@ class _HomeViewState extends State<HomeView>
   }
 
   Widget _buildSongCard(BuildContext context, Song song) {
-    final backgroundColor = Theme.of(context).appBarTheme.backgroundColor ??
-        Theme.of(context).scaffoldBackgroundColor;
+    final backgroundColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -76,17 +82,9 @@ class _HomeViewState extends State<HomeView>
                 ? Image.network(
               song.image,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(
-                Icons.music_note,
-                size: 24,
-                color: Colors.grey,
-              ),
+              errorBuilder: (context, error, stackTrace) => const Icon(Icons.music_note, size: 24, color: Colors.grey),
             )
-                : const Icon(
-              Icons.music_note,
-              size: 24,
-              color: Colors.grey,
-            ),
+                : const Icon(Icons.music_note, size: 24, color: Colors.grey),
           ),
         ),
         title: Text(
@@ -117,8 +115,7 @@ class _HomeViewState extends State<HomeView>
     );
   }
 
-  Widget _buildCategoryItem(
-      BuildContext context, String imageUrl, String label, String routeName) {
+  Widget _buildCategoryItem(BuildContext context, String imageUrl, String label, String routeName) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
     return Container(
       width: 100,
@@ -166,6 +163,23 @@ class _HomeViewState extends State<HomeView>
     );
   }
 
+  Widget _buildAdBanner(String imageUrl, {VoidCallback? onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -178,56 +192,35 @@ class _HomeViewState extends State<HomeView>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionHeader(
-                    title: "we_think_you_like".tr,
-                    textColor: textColor,
-                    route: Routes.all_song_view),
-                SizedBox(
-                    height: 225,
-                    child: _buildSongGrid(context, controller.songs)),
+                SectionHeader(title: "we_think_you_like".tr, textColor: textColor, route: Routes.all_song_view),
+                SizedBox(height: 225, child: _buildSongGrid(context, controller.songs)),
 
                 Dimes.height10,
-                SectionHeader(
-                    title: "music_genre".tr,
-                    textColor: textColor,
-                    route: Routes.genre),
-                SizedBox(
-                    height: 122,
-                    child:
-                        ListView(scrollDirection: Axis.horizontal, children: [
-                      _buildCategoryItem(
-                          context,
-                          'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg',
-                          'Pop',
-                          Routes.albumnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg',
-                          'HipHop',
-                          Routes.albumnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg',
-                          'EDM',
-                          Routes.albumnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
-                          'Jazz',
-                          Routes.albumnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg',
-                          'Rock',
-                          Routes.albumnow),
-                    ])),
 
+                // QUẢNG CÁO BANNER 1
+                _buildAdBanner('https://tongweivietnam.com/wp-content/uploads/2025/03/hello88-%E2%80%93-cai-ten-khong-phai-dang-vua-trong-lang-ca-cuoc.jpg',
+                    onTap: () => _launchURL('https://mcafee6.uk.net/'),
+                ),
+
+                SectionHeader(title: "music_genre".tr, textColor: textColor, route: Routes.genre),
+                SizedBox(
+                  height: 122,
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg', 'Pop', Routes.albumnow),
+                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg', 'HipHop', Routes.albumnow),
+                    _buildCategoryItem(context, 'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg', 'EDM', Routes.albumnow),
+                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg', 'Jazz', Routes.albumnow),
+                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg', 'Rock', Routes.albumnow),
+                  ]),
+                ),
                 Dimes.height10,
-                // ARTIST LIST dynamic
-                SectionHeader(
-                    title: "artists".tr,
-                    textColor: textColor,
-                    route: Routes.artist),
+
+                // QUẢNG CÁO BANNER 1
+                _buildAdBanner('https://lh7-us.googleusercontent.com/docsz/AD_4nXezl_SrxAm9dKv-wMeFKThHwP6U7Np5w7KUVGjJa8-8R00MribXOdkm17HXQJid_wJM7i4xAmB-Oz0K9J1nEhqBLNsUzLGxA8EBXNPKDQ64I1l9YV5DP0UuGcgOcarXWiJU5qOG2NMCIVOmwABdYzYx1ESG?key=jR9BtSOkPttHBYWeWMkvrA',
+                    onTap: () => _launchURL('https://3okvip.info/'),
+                ),
+
+                SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -238,9 +231,7 @@ class _HomeViewState extends State<HomeView>
                     }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: artistController.artistList.length >= 4
-                          ? 4
-                          : artistController.artistList.length,
+                      itemCount: artistController.artistList.length >= 4 ? 4 : artistController.artistList.length,
                       itemBuilder: (context, index) {
                         final artist = artistController.artistList[index];
                         return _buildCategoryItem(
@@ -254,57 +245,26 @@ class _HomeViewState extends State<HomeView>
                 ),
 
                 Dimes.height10,
-                SectionHeader(
-                    title: "you_might_want_to_hear".tr,
-                    textColor: textColor,
-                    route: Routes.playlist
-                ),
+                SectionHeader(title: "you_might_want_to_hear".tr, textColor: textColor, route: Routes.playlist),
                 SizedBox(
-                    height: 122,
-                    child:
-                        ListView(scrollDirection: Axis.horizontal, children: [
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
-                          'For the Brokenhearted',
-                          Routes.playlistnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg',
-                          'The Other One',
-                          Routes.playlistnow),
-                    ])),
+                  height: 122,
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg', 'For the Brokenhearted', Routes.playlistnow),
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg', 'The Other One', Routes.playlistnow),
+                  ]),
+                ),
 
                 Dimes.height10,
-                SectionHeader(
-                    title: "chill".tr,
-                    textColor: textColor,
-                    route: Routes.playlist),
+                SectionHeader(title: "chill".tr, textColor: textColor, route: Routes.playlist),
                 SizedBox(
-                    height: 122,
-                    child:
-                        ListView(scrollDirection: Axis.horizontal, children: [
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg',
-                          'Mood Healer',
-                          Routes.playlistnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg',
-                          'Top Chill Vibes',
-                          Routes.playlistnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg',
-                          'Modern Chill',
-                          Routes.playlistnow),
-                      _buildCategoryItem(
-                          context,
-                          'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg',
-                          'Addictive Lofi Vibes',
-                          Routes.playlistnow),
-                    ])),
+                  height: 122,
+                  child: ListView(scrollDirection: Axis.horizontal, children: [
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg', 'Mood Healer', Routes.playlistnow),
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg', 'Top Chill Vibes', Routes.playlistnow),
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg', 'Modern Chill', Routes.playlistnow),
+                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg', 'Addictive Lofi Vibes', Routes.playlistnow),
+                  ]),
+                ),
 
                 Dimes.height10,
               ],
@@ -328,14 +288,10 @@ class _HomeViewState extends State<HomeView>
                   onTap: () async {
                     final returnedSong = await Get.toNamed(
                       Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _songs,
-                      },
+                      arguments: {'playingSong': current, 'songs': _songs},
                     );
                     setState(() {
-                      _currentlyPlaying =
-                          returnedSong ?? AudioService().currentSong;
+                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
                     });
                   },
                 ),
@@ -362,8 +318,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTextColor =
-        textColor ?? Theme.of(context).textTheme.titleMedium?.color;
+    final effectiveTextColor = textColor ?? Theme.of(context).textTheme.titleMedium?.color;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
@@ -372,19 +327,17 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: AppTheme.primary,
-                ),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: AppTheme.primary,
+            ),
           ),
           TextButton(
             onPressed: () => Get.toNamed(route),
             child: Center(
               child: Text(
                 "more".tr,
-                style: TextStyle(
-                  color: effectiveTextColor,
-                ),
+                style: TextStyle(color: effectiveTextColor),
               ),
             ),
           ),
