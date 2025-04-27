@@ -32,7 +32,7 @@ class AlbumView extends GetView<AlbumController> {
         title: Text(
           'Album',
           style: TextStyle(
-            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            color: Theme.of(context).textTheme.titleLarge?.color ?? AppTheme.labelColor,
             fontSize: 20,
           ),
         ),

@@ -8,6 +8,7 @@ import '../../../core/styles/style.dart';
 import '../../albums & playlist/views/album_page_view.dart';
 import '../../albums & playlist/views/playlist_page_view.dart';
 import '../../home/controllers/home_controller.dart';
+import '../../like/views/like_view.dart';
 import '../controllers/library_controller.dart';
 
 class LibraryView extends StatefulWidget {
@@ -173,18 +174,6 @@ class _LibraryViewState extends State<LibraryView> {
           MaterialPageRoute(builder: (context) => destination),
         );
       },
-    );
-  }
-}
-
-// Dummy Views
-class LikeView extends StatelessWidget {
-  const LikeView({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Liked tracks")),
     );
   }
 }

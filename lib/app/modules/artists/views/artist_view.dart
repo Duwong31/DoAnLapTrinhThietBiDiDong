@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../../models/artist.dart';
 import '../../../core/styles/style.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/artist_controller.dart';
 
 class ArtistView extends StatelessWidget {
@@ -12,25 +13,28 @@ class ArtistView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        elevation: .1,
+        elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_outlined,
             color: Theme.of(context).iconTheme.color,
           ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
         ),
         title: Text(
           'Artist',
-          style: Theme.of(context).appBarTheme.titleTextStyle ??
-              TextStyle(
-                color: Theme.of(context).textTheme.titleLarge?.color,
-                fontSize: 20,
-              ),
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? AppTheme.labelColor,
+            fontSize: 20,
+          ),
         ),
       ),
       body: GetX<ArtistController>(

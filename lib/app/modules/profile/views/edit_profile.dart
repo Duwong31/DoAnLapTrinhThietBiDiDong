@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io'; 
+import 'dart:io';
 
 import '../../../core/styles/style.dart';
+import '../../../routes/app_pages.dart';
 import '../controllers/edit_profile_controller.dart';
 
 class EditProfilePage extends StatelessWidget {
@@ -16,11 +17,28 @@ class EditProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.1,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
-            Get.back();
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
           },
+        ),
+        title: Text(
+          'Edit Profile',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
+          ),
         ),
         actions: [
           TextButton(
@@ -28,10 +46,6 @@ class EditProfilePage extends StatelessWidget {
             child: const Text('Save', style: TextStyle(color: Colors.orange)),
           ),
         ],
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: const Text('Edit Profile', style: TextStyle(color: Colors.black)), // Add a title
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -69,7 +83,7 @@ class EditProfilePage extends StatelessWidget {
                       onTap: ctr.changeAvatar,
                       child: const Text(
                         'Change photo',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.w500),
+                        style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ],
@@ -81,7 +95,7 @@ class EditProfilePage extends StatelessWidget {
             // --- Full Name TextField ---
             Row(
               children: [
-                Text(
+                const Text(
                   'Name:',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
