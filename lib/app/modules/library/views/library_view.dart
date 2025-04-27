@@ -20,14 +20,8 @@ class LibraryView extends StatefulWidget {
 
 class _LibraryViewState extends State<LibraryView> {
   final LibraryController controller = Get.put(LibraryController());
-  // final AudioService _audioService = AudioService();
-  final List<Song> _songs = []; // Danh sách bài hát
-  Song? _currentlyPlaying;      // Bài hát hiện tại đang phát
-
-  // Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-  //   await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-  //   await _audioService.player.play();
-  // }
+  final List<Song> _songs = [];
+  Song? _currentlyPlaying;
 
   @override
   Widget build(BuildContext context) {
@@ -40,18 +34,16 @@ class _LibraryViewState extends State<LibraryView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Library list
                   Column(
                     children: [
-                      _buildMenuItem(context, 'Liked tracks', const LikeView()),
-                      _buildMenuItem(context, 'Playlists', const PlayListView()),
-                      _buildMenuItem(context, 'Albums', AlbumView()),
-                      _buildMenuItem(context, 'Following', const FollowView()),
-                      _buildMenuItem(context, 'Stations', const StationView()),
-                      _buildMenuItem(context, 'Uploads', const UploadView()),
+                      _buildMenuItem(context, 'liked_tracks'.tr, const LikeView()),
+                      _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
+                      _buildMenuItem(context, 'albums'.tr, AlbumView()),
+                      _buildMenuItem(context, 'following'.tr, const FollowView()),
+                      _buildMenuItem(context, 'stations'.tr, const StationView()),
+                      _buildMenuItem(context, 'uploads'.tr, const UploadView()),
                     ],
                   ),
-
                   Divider(
                     color: Theme.of(context).dividerColor,
                     height: 1,
@@ -59,8 +51,6 @@ class _LibraryViewState extends State<LibraryView> {
                     indent: 15,
                     endIndent: 15,
                   ),
-
-                  // Playlist
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -69,17 +59,16 @@ class _LibraryViewState extends State<LibraryView> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text(
-                              "My playlist",
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.primary),
+                            Text(
+                              "my_playlist".tr,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primary,
+                              ),
                             ),
                             TextButton(
-                              onPressed: () {
-                                // Navigate to all songs page
-                              },
+                              onPressed: () {},
                               child: Container(
                                 width: 60,
                                 height: 30,
@@ -87,10 +76,9 @@ class _LibraryViewState extends State<LibraryView> {
                                   color: const Color(0xFFE8E8E8),
                                   borderRadius: BorderRadius.circular(50),
                                 ),
-                                child: const Center(
-                                  child: Text('See all',
-                                      style: TextStyle(
-                                          color: AppTheme.labelColor)),
+                                child: Center(
+                                  child: Text('see_all'.tr,
+                                      style: const TextStyle(color: AppTheme.labelColor)),
                                 ),
                               ),
                             ),
@@ -112,23 +100,23 @@ class _LibraryViewState extends State<LibraryView> {
                               ),
                             ),
                             Dimes.width10,
-                            const Text(
-                              'Best song of Jack - J97',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold),
+                            Text(
+                              'best_song_of_jack'.tr,
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold
+                              ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 180), // Chừa chỗ cho MiniPlayer
+                      const SizedBox(height: 180),
                     ],
                   ),
                 ],
               ),
             ),
           ),
-
-          // MiniPlayer
           StreamBuilder<Song>(
             stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
@@ -183,8 +171,8 @@ class FollowView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Following")),
+    return Scaffold(
+      body: Center(child: Text("following".tr)),
     );
   }
 }
@@ -194,8 +182,8 @@ class StationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Stations")),
+    return Scaffold(
+      body: Center(child: Text("stations".tr)),
     );
   }
 }
@@ -205,8 +193,8 @@ class UploadView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: Text("Your uploads")),
+    return Scaffold(
+      body: Center(child: Text("your_uploads".tr)),
     );
   }
 }

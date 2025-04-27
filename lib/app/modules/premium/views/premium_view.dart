@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Keep Get if needed for navigation/state later
+import 'package:get/get.dart';
 
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
@@ -7,9 +7,8 @@ import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
-import '../../profile/widgets/widgets.dart'; // Ensure this path is correct
+import '../../profile/widgets/widgets.dart';
 
-// Define your colors
 const darkTextColor = Colors.black87;
 const mediumTextColor = Color(0xFF616161);
 const lightGrey = Color(0xFFEEEEEE);
@@ -22,17 +21,16 @@ class PremiumView extends StatefulWidget {
 }
 
 class _PremiumViewState extends State<PremiumView> {
-  final List<Song> _songs = []; // Danh sách bài hát
+  final List<Song> _songs = [];
   Song? _currentlyPlaying;
 
   @override
   Widget build(BuildContext context) {
-    // Get the background color from appBarTheme or scaffoldBackgroundColor
     Color backgroundColor = Theme.of(context).appBarTheme.backgroundColor ??
         Theme.of(context).scaffoldBackgroundColor;
 
     return Scaffold(
-      backgroundColor: backgroundColor, // Set background dynamically
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -40,22 +38,19 @@ class _PremiumViewState extends State<PremiumView> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // --- Hero Element ---
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Replace with your actual logo widget
                     Image.asset(
-                      AppImage.logo, // Make sure AppImage.logo path is correct
+                      AppImage.logo,
                       width: 32,
-                      // Add errorBuilder for robustness
                       errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.music_note, size: 32, color: AppTheme.primary),
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      "Premium", // Already English
-                      style: TextStyle(
+                    Dimes.height8,
+                    Text(
+                      'premium'.tr, // <-- Dùng GetX tr
+                      style: const TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primary,
@@ -65,7 +60,7 @@ class _PremiumViewState extends State<PremiumView> {
                 ),
                 Dimes.height15,
                 Text(
-                  "Elevate Your Music Experience",
+                  'elevate_music'.tr, // <-- Dùng GetX tr
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,
@@ -76,38 +71,41 @@ class _PremiumViewState extends State<PremiumView> {
                         : Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 25),
-
-                // --- Benefits ---
+                Dimes.height30,
                 BoxContainer(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start, // Căn chỉnh nội dung
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Why Premium?', style: TextStyle(color: AppTheme.labelColor, fontSize: 18, fontFamily: 'Noto Sans', fontWeight: FontWeight.w800)),
+                      Text(
+                        'why_premium'.tr,
+                        style: const TextStyle(
+                            color: AppTheme.labelColor,
+                            fontSize: 18,
+                            fontFamily: 'Noto Sans',
+                            fontWeight: FontWeight.w800),
+                      ),
                       const Divider(color: lightGrey, thickness: 1),
-                      _buildBenefitItem(Icons.headset_off_outlined, "Ad-Free Listening"),
-                      _buildBenefitItem(Icons.download_for_offline_outlined, "Download & Offline Playback"),
-                      _buildBenefitItem(Icons.volume_up_outlined, "Highest Audio Quality"),
-                      _buildBenefitItem(Icons.skip_next_outlined, "Unlimited Skips"),
+                      _buildBenefitItem(Icons.headset_off_outlined, 'ad_free'.tr),
+                      _buildBenefitItem(Icons.download_for_offline_outlined, 'offline_playback'.tr),
+                      _buildBenefitItem(Icons.volume_up_outlined, 'high_quality'.tr),
+                      _buildBenefitItem(Icons.skip_next_outlined, 'unlimited_skips'.tr),
                     ],
                   ),
                 ),
                 Dimes.height50,
-
-                // --- Primary CTA ---
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.primary,
-                    minimumSize: const Size(double.infinity, 50), // Full width
+                    minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 15),
                   ),
                   onPressed: () {},
-                  child: const Text(
-                    "GET PREMIUM NOW", // Translated
-                    style: TextStyle(
+                  child: Text(
+                    'get_premium_now'.tr,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -115,18 +113,16 @@ class _PremiumViewState extends State<PremiumView> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 15),
-
-                // --- Footer Links ---
+                Dimes.height15,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextButton(onPressed: () { /* Handle Restore */}, child: const Text("Restore", style: TextStyle(color: mediumTextColor, fontSize: 12))),
-                    TextButton(onPressed: () { /* Handle Terms */}, child: const Text("Terms", style: TextStyle(color: mediumTextColor, fontSize: 12))),
-                    TextButton(onPressed: () { /* Handle Privacy */}, child: const Text("Privacy", style: TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(onPressed: () {}, child: Text('restore'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(onPressed: () {}, child: Text('terms'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(onPressed: () {}, child: Text('privacy'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
                   ],
                 ),
-                const SizedBox(height: 30),
+                Dimes.height30,
               ],
             ),
           ),
@@ -164,7 +160,6 @@ class _PremiumViewState extends State<PremiumView> {
     );
   }
 
-  // Helper widget for benefit items
   Widget _buildBenefitItem(IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -172,7 +167,7 @@ class _PremiumViewState extends State<PremiumView> {
         children: [
           Icon(icon, color: AppTheme.primary, size: 24),
           const SizedBox(width: 15),
-          Expanded( // Use Expanded to prevent text overflow issues
+          Expanded(
             child: Text(text, style: const TextStyle(fontSize: 16, color: mediumTextColor)),
           ),
         ],
