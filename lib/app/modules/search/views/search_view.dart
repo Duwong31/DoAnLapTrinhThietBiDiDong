@@ -3,8 +3,8 @@ import 'package:get/get.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
+import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
-import '../../home/controllers/home_controller.dart';
 import '../controllers/search_page_controller.dart';
 
 class SearchView extends StatefulWidget {
@@ -74,7 +74,7 @@ class _SearchViewState extends State<SearchView> {
                               onTap: controller.startSearch,
                               onChanged: controller.onSearchChanged,
                               decoration: InputDecoration(
-                                hintText: "Search for songs, artists...",
+                                hintText: "search_hint".tr,
                                 hintStyle: TextStyle(color: Theme.of(context).hintColor),
                                 border: InputBorder.none,
                               ),
@@ -84,7 +84,7 @@ class _SearchViewState extends State<SearchView> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  Dimes.height20,
                   Obx(() => Expanded(
                     child: controller.isSearching.value
                         ? _buildSearchResultView()
@@ -136,20 +136,20 @@ class _SearchViewState extends State<SearchView> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Recent searches",
+              "recent_searches".tr,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             if (controller.recentSearches.isNotEmpty)
               TextButton(
                 onPressed: controller.clearRecentSearches,
-                child: const Text("Clear all", style: TextStyle(color: Colors.red)),
+                child: Text("clear_all".tr, style: const TextStyle(color: Colors.red)),
               ),
           ],
         )),
-        const SizedBox(height: 10),
+        Dimes.height10,
         Obx(() {
           if (controller.recentSearches.isEmpty) {
-            return const Text("No recent searches");
+            return Text("no_recent_searches".tr);
           }
           return Expanded(
             child: ListView.builder(
@@ -181,7 +181,7 @@ class _SearchViewState extends State<SearchView> {
     return Obx(() {
       final results = controller.suggestions;
       if (results.isEmpty) {
-        return const Center(child: Text("🔍 Nhập từ khóa để hiển thị gợi ý"));
+        return Center(child: Text("enter_keyword_to_show_suggestions".tr));
       }
       return ListView.separated(
         itemCount: results.length,

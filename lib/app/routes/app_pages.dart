@@ -27,6 +27,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/library/bindings/library_binding.dart';
 import '../modules/library/views/library_view.dart';
+import '../modules/like/bindings/like_view.dart';
+import '../modules/like/views/like_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
 import '../modules/notifications/views/notifications_view.dart';
@@ -82,7 +84,7 @@ class AppPages {
     GetPage(
       name: _Paths.splash,
       page: () => const SplashView(),
-      // binding: SplashBinding(),
+      binding: SplashBinding(),
     ),
     GetPage(
       name: _Paths.welcome,
@@ -184,12 +186,12 @@ class AppPages {
         page: () => const ArtistView(),
         binding: ArtistBinding()),
     GetPage(
-        name: _Paths.createNewPlaylist,
-        page: () => const CreateNewPlaylist(),
-        binding: CreateNewPlaylistBinding()),
-    GetPage(
         name: _Paths.genre,
         page: () => const GenreView(),
         binding: GenreBinding()),
+    GetPage(
+        name: _Paths.liked,
+        page: () => const LikeView(),
+        binding: LikeBinding()),
   ];
 }

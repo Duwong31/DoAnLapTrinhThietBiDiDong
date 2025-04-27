@@ -100,17 +100,18 @@ class ThemesView extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Obx(() {
           final isDarkMode = themeController.themeMode.value == ThemeMode.dark;
           return Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Text(
-                'Current Theme: ${isDarkMode ? 'Dark' : 'Light'}',
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 20),
+              // Text(
+              //   'Current Theme: ${isDarkMode ? 'Dark' : 'Light'}',
+              //   style: Theme.of(context).textTheme.headlineSmall,
+              // ),
+              // const SizedBox(height: 20),
               SwitchListTile(
                 title: Text(isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'),
                 value: isDarkMode,
