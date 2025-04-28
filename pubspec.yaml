@@ -58,6 +58,7 @@ dependencies:
   spotify_sdk: ^3.0.2
   marquee: ^2.2.3
   collection: ^1.18.0
+  flutter_svg: ^2.1.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

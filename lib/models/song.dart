@@ -7,6 +7,7 @@ class SongCollection {
   final String image;
   final int duration;
   final List<Song> songs;
+  bool isFavorite;
 
   SongCollection({
     required this.id,
@@ -17,6 +18,7 @@ class SongCollection {
     required this.image,
     required this.duration,
     required this.songs,
+    required this.isFavorite
   });
 
   factory SongCollection.fromJson(Map<String, dynamic> json) {
@@ -33,6 +35,7 @@ class SongCollection {
       image: json['image'],
       duration: json['duration'],
       songs: songList,
+      isFavorite: json['is_favorite'] ?? false,
     );
   }
 }
@@ -45,6 +48,7 @@ class Song {
   final String source;
   final String image;
   final int duration;
+  bool isFavorite;
 
   Song({
     required this.id,
@@ -54,6 +58,7 @@ class Song {
     required this.source,
     required this.image,
     required this.duration,
+    required this.isFavorite
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
@@ -65,12 +70,13 @@ class Song {
       source: json['source'],
       image: json['image'],
       duration: int.tryParse(json['duration'].toString()) ?? 0,
+      isFavorite: json['is_favorite'] ?? false,
     );
   }
 
   @override
   String toString() {
-    return 'Song{id: $id, title: $title, album: $album, artist: $artist, duration: $duration}';
+    return 'Song{id: $id, title: $title, album: $album, artist: $artist, duration: $duration, isFavorite: $isFavorite}';
   }
 }
 

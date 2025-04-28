@@ -80,7 +80,7 @@ class AppPages {
     GetPage(
       name: _Paths.splash,
       page: () => const SplashView(),
-      // binding: SplashBinding(),
+      binding: SplashBinding(),
     ),
     GetPage(
       name: _Paths.welcome,
@@ -182,9 +182,5 @@ class AppPages {
         page: () => const ArtistView(),
         binding: ArtistBinding()
     ),
-    GetPage(
-        name: _Paths.createNewPlaylist,
-        page: () => const CreateNewPlaylist(),
-        binding: CreateNewPlaylistBinding())
   ];
 }

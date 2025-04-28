@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:marquee/marquee.dart';
 import '../../../../models/duration_state.dart';
 import '../../../../models/song.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
+import '../../../core/utilities/image.dart';
+import '../../library/views/library_view.dart';
 import '../bindings/audio_service.dart';
 import '../controllers/songs_controller.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class NowPlaying extends StatelessWidget {
   final Song playingSong;
@@ -217,14 +221,21 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 return Expanded(
                                   child: Column(
                                     children: <Widget>[
-                                      Text(
-                                        song.title,
-                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                          color: Theme.of(context).textTheme.bodyMedium!.color,
-                                          fontFamily: 'Roboto',
+                                      SizedBox(
+                                        height: 24, // Chiều cao cố định
+                                        child: Marquee(
+                                          text: song.title,
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                                            fontFamily: 'Roboto',
+                                            fontSize: 17
+                                          ),
+                                          blankSpace: 120.0, // Khoảng trống giữa các lần lặp
+                                          velocity: 50.0, // Tốc độ chạy chữ
+                                          // startPadding: 10.0, // Khoảng cách từ lề
+                                          fadingEdgeStartFraction: 0.1,
+                                          fadingEdgeEndFraction: 0.1,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 5),
                                       Center(
@@ -233,9 +244,9 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                             color: Theme.of(context).textTheme.bodyMedium!.color,
                                             fontFamily: 'Roboto',
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -245,14 +256,15 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                             ),
 
                             const SizedBox(width: 10),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.favorite_border_outlined,
-                                size: 20,
-                                color: Theme.of(context).textTheme.bodyMedium!.color,
-                              ),
-                            ),
+                            // IconButton(
+                            //   // icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
+                            //   // onPressed: () async {
+                            //   //   await addFavorite(songId);
+                            //   //   setState(() {
+                            //   //     isFavorite = true; // đổi biểu tượng ❤️
+                            //   //   });
+                            //   // },
+                            // ),
                           ],
                         ),
                       ),
@@ -316,9 +328,13 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               iconSize: 35,
                             ),
                             IconButton(
-                              icon: const Icon(
-                                Icons.skip_previous_outlined,
-                                color: Colors.black,
+                              icon: SvgPicture.asset(
+                                AppImage.previousSong,    // icon previous_song
+                                height: 55,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               onPressed: () => controller.setPreviousSong(widget.songs),
                               iconSize: 60,
@@ -337,7 +353,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
 
                                 final playState = snapshot.data!;
                                 final processingState = playState.processingState;
-                                final playing = playState.playing;
+                                final isPlaying = playState.playing;
 
                                 if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
                                   return Container(
@@ -362,12 +378,16 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                   );
                                 }
                                 return IconButton(
-                                  icon: Icon(
-                                    playing ? Icons.pause : Icons.play_arrow_sharp,
-                                    color: Colors.black,
+                                  icon: SvgPicture.asset(
+                                    isPlaying ? AppImage.pauseSong : AppImage.playSong,   // pause/play
+                                    height: 60,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.black,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   onPressed: () async {
-                                    if (playing) {
+                                    if (isPlaying) {
                                       await controller.player.pause();
                                       controller.pauseRotationAnim();
                                     } else {
@@ -381,9 +401,13 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                             ),
 
                             IconButton(
-                              icon: const Icon(
-                                Icons.skip_next_outlined,
-                                color: Colors.black,
+                              icon: SvgPicture.asset(
+                                AppImage.nextSong,                  // icon next_song
+                                height: 55,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               onPressed: () => controller.setNextSong(widget.songs),
                               iconSize: 60,
