@@ -61,7 +61,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               vertical: isSmallScreen ? 0 : 1,
             ),
             decoration: BoxDecoration(
-              color: Colors.orange[100],
+              color: const Color(0xFFFFE0B2), // Màu cố định (Orange Light)
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
@@ -115,7 +115,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       Text(
                         song.artist,
                         style: TextStyle(
-                          color: Colors.grey[700],
+                          color: Colors.grey[700], // Màu cố định cho artist
                           fontSize: isSmallScreen ? 8 : 10,
                         ),
                         maxLines: 1,

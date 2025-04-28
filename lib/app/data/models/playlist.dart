@@ -64,7 +64,8 @@ class Playlist {
 
   @override
   int get hashCode => id.hashCode ^ name.hashCode ^ trackIds.hashCode;
-
+  int get trackCount => trackIds.length;
+  
    @override
    String toString() {
       return 'Playlist(id: $id, name: $name, trackIds: $trackIds)';

@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 import '../core/styles/style.dart';
 import '../modules/profile/controllers/profile_controller.dart';
@@ -13,10 +15,11 @@ class UserAvatar extends GetView<ProfileController> {
   });
   final double width, padding;
   final bool isShadow;
+
   @override
   Widget build(BuildContext context) {
     return Obx(
-      () => AvatarCustom(
+          () => AvatarCustom(
         avatar: controller.user.value?.avatar,
         width: width,
         isShadow: isShadow,
@@ -37,45 +40,51 @@ class AvatarCustom extends StatelessWidget {
     this.isShadow = false,
     this.child,
   });
+
   final Widget? child;
   final String? avatar;
   final double width, padding;
   final Color? bg, color;
   final bool isShadow;
+
   @override
   Widget build(BuildContext context) {
     return VxCircle(
-      customDecoration: isShadow
-          ? BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(.3),
-                  blurRadius: 4,
-                )
-              ],
-              shape: BoxShape.circle,
-              color: bg ?? Colors.white,
-            )
-          : null,
-      backgroundColor: bg ?? context.primaryColor,
+      customDecoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: bg ?? AppTheme.primary, // luôn là trắng
+        boxShadow: isShadow
+            ? [
+          BoxShadow(
+            color: Colors.black.withOpacity(.3),
+            blurRadius: 4,
+          )
+        ]
+            : [],
+      ),
+      backgroundColor: bg ?? Colors.white, // không đổi theo theme
       radius: width,
       child: Padding(
         padding: EdgeInsets.all(padding),
         child: child ??
             (avatar == null || avatar!.isEmpty
-                ? Icon(Icons.person, color: color ?? Colors.white)
+                ? Icon(
+              Icons.person,
+              color: color ?? AppTheme.background, // luôn là đen
+              size: width * 0.5,
+            )
                 : ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: CachedNetworkImage(
-                      imageUrl: avatar!,
-                      errorWidget: (_, item, child) => Icon(
-                        Icons.person,
-                        color: color ?? Colors.white,
-                        size: width * .4,
-                      ),
-                      fit: BoxFit.cover,
-                    ),
-                  )),
+              borderRadius: BorderRadius.circular(100),
+              child: CachedNetworkImage(
+                imageUrl: avatar!,
+                errorWidget: (_, item, child) => Icon(
+                  Icons.person,
+                  color: color ?? Colors.black, // luôn là đen
+                  size: width * 0.5,
+                ),
+                fit: BoxFit.cover,
+              ),
+            )),
       ),
     );
   }

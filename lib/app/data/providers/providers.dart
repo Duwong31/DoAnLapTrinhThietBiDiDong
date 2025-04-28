@@ -22,6 +22,7 @@ import '../models/dashboard_model.dart';
 import '../models/models.dart';
 import '../models/review_listing_model.dart';
 import '../models/voucher_model/voucher.dart';
+import '../repositories/repositories.dart';
 // *** BỎ IMPORT providers.dart KHỎI CHÍNH NÓ ***
 // import 'providers.dart'; // <-- XÓA DÒNG NÀY
 
@@ -808,6 +809,43 @@ class UserApiService extends BaseApiService {
     }
     // handleApiError sẽ tự động xử lý DioException và lỗi 401
   }
+
+  Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) async {
+    // Gọi phương thức post kế thừa từ BaseApiService
+    // Nó đã bao gồm handleApiError và auth header
+    try {
+      final response = await post<dynamic>( // Kiểu trả về có thể là dynamic hoặc Map<String, dynamic>
+        ApiUrl.addTrackToPlaylist(playlistId), // Lấy URL từ ApiUrl
+        data: {'track_id': trackId},          // Body của request
+        // options: getOptions() // Không cần thiết, post đã tự gọi
+      );
+
+      // Xử lý kết quả dựa trên status code và body response từ backend của bạn
+      if (response.statusCode == 200 || response.statusCode == 201) {
+          // Kiểm tra thêm status trong body nếu backend trả về {status: 1, ...}
+          if (response.data != null && response.data['status'] == 1) {
+             AppUtils.log('Successfully added track $trackId to playlist $playlistId via API.');
+             return AddTrackResult.success;
+          } else {
+             AppUtils.log('API indicated failure adding track (status != 1 or missing). Response: ${response.data}');
+             return AddTrackResult.failure;
+          }
+      } else if (response.statusCode == 409) { // Conflict - Track đã tồn tại
+          AppUtils.log('Track $trackId already exists in playlist $playlistId (409 Conflict).');
+          return AddTrackResult.alreadyExists;
+      } else {
+          // Các lỗi khác (403, 404, 500...)
+          AppUtils.log('Failed to add track. API returned status ${response.statusCode}. Response: ${response.data}');
+          // handleApiError có thể đã log lỗi, nhưng ta trả về failure ở đây
+          return AddTrackResult.failure;
+      }
+    } catch (e) {
+       // Lỗi DioException hoặc lỗi khác đã được handleApiError log
+       // Chỉ cần trả về failure
+       AppUtils.log('Exception caught during addTrackToPlaylist API call: $e');
+       return AddTrackResult.failure;
+    }
+  }
 }
 
 
@@ -1222,4 +1260,6 @@ class ApiProvider {
   
   static Future<bool> deletePlaylist(int playlistId) =>
       _userService.deletePlaylist(playlistId);
+  static Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) =>
+      _userService.addTrackToPlaylist(playlistId, trackId);
 }

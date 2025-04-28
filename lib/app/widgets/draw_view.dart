@@ -53,14 +53,14 @@ class DrawerView extends StatelessWidget {
                       ),
                     ),
                     Dimes.width5,
-                    Image.asset(
-                      AppImage.edit,
-                      color: AppTheme.secondary,
-                      height: 15,
-                    ).onInkTap(() {
-                      drawerKey.currentState!.openEndDrawer();
-                      Get.toNamed(Routes.profile);
-                    })
+                    // Image.asset(
+                    //   AppImage.edit,
+                    //   color: AppTheme.secondary,
+                    //   height: 15,
+                    // ).onInkTap(() {
+                    //   drawerKey.currentState!.openEndDrawer();
+                    //   Get.toNamed(Routes.profile);
+                    // })
                   ],
                 )
               ],
@@ -72,19 +72,21 @@ class DrawerView extends StatelessWidget {
           ListTile(
             minLeadingWidth: 0,
             title: 'Notifications'.text.size(16).make(),
-            leading: 'alert'.icon,
+            leading: Icon(Icons.notifications_none, color: Theme.of(context).iconTheme.color), // Hỗ trợ dark/light
             trailing: Obx(
-              () => CustomSwitch(
+                  () => CustomSwitch(
                 value: profileCtr.user.value?.isEnableNotification ?? false,
                 onChanged: (isOn) {
                   profileCtr.toggleNotify(isOn);
                   FirebaseAnalyticService.logEvent(
-                      'Left_Menu_Notification_Switch',
-                      params: {'Notification_Switch': isOn ? 'On' : 'Off'});
+                    'Left_Menu_Notification_Switch',
+                    params: {'Notification_Switch': isOn ? 'On' : 'Off'},
+                  );
                 },
               ),
             ),
           ),
+
           /*
           ListTile(
             minLeadingWidth: 0,
@@ -118,13 +120,14 @@ class DrawerView extends StatelessWidget {
           ListTile(
             minLeadingWidth: 0,
             title: 'Profile'.text.size(16).make(),
-            leading: const Icon(Icons.person_outline, color: Colors.black),
+            leading: Icon(
+              Icons.person_outlined,
+              color: Theme.of(context).iconTheme.color, // ✅ Tự động đổi theo theme
+            ),
             onTap: () {
               drawerKey.currentState!.openEndDrawer();
-              Get.toNamed(Routes.profile);
-              FirebaseAnalyticService.logEvent(
-                'Left_Menu_Profile',
-              );
+              Get.toNamed(Routes.setting);
+              FirebaseAnalyticService.logEvent('Left_Menu_Profile');
             },
           ),
 
@@ -132,15 +135,17 @@ class DrawerView extends StatelessWidget {
           ListTile(
             minLeadingWidth: 0,
             title: 'Setting'.text.size(16).make(),
-            leading: const Icon(Icons.settings_outlined, color: Colors.black),
+            leading: Icon(
+              Icons.settings_outlined,
+              color: Theme.of(context).iconTheme.color, // ✅ Tự động đổi theo theme
+            ),
             onTap: () {
               drawerKey.currentState!.openEndDrawer();
               Get.toNamed(Routes.setting);
-              FirebaseAnalyticService.logEvent(
-                'Left_Menu_Setting',
-              );
+              FirebaseAnalyticService.logEvent('Left_Menu_Setting');
             },
           ),
+
 
           // ListTile(
           //   minLeadingWidth: 0,

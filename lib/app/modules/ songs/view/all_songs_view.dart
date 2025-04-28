@@ -160,16 +160,27 @@ class _AllSongsViewState extends State<AllSongsView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colors.black,
-        title: Padding(
-          padding: const EdgeInsets.only(left: 80),
-          child: Text(
-            "Songs",
-            style: TextStyle(
-              color: Colors.orange[500],
-              fontWeight: FontWeight.bold,
-              fontSize: 20
-            ),
+        elevation: 0.1,
+        centerTitle: true,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios_new_outlined,
+            color: Theme.of(context).iconTheme.color,
+          ),
+          onPressed: () {
+            if (Get.previousRoute.isNotEmpty) {
+              Get.back();
+            } else {
+              Get.offAllNamed(Routes.dashboard);
+            }
+          },
+        ),
+        title: Text(
+          'Songs',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
+            fontSize: 20,
           ),
         ),
       ),

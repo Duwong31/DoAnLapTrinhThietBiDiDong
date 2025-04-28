@@ -19,7 +19,8 @@ class DefaultRepository implements Repository {
   Future<List<Song>?> loadData({int page = 1, int perPage = 10}) async {
     List<Song> songs = [];
 
-    final remoteSongs = await _remoteDataSource.loadData(page: page, perPage: perPage);
+    final remoteSongs =
+        await _remoteDataSource.loadData(page: page, perPage: perPage);
     // final localSongs = await _localDataSource.loadData(page: page, perPage: perPage);
 
     if (remoteSongs != null) {
@@ -42,8 +43,9 @@ class DefaultRepository implements Repository {
 
       // Nếu fetch lỗi và trả về list rỗng
       if (allSongs.isEmpty && _cachedSongs == null) {
-          print("Repository: Cannot find song '$id' because the song list failed to load.");
-          return null;
+        print(
+            "Repository: Cannot find song '$id' because the song list failed to load.");
+        return null;
       }
 
       // 2. Tìm bài hát trong danh sách đã cache bằng ID
@@ -55,10 +57,10 @@ class DefaultRepository implements Repository {
         print("Repository: Found song '$id' in cache: ${song.title}");
       } else {
         // Điều này có thể xảy ra nếu ID trong playlist không tồn tại trong file songs.json
-        print("Repository: Song with ID '$id' NOT FOUND in the cached list (${allSongs.length} songs total).");
+        print(
+            "Repository: Song with ID '$id' NOT FOUND in the cached list (${allSongs.length} songs total).");
       }
       return song; // Trả về bài hát tìm thấy hoặc null
-
     } catch (e) {
       // Lỗi xảy ra trong quá trình tìm kiếm hoặc khi fetch cache
       print("Repository: Error in getSongDetails for ID '$id': $e");
@@ -69,10 +71,10 @@ class DefaultRepository implements Repository {
   Future<List<Song>> _fetchAllSongsAndCache() async {
     // Nếu đang fetch rồi thì chờ và trả về cache (hoặc ném lỗi/chờ)
     if (_isFetchingAllSongs) {
-       print("Repository: Already fetching all songs, waiting...");
-       // Đợi một chút và thử lại hoặc implement cơ chế lock phức tạp hơn
-       await Future.delayed(const Duration(milliseconds: 200));
-       return _cachedSongs ?? []; // Trả về cache nếu có sau khi đợi
+      print("Repository: Already fetching all songs, waiting...");
+      // Đợi một chút và thử lại hoặc implement cơ chế lock phức tạp hơn
+      await Future.delayed(const Duration(milliseconds: 200));
+      return _cachedSongs ?? []; // Trả về cache nếu có sau khi đợi
     }
 
     // Nếu đã có cache, trả về luôn
@@ -83,18 +85,21 @@ class DefaultRepository implements Repository {
 
     // Đánh dấu đang fetch
     _isFetchingAllSongs = true;
-    print("Repository: Cache empty or invalid. Fetching all songs from remote source...");
+    print(
+        "Repository: Cache empty or invalid. Fetching all songs from remote source...");
 
     try {
       // Gọi hàm mới trong RemoteDataSource
-      final List<dynamic> songListData = await _remoteDataSource.fetchAllSongsData();
+      final List<dynamic> songListData =
+          await _remoteDataSource.fetchAllSongsData();
 
       // Parse list Map thành list Song object
       _cachedSongs = songListData
           .map((json) => Song.fromJson(json as Map<String, dynamic>))
           .toList();
 
-      print("Repository: Successfully fetched and cached ${_cachedSongs!.length} songs.");
+      print(
+          "Repository: Successfully fetched and cached ${_cachedSongs!.length} songs.");
       return _cachedSongs!;
     } catch (e) {
       print("Repository: Error fetching or caching all songs: $e");
@@ -102,8 +107,8 @@ class DefaultRepository implements Repository {
       // Có thể ném lại lỗi hoặc trả về list rỗng tùy logic xử lý lỗi mong muốn
       return []; // Trả về list rỗng để tránh crash app
     } finally {
-       // Đảm bảo bỏ đánh dấu sau khi fetch xong (thành công hay thất bại)
-       _isFetchingAllSongs = false;
+      // Đảm bảo bỏ đánh dấu sau khi fetch xong (thành công hay thất bại)
+      _isFetchingAllSongs = false;
     }
   }
 }

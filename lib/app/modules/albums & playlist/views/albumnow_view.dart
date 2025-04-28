@@ -104,7 +104,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                     final song = songs[index];
                     return ListTile(
                       leading: ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(50),
                         child: Image.network(
                           song.image,
                           width: 50,
