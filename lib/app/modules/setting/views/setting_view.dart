@@ -39,12 +39,12 @@ class SettingView extends GetView<SettingController> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          _buildMenuItem(context, 'Themes', const ThemesView()),
-          _buildMenuItem(context, 'Audio Quality', const AudioQualityView()),
-          _buildMenuItem(context, 'Video Quality', const VideoQualityView()),
-          _buildMenuItem(context, 'Apps and Devices', const AppsDevicesView()),
-          _buildMenuItem(context, 'Languages', LanguageView()),
-          _buildMenuItem(context, 'About', const AboutView()),
+          _buildMenuItem(context, 'themes'.tr, const ThemesView()),
+          _buildMenuItem(context, 'audio_quality'.tr, const AudioQualityView()),
+          _buildMenuItem(context, 'video_quality'.tr, const VideoQualityView()),
+          _buildMenuItem(context, 'apps_and_devices'.tr, const AppsDevicesView()),
+          _buildMenuItem(context, 'languages'.tr, LanguageView()),
+          _buildMenuItem(context, 'about'.tr, const AboutView()),
         ],
       ),
     );
@@ -70,7 +70,7 @@ class ThemesView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeController = Get.find<ThemeController>(); // 💡 "Gọi lại" controller đã khởi tạo
+    final themeController = Get.find<ThemeController>(); // "Gọi lại" controller đã khởi tạo
 
     final isDarkMode = themeController.themeMode.value == ThemeMode.dark;
 
@@ -93,7 +93,7 @@ class ThemesView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Themes',
+          'themes'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -113,7 +113,7 @@ class ThemesView extends StatelessWidget {
               // ),
               // const SizedBox(height: 20),
               SwitchListTile(
-                title: Text(isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'),
+                title: Text(isDarkMode ? 'switch_to_light_mode'.tr : 'switch_to_dark_mode'.tr),
                 value: isDarkMode,
                 onChanged: (value) {
                   themeController.toggleTheme();
@@ -151,7 +151,7 @@ class AudioQualityView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Audio Quality',
+          'audio_quality'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -188,7 +188,7 @@ class VideoQualityView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Video Quality',
+          'video_quality'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -224,7 +224,7 @@ class AppsDevicesView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Apps and Devices',
+          'apps_and_devices'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -261,7 +261,7 @@ class LanguageView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Languages',
+          'languages'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -281,7 +281,7 @@ class LanguageView extends StatelessWidget {
 
             // English
             ListTile(
-              title: const Text('English'),
+              title: Text('english'.tr),
               leading: Radio<Locale>(
                 value: const Locale('en', 'US'),
                 groupValue: controller.selectedLocale ,
@@ -295,7 +295,7 @@ class LanguageView extends StatelessWidget {
 
             // Vietnamese
             ListTile(
-              title: const Text('Tiếng Việt'),
+              title: Text('vietnamese'.tr),
               leading: Radio<Locale>(
                 value: const Locale('vi', 'VN'),
                 groupValue: controller.selectedLocale,
@@ -337,7 +337,7 @@ class AboutView extends StatelessWidget {
           },
         ),
         title: Text(
-          'About',
+          'about'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,

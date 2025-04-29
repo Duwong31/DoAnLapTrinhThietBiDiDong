@@ -29,6 +29,8 @@ class Messages extends Translations {
       'see_all': 'See All',
       'best_song_of_jack': 'Best song of Jack - J97',
       'your_uploads': 'Your Uploads',
+
+      'no_liked_song': 'No liked songs',
       // premium
       'premium': 'Premium',
       'elevate_music': 'Elevate Your Music Experience',
@@ -41,6 +43,31 @@ class Messages extends Translations {
       'restore': 'Restore',
       'terms': 'Terms',
       'privacy': 'Privacy',
+      // draw
+      'guest': "Guest",
+      'notifications': 'Notifications',
+      'profile': 'Profile',
+      'setting': 'Setting',
+      'log_out': 'Log out',
+      // profile & edit profile
+      'edit': 'Edit',
+      'see_all_playlists': 'See all playlist',
+      'edit_profile': 'Edit Profile',
+      'save': 'Save',
+      'change_photo': 'Change photo',
+      'name': 'Name',
+      // setting
+      'themes': 'Themes',
+      'audio_quality': 'Audio Quality',
+      'video_quality': 'Video Quality',
+      'apps_and_devices': 'Apps and Devices',
+      'languages': 'Languages',
+      'about': 'About',
+      'switch_to_light_mode': 'Switch to Light Mode',
+      'switch_to_dark_mode': 'Switch to Dark Mode',
+      'select_language': 'Select language',
+      'english': 'English',
+      'vietnamese': 'Vietnamese',
     },
 
     // Tiếng Việt
@@ -69,6 +96,8 @@ class Messages extends Translations {
       'see_all': 'Tất cả',
       'best_song_of_jack': 'Những bài hát hay nhất của Jack - J97',
       'your_uploads': 'Các bài đã tải lên',
+
+      'no_liked_song': 'Không có bài hát nào được thích',
       // premium
       'premium': 'Cao cấp',
       'elevate_music': 'Nâng tầm trải nghiệm âm nhạc',
@@ -81,6 +110,31 @@ class Messages extends Translations {
       'restore': 'Khôi phục',
       'terms': 'Điều khoản',
       'privacy': 'Bảo mật',
+      // draw
+      'guest': 'Khách',
+      'notifications': 'Thông báo',
+      'profile': 'Hồ sơ',
+      'setting': 'Cài đặt',
+      'log_out': 'Đăng xuất',
+      // profile & edit profile
+      'edit': 'Chỉnh sửa',
+      'see_all_playlists': 'Xem tất cả danh sách phát',
+      'edit_profile': 'Chỉnh sửa Hồ sơ',
+      'save': 'Lưu',
+      'change_photo': 'Chọn ảnh',
+      'name': 'Tên',
+      // setting
+      'themes': 'Chủ đề',
+      'audio_quality': 'Chất lượng âm thanh',
+      'video_quality': 'Chất lượng video',
+      'apps_and_devices': 'Ứng dụng và thiết bị',
+      'languages': 'Ngôn ngữ',
+      'about': 'Khác',
+      'switch_to_light_mode': 'Chuyển sang chế độ sáng',
+      'switch_to_dark_mode': 'Chuyển sang chế độ tối',
+      'select_language': 'Chọn ngôn ngữ',
+      'english': 'Tiếng Anh',
+      'vietnamese': 'Tiếng Việt',
     },
   };
 }

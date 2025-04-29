@@ -48,7 +48,7 @@ class LikeView extends StatelessWidget {
           },
         ),
         title: Text(
-          'Likes tracks',
+          'liked_tracks'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -89,10 +89,10 @@ class LikeView extends StatelessWidget {
           ),
           Expanded(
             child: likedSongs.isEmpty
-                ? const Center(
+                ? Center(
               child: Text(
-                'No liked songs',
-                style: TextStyle(fontSize: 16),
+                'no_liked_songs'.tr,
+                style: const TextStyle(fontSize: 16),
               ),
             )
                 : ListView.separated(

@@ -24,7 +24,7 @@ class AlbumNow extends GetView<AlbumNowController> {
         if (album.isEmpty) {
           return const Scaffold(
             body: Center(
-              child: Text("Không tìm thấy thông tin album."),
+              child: Text("Album information not found."),
             ),
           );
         }

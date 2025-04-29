@@ -34,7 +34,7 @@ class EditProfilePage extends StatelessWidget {
           },
         ),
         title: Text(
-          'Edit Profile',
+          'edit_profile'.tr,
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -43,7 +43,7 @@ class EditProfilePage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: ctr.saveProfile, // Call the save method on the controller
-            child: const Text('Save', style: TextStyle(color: Colors.orange)),
+            child: Text('save'.tr, style: TextStyle(color: Colors.orange)),
           ),
         ],
       ),
@@ -82,7 +82,7 @@ class EditProfilePage extends StatelessWidget {
                     GestureDetector(
                       onTap: ctr.changeAvatar,
                       child: const Text(
-                        'Change photo',
+                        'chang_photo',
                         style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w500),
                       ),
                     ),
@@ -95,8 +95,8 @@ class EditProfilePage extends StatelessWidget {
             // --- Full Name TextField ---
             Row(
               children: [
-                const Text(
-                  'Name:',
+                Text(
+                  'name'.tr,
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Dimes.width12, // Khoảng cách giữa nhãn và ô nhập
