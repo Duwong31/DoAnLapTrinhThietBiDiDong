@@ -10,11 +10,27 @@ class SettingController extends GetxController {
 // Themes setting
 class ThemeController extends GetxController {
   var themeMode = ThemeMode.light.obs;
+  final _box = GetStorage();
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadThemeFromStorage();
+  }
 
   void toggleTheme() {
-    themeMode.value = themeMode.value == ThemeMode.light
-        ? ThemeMode.dark
-        : ThemeMode.light;
+    themeMode.value =
+    themeMode.value == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+    _saveThemeToStorage();
+  }
+
+  void _loadThemeFromStorage() {
+    final isDark = _box.read('isDarkMode') ?? false; // mặc định sáng
+    themeMode.value = isDark ? ThemeMode.dark : ThemeMode.light;
+  }
+
+  void _saveThemeToStorage() {
+    _box.write('isDarkMode', themeMode.value == ThemeMode.dark);
   }
 }
 
