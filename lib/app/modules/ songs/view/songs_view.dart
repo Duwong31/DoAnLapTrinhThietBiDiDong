@@ -1,3 +1,4 @@
+import 'package:dartz/dartz.dart' as _currentSong;
 import 'package:flutter/cupertino.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:just_audio/just_audio.dart';
@@ -7,10 +8,10 @@ import '../../../../models/song.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
-import '../../library/views/library_view.dart';
-import '../bindings/audio_service.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../controllers/songs_controller.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/services.dart'; // Thêm cho HapticFeedback
 
 class NowPlaying extends StatelessWidget {
   final Song playingSong;
@@ -39,7 +40,6 @@ class NowPlaying extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return NowPlayingPage(
@@ -65,10 +65,30 @@ class NowPlayingPage extends StatefulWidget {
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
   late final NowPlayingController _controller = Get.find();
+  late final FavoriteController _favoriteController;
+  late Song _currentSong = widget.playingSong;
 
   @override
   void initState() {
     super.initState();
+
+    _favoriteController = Get.find<FavoriteController>();
+    // Cập nhật trạng thái yêu thích ban đầu
+    _currentSong = _currentSong.copyWith(
+      isFavorite: _favoriteController.isFavorite(_currentSong.id),
+    );
+
+
+    // Theo dõi thay đổi bài hát đang phát
+    _controller.currentSongStream.listen((song) {
+      if (mounted) {
+        setState(() {
+          _currentSong = song.copyWith(
+            isFavorite: _favoriteController.isFavorite(song.id),
+          );
+        });
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.initAudioPlayer().then((_) {
@@ -99,9 +119,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                       leading: Icon(Icons.download),
                       title: Text("Download"),
                     ),
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                   ),
                   PopupMenuItem(
                     child: const ListTile(
@@ -156,8 +174,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         decoration: BoxDecoration(
           gradient: Themes(),
         ),
-
-        // Đĩa hình tròn cho nền
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
@@ -167,7 +183,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    StreamBuilder<Song>(            // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
+                    StreamBuilder<Song>(
                       stream: controller.currentSongStream,
                       initialData: controller.song,
                       builder: (context, snapshot) {
@@ -222,17 +238,16 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                   child: Column(
                                     children: <Widget>[
                                       SizedBox(
-                                        height: 24, // Chiều cao cố định
-                                        child: Marquee(
+                                        height: 24,
+                                        child: Marquee(         // chạy dòng chữ
                                           text: song.title,
                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                             color: Theme.of(context).textTheme.bodyMedium!.color,
                                             fontFamily: 'Roboto',
                                             fontSize: 17
                                           ),
-                                          blankSpace: 120.0, // Khoảng trống giữa các lần lặp
-                                          velocity: 50.0, // Tốc độ chạy chữ
-                                          // startPadding: 10.0, // Khoảng cách từ lề
+                                          blankSpace: 120.0,
+                                          velocity: 50.0,     // chạy nhanh hay chậm
                                           fadingEdgeStartFraction: 0.1,
                                           fadingEdgeEndFraction: 0.1,
                                         ),
@@ -254,24 +269,42 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 );
                               },
                             ),
-
                             const SizedBox(width: 10),
-                            // IconButton(
-                            //   // icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_border),
-                            //   // onPressed: () async {
-                            //   //   await addFavorite(songId);
-                            //   //   setState(() {
-                            //   //     isFavorite = true; // đổi biểu tượng ❤️
-                            //   //   });
-                            //   // },
-                            // ),
+
+                            // Thêm nút yêu thích ở đây
+                            IconButton(
+                              icon: Obx(() {
+                                final isFav = _favoriteController.isFavorite(_currentSong.id);
+                                return AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: Icon(
+                                    isFav ? Icons.favorite : Icons.favorite_border,
+                                    key: ValueKey<bool>(isFav),
+                                    color: isFav ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                                  ),
+                                );
+                              }),
+                              onPressed: () async {
+                                HapticFeedback.lightImpact();
+                                try {
+                                  await _favoriteController.toggleFavorite(_currentSong.id);
+                                  setState(() {
+                                    _currentSong = _currentSong.copyWith(
+                                      isFavorite: _favoriteController.isFavorite(_currentSong.id),
+                                    );
+                                  });
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Failed to update favorite');
+                                }
+                              },
+                            ),
                           ],
                         ),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 30, left: 30, right: 30, bottom: 20),
-                      child: StreamBuilder<DurationState>(                // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
+                      child: StreamBuilder<DurationState>(
                         stream: Stream.periodic(const Duration(milliseconds: 100), (_) => DurationState(
                           progress: controller.player.position,
                           buffered: controller.player.bufferedPosition,
@@ -329,7 +362,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                             ),
                             IconButton(
                               icon: SvgPicture.asset(
-                                AppImage.previousSong,    // icon previous_song
+                                AppImage.previousSong,
                                 height: 55,
                                 colorFilter: const ColorFilter.mode(
                                   Colors.black,
@@ -365,7 +398,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 }
 
                                 if (processingState == ProcessingState.completed) {
-                                  // controller.stopRotationAnim();
                                   controller.setNextSong(widget.songs);
                                   return IconButton(
                                     icon: const Icon(Icons.replay, color: Colors.black),
@@ -379,7 +411,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 }
                                 return IconButton(
                                   icon: SvgPicture.asset(
-                                    isPlaying ? AppImage.pauseSong : AppImage.playSong,   // pause/play
+                                    isPlaying ? AppImage.pauseSong : AppImage.playSong,
                                     height: 60,
                                     colorFilter: const ColorFilter.mode(
                                       Colors.black,
@@ -399,10 +431,9 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 );
                               },
                             ),
-
                             IconButton(
                               icon: SvgPicture.asset(
-                                AppImage.nextSong,                  // icon next_song
+                                AppImage.nextSong,
                                 height: 55,
                                 colorFilter: const ColorFilter.mode(
                                   Colors.black,

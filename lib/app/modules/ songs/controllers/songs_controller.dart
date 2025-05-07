@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,6 +16,7 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
   late List<Song> songs;
   late Song currentSong;
   List<String> favoriteSongIds = [];
+  final FavoriteController _favoriteController = Get.find<FavoriteController>();
 
   // Đồng bộ với AudioService
   Stream<Song> get currentSongStream => _audioService.currentSongStream;
@@ -41,6 +43,15 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
       duration: const Duration(seconds: 10),
     )..repeat();
 
+    // Thêm listener cho stream bài hát hiện tại
+    _audioService.currentSongStream.listen((song) {
+      currentSong = song.copyWith(
+        isFavorite: _favoriteController.isFavorite(song.id),
+      );
+      update();
+    });
+
+    // Thêm listener cho trạng thái phát nhạc
     _audioService.playerStateStream.listen((state) {
       if (state.playing) {
         _playRotationAnim();

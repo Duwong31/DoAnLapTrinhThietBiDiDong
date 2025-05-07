@@ -70,7 +70,7 @@ class ApiUrl {
   // static const String listLifeStyle = '$receipt/lifestyle';
   // static const String cateLifeStyle = '$receipt/lifestyle/category';
 
-  // static String detailLifeStyle(id) => '$receipt/lifestyle/$id';
+  // static String detailLifeStyle(id) =>li '$relíceipt/lifestyle/$id';
 
   //voucher
   static const String voucher = '$receipt/user/coupons';
@@ -102,4 +102,10 @@ class ApiUrl {
   static String deletePlaylist(int playlistId) => '$receipt/playlists/$playlistId';   
   static String addTrackToPlaylist(int playlistId) =>
       '$receipt/playlists/$playlistId/tracks';
+
+      
+    // favorite
+    static const String favorites = '$receipt/favorites';                               // GET - lấy danh sách bài hát yêu thích
+    static const String addToFavorite = '$receipt/favorites';                           // POST - thêm bài hát vào yêu thích
+    static String removeFavorite(String songId) => '$receipt/favorites/$songId';        // DELETE - xóa bài hát khỏi yêu thích
 }

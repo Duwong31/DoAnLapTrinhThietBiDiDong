@@ -11,12 +11,11 @@ import 'app/core/utilities/encry_data.dart';
 import 'app/core/utilities/utilities.dart';
 import 'app/data/http_client/http_client.dart';
 import 'app/data/providers/notification_provider.dart';
-import 'app/data/repositories/repositories.dart';
+import 'app/data/services/song_service.dart';
 import 'app/data/sources/source_songs.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
-import 'app/widgets/messages.dart';
 import 'root.dart';
 
 Future<void> initServices() async {
@@ -61,7 +60,10 @@ void main() async {
   }, fenix: true);
   Get.lazyPut<RemoteDataSource>(() => RemoteDataSource(), fenix: true);
   // Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
+  Get.put(ApiClient(), permanent: true);
+  Get.lazyPut(() => SongService(ApiClient()), fenix: true);
 
+  await GetStorage.init();
   Get.put(ThemeController());
 
   AudioService();

@@ -7,7 +7,6 @@ class SongCollection {
   final String image;
   final int duration;
   final List<Song> songs;
-  bool isFavorite;
 
   SongCollection({
     required this.id,
@@ -18,7 +17,6 @@ class SongCollection {
     required this.image,
     required this.duration,
     required this.songs,
-    required this.isFavorite
   });
 
   factory SongCollection.fromJson(Map<String, dynamic> json) {
@@ -35,7 +33,6 @@ class SongCollection {
       image: json['image'],
       duration: json['duration'],
       songs: songList,
-      isFavorite: json['is_favorite'] ?? false,
     );
   }
 }
@@ -70,7 +67,20 @@ class Song {
       source: json['source'],
       image: json['image'],
       duration: int.tryParse(json['duration'].toString()) ?? 0,
-      isFavorite: json['is_favorite'] ?? false,
+      isFavorite: json['favorite']?.toString().toLowerCase() == 'true',
+    );
+  }
+
+  Song copyWith({bool? isFavorite}) {
+    return Song(
+      id: id,
+      title: title,
+      album: album,
+      artist: artist,
+      source: source,
+      image: image,
+      duration: duration,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
@@ -80,7 +90,19 @@ class Song {
   }
 }
 
+class FavoriteResponse {
+  final bool success;
+  final List<String> songIds;
 
+  FavoriteResponse({required this.success, required this.songIds});
+
+  factory FavoriteResponse.fromJson(Map<String, dynamic> json) {
+    return FavoriteResponse(
+      success: json['success'] ?? false,
+      songIds: List<String>.from(json['song_ids'] ?? []),
+    );
+  }
+}
 
 //
 // class Song {

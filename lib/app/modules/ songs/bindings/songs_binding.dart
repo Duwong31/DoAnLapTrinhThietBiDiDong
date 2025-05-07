@@ -1,6 +1,9 @@
 import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
+import '../../../data/http_client/http_client.dart';
+import '../../../data/services/song_service.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../controllers/songs_controller.dart';
 
 class NowPlayingBinding implements Bindings {
@@ -20,6 +23,8 @@ class NowPlayingBinding implements Bindings {
       throw Exception("Current song is missing or invalid");
     }
 
+    Get.lazyPut(() => SongService(ApiClient()), fenix: true);
+    Get.lazyPut(() => FavoriteController());
     Get.lazyPut<NowPlayingController>(() => NowPlayingController(
       songs: songs,                        // Lấy danh sách bài hát từ dữ liệu truyền vào khi điều hướng (Get.to(...))
       currentSong: playingSong,           // Lấy bài hát hiện tại

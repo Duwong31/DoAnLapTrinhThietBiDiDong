@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
-
+import '../../../data/http_client/http_client.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/repositories/song_repository.dart';
+import '../../../data/services/song_service.dart';
 import '../../albums & playlist/controllers/album_page_controller.dart';
 import '../../albums & playlist/controllers/playlist_page_controller.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../../home/controllers/home_controller.dart';
-import '../../messages/controllers/messages_controller.dart';
 import '../../notifications/controllers/notifications_controller.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../search/controllers/search_page_controller.dart';
@@ -24,6 +25,8 @@ class DashboardBinding extends Bindings {
     Get.lazyPut(() => AlbumController());
     Get.lazyPut(() => PlayListController());
     Get.lazyPut<DefaultRepository>(() => DefaultRepository(), fenix: true);
-    Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
+    Get.lazyPut<UserRepository>(() => UserRepository(ApiClient()), fenix: true);
+    Get.lazyPut(() => FavoriteController());
+    Get.lazyPut(() => SongService(ApiClient()), fenix: true);
   }
 }

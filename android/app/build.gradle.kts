@@ -46,8 +46,8 @@ flutter {
 dependencies {
     implementation ("androidx.appcompat:appcompat:1.4.0")
     dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
-    implementation("com.google.firebase:firebase-analytics")
+        implementation(platform("com.google.firebase:firebase-bom:33.11.0"))
+        implementation("com.google.firebase:firebase-analytics")
     }
 }
 apply(plugin = "com.google.gms.google-services")

@@ -7,8 +7,9 @@ import '../../../routes/app_pages.dart';
 import '../../../core/styles/style.dart';
 import '../../albums & playlist/views/album_page_view.dart';
 import '../../albums & playlist/views/playlist_page_view.dart';
-import '../../home/controllers/home_controller.dart';
-import '../../like/views/like_view.dart';
+import '../../favorite/bindings/favorite_bindings.dart';
+import '../../favorite/controller/favorite_controller.dart';
+import '../../favorite/views/favorite_view.dart';
 import '../controllers/library_controller.dart';
 
 class LibraryView extends StatefulWidget {
@@ -23,6 +24,13 @@ class _LibraryViewState extends State<LibraryView> {
   final List<Song> _songs = [];
   Song? _currentlyPlaying;
 
+
+  @override
+  void initState() {
+    super.initState();
+    Get.put(FavoriteController());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +44,7 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   Column(
                     children: [
-                      _buildMenuItem(context, 'Liked tracks', const LikeView()),
+                      _buildMenuItem(context, 'Favorite songs', FavoriteView()),
                       _buildMenuItem(context, 'Playlists', const PlayListView()),
                       _buildMenuItem(context, 'Albums', const AlbumView()),
                       _buildMenuItem(context, 'Following', const FollowView()),
@@ -139,8 +147,7 @@ class _LibraryViewState extends State<LibraryView> {
                       },
                     );
                     setState(() {
-                      _currentlyPlaying =
-                          returnedSong ?? AudioService().currentSong;
+                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
                     });
                   },
                 ),
@@ -157,10 +164,14 @@ class _LibraryViewState extends State<LibraryView> {
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14),
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destination),
-        );
+        if (destination is FavoriteView) {
+          Get.to(
+                () => FavoriteView(),
+            binding: FavoriteBinding(),
+          );
+        } else {
+          Get.to(() => destination);
+        }
       },
     );
   }

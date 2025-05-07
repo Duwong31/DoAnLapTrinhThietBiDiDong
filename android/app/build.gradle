@@ -23,7 +23,7 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '2.1'
 }
- 
+
 def keystoreProperties = new Properties()
 def keystorePropertiesFile = rootProject.file('key.properties')
 if (keystorePropertiesFile.exists()) {
@@ -45,7 +45,7 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
     }
     defaultConfig {
-       manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
+        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "org.soundflow"
         minSdkVersion 24
@@ -54,7 +54,7 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
-      signingConfigs {
+    signingConfigs {
         release {
             keyAlias keystoreProperties['keyAlias']
             keyPassword keystoreProperties['keyPassword']
@@ -82,12 +82,12 @@ android {
         dev {
             dimension "environment"
             applicationId "org.soundflow"
-           
+
         }
         prod {
             dimension "environment"
             applicationId "org.soundflow"
-           
+
         }
     }
     namespace 'org.soundflow'
