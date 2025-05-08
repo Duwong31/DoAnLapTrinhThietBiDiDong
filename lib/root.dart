@@ -11,7 +11,9 @@ import 'app/widgets/messages.dart';  // Select language
 import 'app/widgets/zoom_transition.dart';
 
 class RootApp extends StatelessWidget {
-  const RootApp({super.key});
+  final Locale initialLocale; // nhận locale truyền vào
+
+  const RootApp({super.key, required this.initialLocale});
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +29,9 @@ class RootApp extends StatelessWidget {
       child: Obx(() => GetMaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'SoundFlow',
-        translations: Messages(),                         // ✅ cấu hình dịch
-        locale: const Locale('en', 'US'),                 // ✅ ngôn ngữ mặc định: tiếng Anh
-        fallbackLocale: const Locale('en', 'US'),         // ✅ fallback nếu không hỗ trợ
+        translations: Messages(),                   // cấu hình dịch
+        locale: initialLocale,                      // dùng initialLocale ở đây
+        fallbackLocale: const Locale('en', 'US'),   // fallback nếu không hỗ trợ
 
         theme: AppTheme.getCollectionTheme().copyWith(
           pageTransitionsTheme: const PageTransitionsTheme(

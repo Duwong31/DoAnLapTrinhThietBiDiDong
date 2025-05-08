@@ -42,7 +42,7 @@ class DrawerView extends StatelessWidget {
                   children: [
                     Obx(
                       () => Flexible(
-                        child: (profileCtr.user.value?.fullName ?? 'Unknown')
+                        child: (profileCtr.user.value?.fullName ?? 'guest'.tr)
                             .text
                             .ellipsis
                             .maxLines(1)
@@ -71,7 +71,7 @@ class DrawerView extends StatelessWidget {
           // Notification
           ListTile(
             minLeadingWidth: 0,
-            title: 'Notifications'.text.size(16).make(),
+            title: 'notifications'.tr.text.size(16).make(),
             leading: Icon(Icons.notifications_none, color: Theme.of(context).iconTheme.color), // Hỗ trợ dark/light
             trailing: Obx(
                   () => CustomSwitch(
@@ -119,14 +119,14 @@ class DrawerView extends StatelessWidget {
           // Profile
           ListTile(
             minLeadingWidth: 0,
-            title: 'Profile'.text.size(16).make(),
+            title: 'profile'.tr.text.size(16).make(),
             leading: Icon(
               Icons.person_outlined,
               color: Theme.of(context).iconTheme.color, // ✅ Tự động đổi theo theme
             ),
             onTap: () {
               drawerKey.currentState!.openEndDrawer();
-              Get.toNamed(Routes.setting);
+              Get.toNamed(Routes.profile);
               FirebaseAnalyticService.logEvent('Left_Menu_Profile');
             },
           ),
@@ -134,7 +134,7 @@ class DrawerView extends StatelessWidget {
           // Setting
           ListTile(
             minLeadingWidth: 0,
-            title: 'Setting'.text.size(16).make(),
+            title: 'setting'.tr.text.size(16).make(),
             leading: Icon(
               Icons.settings_outlined,
               color: Theme.of(context).iconTheme.color, // ✅ Tự động đổi theo theme
@@ -158,7 +158,7 @@ class DrawerView extends StatelessWidget {
           // ),
           ListTile(
             minLeadingWidth: 0,
-            title: 'Log  Out'.text.color(Colors.red).size(16).make(),
+            title: 'log_out'.tr.text.color(Colors.red).size(16).make(),
             leading: Image.asset(AppImage.logout, width: 24, color: Colors.red),
             onTap: () {
               drawerKey.currentState!.openEndDrawer();

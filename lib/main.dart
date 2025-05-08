@@ -27,7 +27,7 @@ Future<void> initServices() async {
   EncryptData.init();
   if (Preferences.isAuth()) {
     await Get.putAsync(
-      () => ProfileController().getUserDetail(),
+          () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }
@@ -50,6 +50,13 @@ void main() async {
   }
 
   await GetStorage.init();
+  final box = GetStorage();
+  final savedLang = box.read('locale') ?? 'en_US';
+
+  Locale initialLocale = savedLang == 'vi_VN'
+      ? const Locale('vi', 'VN')
+      : const Locale('en', 'US');
+
   Get.lazyPut<Dio>(() {
     final options = BaseOptions(
       // Bạn có thể cấu hình thêm timeout, interceptor ở đây nếu cần
@@ -58,6 +65,7 @@ void main() async {
     );
     return Dio(options);
   }, fenix: true);
+
   Get.lazyPut<RemoteDataSource>(() => RemoteDataSource(), fenix: true);
   // Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
   Get.put(ApiClient(), permanent: true);
@@ -65,16 +73,17 @@ void main() async {
 
   await GetStorage.init();
   Get.put(ThemeController());
-
   AudioService();
-  runApp(const RootApp());
+
+  // runApp phải truyền đúng initialLocale
+  runApp(RootApp(initialLocale: initialLocale));
 
   EncryptData.init();
   await NotificationProvider.initialize();
 
   if (Preferences.isAuth()) {
     await Get.putAsync(
-      () => ProfileController().getUserDetail(),
+          () => ProfileController().getUserDetail(),
       permanent: true,
     );
   }

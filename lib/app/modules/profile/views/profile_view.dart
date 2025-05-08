@@ -76,7 +76,7 @@ class _ProfileViewState extends State<ProfileView>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            (ctr.user.value?.fullName ?? 'Guest')
+                            (ctr.user.value?.fullName ?? 'guest'.tr)
                                 .text
                                 .xl
                                 .semiBold
@@ -102,7 +102,7 @@ class _ProfileViewState extends State<ProfileView>
                           const EdgeInsets.symmetric(horizontal: 10),
                         ),
                         child: Text(
-                          'Edit',
+                          'edit'.tr,
                           style: TextStyle(
                             color: textTheme.bodyMedium?.color,
                             fontSize: 14,
@@ -126,7 +126,7 @@ class _ProfileViewState extends State<ProfileView>
                   24.heightBox,
 
                   // Playlist Section
-                  'Playlists'.text.lg.bold.make(),
+                  'playlists'.tr.text.lg.bold.make(),
                   Dimes.height10,
 
                   // Playlist demo item
@@ -168,7 +168,7 @@ class _ProfileViewState extends State<ProfileView>
                         BorderSide(color: colorScheme.onSurface),
                       ),
                       child: Text(
-                        'See all playlists',
+                        'see_all_playlists'.tr,
                         style: TextStyle(
                           color: colorScheme.onSurface,
                         ),
