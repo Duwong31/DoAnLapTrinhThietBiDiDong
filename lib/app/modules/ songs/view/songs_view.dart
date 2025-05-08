@@ -65,14 +65,13 @@ class NowPlayingPage extends StatefulWidget {
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
   late final NowPlayingController _controller = Get.find();
-  late final FavoriteController _favoriteController;
+  late final FavoriteController _favoriteController = Get.find<FavoriteController>();
   late Song _currentSong = widget.playingSong;
 
   @override
   void initState() {
     super.initState();
 
-    _favoriteController = Get.find<FavoriteController>();
     // Cập nhật trạng thái yêu thích ban đầu
     _currentSong = _currentSong.copyWith(
       isFavorite: _favoriteController.isFavorite(_currentSong.id),
@@ -271,34 +270,41 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                             ),
                             const SizedBox(width: 10),
 
-                            // Thêm nút yêu thích ở đây
-                            IconButton(
-                              icon: Obx(() {
-                                final isFav = _favoriteController.isFavorite(_currentSong.id);
-                                return AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 0),
-                                  child: Icon(
-                                    isFav ? Icons.favorite : Icons.favorite_border,
-                                    key: ValueKey<bool>(isFav),
-                                    color: isFav ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
-                                    size: 26,
-                                  ),
-                                );
-                              }),
-                              onPressed: () async {
-                                HapticFeedback.lightImpact();
-                                try {
-                                  await _favoriteController.toggleFavorite(_currentSong.id);
-                                  setState(() {
-                                    _currentSong = _currentSong.copyWith(
-                                      isFavorite: _favoriteController.isFavorite(_currentSong.id),
+                            // Thêm và xóa nút yêu thích ở đây
+                            Obx(() {
+                              final isFavorite = _favoriteController.isFavorite(_currentSong.id);
+                              return IconButton(
+                                icon: Icon(
+                                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                                  color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                                  size: 26,
+                                ),
+                                onPressed: () async {
+                                  HapticFeedback.lightImpact();
+                                  try {
+                                    await _favoriteController.toggleFavorite(_currentSong.id);
+                                    // Thông báo khi thay đổi trạng thái
+                                    Get.snackbar(
+                                      isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
+                                      '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
+                                      snackPosition: SnackPosition.TOP,
+                                      backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
+                                      colorText: Colors.white,
+                                      margin: const EdgeInsets.all(10),
+                                      icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
                                     );
-                                  });
-                                } catch (e) {
-                                  Get.snackbar('Error', 'Failed to update favorite');
-                                }
-                              },
-                            ),
+                                  } catch (e) {
+                                    Get.snackbar(
+                                      'Lỗi',
+                                      'Không thể cập nhật trạng thái yêu thích',
+                                      snackPosition: SnackPosition.TOP,
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                  }
+                                },
+                              );
+                            })
                           ],
                         ),
                       ),

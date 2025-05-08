@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 import '../../../../models/song.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
 
 class MiniPlayer extends StatefulWidget {
@@ -25,6 +27,8 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   late final AudioService _audioService;
+  late final FavoriteController _favoriteController = Get.find<FavoriteController>();
+  late Song _currentSong = widget.song;
 
   @override
   void initState() {
@@ -105,6 +109,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isSmallScreen ? 10 : 13,
+                            color: Colors.black,
                           ),
                           blankSpace: 50.0,
                           velocity: 55.0,
@@ -124,6 +129,45 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     ],
                   ),
                 ),
+
+                // Thêm và xóa nút yêu thích
+                Obx(() {
+                  final isFavorite = _favoriteController.isFavorite(_currentSong.id);
+                  return IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                      size: 26,
+                    ),
+                    onPressed: () async {
+                      HapticFeedback.lightImpact();
+                      try {
+                        await _favoriteController.toggleFavorite(_currentSong.id);
+
+                        // Thông báo khi thay đổi trạng thái
+                        Get.snackbar(
+                          isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
+                          '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
+                          colorText: Colors.white,
+                          margin: const EdgeInsets.all(10),
+                          icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
+                        );
+                      } catch (e) {
+                        Get.snackbar(
+                          'Lỗi',
+                          'Không thể cập nhật trạng thái yêu thích',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
+                    },
+                  );
+                }),
+
+                // Thêm nút previous
                 IconButton(
                   onPressed: () => _audioService.playPreviousSong(),
                   icon: SvgPicture.asset(
@@ -135,6 +179,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     ),
                   ),
                 ),
+
+                // Thêm nút play/pause
                 StreamBuilder<bool>(
                   stream: _audioService.playerStateStream.map((state) => state.playing),
                   builder: (context, snapshot) {
@@ -152,6 +198,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     );
                   },
                 ),
+
+                // Thêm nút next
                 IconButton(
                   onPressed: () => _audioService.playNextSong(),
                   icon: SvgPicture.asset(
