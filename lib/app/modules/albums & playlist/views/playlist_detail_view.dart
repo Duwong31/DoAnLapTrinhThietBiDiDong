@@ -86,6 +86,13 @@ class _PlayListNowState extends State<PlayListNow> {
     });
   }
 
+  // Thêm phương thức để cập nhật tên playlist
+  void _updatePlaylistName(Playlist updatedPlaylist) {
+    setState(() {
+      _playlistData = updatedPlaylist;
+    });
+  }
+
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
@@ -175,12 +182,12 @@ class _PlayListNowState extends State<PlayListNow> {
                           Row(
                             children: [
                               IconButton(
-                                icon: Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
+                                icon: const Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
                                 onPressed: () {},
                               ),
-                              SizedBox(width: 10),
+                              const SizedBox(width: 10),
                               IconButton(
-                                icon: Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
+                                icon: const Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
                                 onPressed: () {
                                   _controller.showPlaylistOptionsBottomSheet(context, playlist: playlist);
                                 },

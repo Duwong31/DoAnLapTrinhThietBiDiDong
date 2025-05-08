@@ -876,6 +876,25 @@ class UserApiService extends BaseApiService {
        return AddTrackResult.failure;
     }
   }
+
+  Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.updatePlaylist(playlistId)} with data: {"name": "$newName"}');
+
+      final response = await put<dynamic>(
+        ApiUrl.updatePlaylist(playlistId),
+        data: {'name': newName},
+      );
+
+      AppUtils.log('API Response from update playlist: ${response.data}');
+
+      if (response.statusCode == 200 && response.data['status'] == 1) {
+        return response.data;
+      } else {
+        throw Exception(response.data['message'] ?? 'Failed to update playlist');
+      }
+    });
+  }
 }
 
 
@@ -1297,4 +1316,7 @@ class ApiProvider {
   static Future<Map<String, dynamic>> getFavorites() => _userService.getFavorites();
   static Future<bool> addToFavorite(String trackId) => _userService.addToFavorite(trackId);
   static Future<bool> removeFavorite(String songId) => _userService.removeFavorite(songId);
+
+  static Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) =>
+      _userService.updatePlaylist(playlistId, newName);
 }

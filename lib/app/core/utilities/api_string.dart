@@ -102,6 +102,7 @@ class ApiUrl {
   static String deletePlaylist(int playlistId) => '$receipt/playlists/$playlistId';   
   static String addTrackToPlaylist(int playlistId) =>
       '$receipt/playlists/$playlistId/tracks';
+  static String updatePlaylist(int playlistId) => '$receipt/playlists/$playlistId';
 
       
     // favorite
