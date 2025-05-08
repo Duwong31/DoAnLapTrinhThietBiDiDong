@@ -12,20 +12,22 @@ class SongService extends GetxService {
     try {
       debugPrint('Fetching songs for IDs: $songIds');
 
+      // Gọi API JSONBin
       final response = await apiClient.get(
-        'https://thantrieu.com/resources/braniumapis/songs.json',
+        'https://api.jsonbin.io/v3/b/681ba8c08a456b7966996409',
       );
 
       debugPrint('API Response: ${response.data}');
 
       if (response.statusCode == 200) {
-        // API trả về {songs: [...]} nên cần lấy key 'songs'
-        final songsData = response.data['songs'] as List<dynamic>? ?? [];
+        // Lấy dữ liệu từ trường 'record' trong response và trường 'songs' chứa danh sách bài hát
+        final songsData = response.data['record']['songs'] as List<dynamic>? ?? [];
         debugPrint('Total songs in API: ${songsData.length}');
 
-        // Chuyển đổi sang Set để tìm kiếm nhanh hơn
+        // Chuyển danh sách songIds thành Set để tìm kiếm nhanh
         final idsSet = songIds.map((id) => id.toString()).toSet();
 
+        // Lọc các bài hát phù hợp với songIds
         final matchedSongs = songsData.where((songJson) {
           final songId = songJson['id']?.toString();
           return songId != null && idsSet.contains(songId);
