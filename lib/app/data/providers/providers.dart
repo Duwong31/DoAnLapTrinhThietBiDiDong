@@ -1,13 +1,10 @@
-// C:\work\SoundFlow\lib\app\data\providers\providers.dart
-
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 import 'package:get_storage/get_storage.dart';
-
+import '../models/favorite_model.dart';
 import '../../core/styles/style.dart';
 import '../../core/utilities/utilities.dart';
 import '../../routes/app_pages.dart';
@@ -23,10 +20,7 @@ import '../models/models.dart';
 import '../models/review_listing_model.dart';
 import '../models/voucher_model/voucher.dart';
 import '../repositories/repositories.dart';
-// *** BỎ IMPORT providers.dart KHỎI CHÍNH NÓ ***
-// import 'providers.dart'; // <-- XÓA DÒNG NÀY
 
-// ... (BaseApiService giữ nguyên) ...
 abstract class BaseApiService {
   final Dio _dio;
   final GetStorage _storage = GetStorage();
@@ -171,6 +165,42 @@ class UserApiService extends BaseApiService {
       rethrow;
     }
   }
+
+  // Favorite API
+    Future<Map<String, dynamic>> getFavorites() async {
+      return handleApiError(() async {
+        final response = await get(ApiUrl.favorites, query: {'t': DateTime.now().millisecondsSinceEpoch.toString()});
+        debugPrint('Raw getFavorites response: ${response.data}');
+        return response.data;
+      });
+    }
+
+    Future<bool> addToFavorite(String trackId) async {
+      return handleApiError(() async {
+        final response = await post(ApiUrl.addToFavorite, data: {'song_id': trackId});
+        debugPrint('API Response (addToFavorite): status=${response.statusCode}, data=${response.data}');
+        if (response.statusCode == 201 && response.data['success'] == true) {
+          return true; // Thêm thành công
+        } else if (response.statusCode == 400 || response.statusCode == 409) {
+          // Bài hát đã có trong danh sách yêu thích, coi là thành công
+          debugPrint('Song $trackId already in favorites (status: ${response.statusCode})');
+          return true;
+        }
+        throw Exception(response.data['message'] ?? 'Failed to add to favorites');
+      });
+    }
+
+    Future<bool> removeFavorite(String trackId) async {
+      return handleApiError(() async {
+        final response = await delete(ApiUrl.removeFavorite(trackId));
+        debugPrint('API Response (removeFavorite): status=${response.statusCode}, data=${response.data}');
+        if (response.statusCode == 200 && response.data['success'] == true) {
+          debugPrint('Successfully removed song $trackId from favorites');
+          return true;
+        }
+        throw Exception(response.data['message'] ?? 'Failed to remove from favorites');
+      });
+    }
 
   Future<dynamic> verify(String userId, String otp, String deviceName) async {
     return handleApiError(() async {
@@ -1262,4 +1292,9 @@ class ApiProvider {
       _userService.deletePlaylist(playlistId);
   static Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) =>
       _userService.addTrackToPlaylist(playlistId, trackId);
+
+
+  static Future<Map<String, dynamic>> getFavorites() => _userService.getFavorites();
+  static Future<bool> addToFavorite(String trackId) => _userService.addToFavorite(trackId);
+  static Future<bool> removeFavorite(String songId) => _userService.removeFavorite(songId);
 }

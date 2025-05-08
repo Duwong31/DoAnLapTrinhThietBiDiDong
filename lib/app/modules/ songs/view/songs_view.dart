@@ -1,12 +1,17 @@
+import 'package:dartz/dartz.dart' as _currentSong;
 import 'package:flutter/cupertino.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:marquee/marquee.dart';
 import '../../../../models/duration_state.dart';
 import '../../../../models/song.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
-import '../bindings/audio_service.dart';
+import '../../../core/utilities/image.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../controllers/songs_controller.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter/services.dart'; // Thêm cho HapticFeedback
 
 class NowPlaying extends StatelessWidget {
   final Song playingSong;
@@ -35,7 +40,6 @@ class NowPlaying extends StatelessWidget {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return NowPlayingPage(
@@ -61,10 +65,30 @@ class NowPlayingPage extends StatefulWidget {
 
 class _NowPlayingPageState extends State<NowPlayingPage> {
   late final NowPlayingController _controller = Get.find();
+  late final FavoriteController _favoriteController;
+  late Song _currentSong = widget.playingSong;
 
   @override
   void initState() {
     super.initState();
+
+    _favoriteController = Get.find<FavoriteController>();
+    // Cập nhật trạng thái yêu thích ban đầu
+    _currentSong = _currentSong.copyWith(
+      isFavorite: _favoriteController.isFavorite(_currentSong.id),
+    );
+
+
+    // Theo dõi thay đổi bài hát đang phát
+    _controller.currentSongStream.listen((song) {
+      if (mounted) {
+        setState(() {
+          _currentSong = song.copyWith(
+            isFavorite: _favoriteController.isFavorite(song.id),
+          );
+        });
+      }
+    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.initAudioPlayer().then((_) {
@@ -95,9 +119,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                       leading: Icon(Icons.download),
                       title: Text("Download"),
                     ),
-                    onTap: () {
-
-                    },
+                    onTap: () {},
                   ),
                   PopupMenuItem(
                     child: const ListTile(
@@ -152,8 +174,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
         decoration: BoxDecoration(
           gradient: Themes(),
         ),
-
-        // Đĩa hình tròn cho nền
         child: Scaffold(
           backgroundColor: Colors.transparent,
           body: Padding(
@@ -163,7 +183,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    StreamBuilder<Song>(            // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
+                    StreamBuilder<Song>(
                       stream: controller.currentSongStream,
                       initialData: controller.song,
                       builder: (context, snapshot) {
@@ -204,7 +224,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               onPressed: () {},
                               icon: Icon(
                                 Icons.share_rounded,
-                                size: 20,
+                                size: 23,
                                 color: Theme.of(context).textTheme.bodyMedium!.color,
                               ),
                             ),
@@ -217,14 +237,20 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 return Expanded(
                                   child: Column(
                                     children: <Widget>[
-                                      Text(
-                                        song.title,
-                                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                          color: Theme.of(context).textTheme.bodyMedium!.color,
-                                          fontFamily: 'Roboto',
+                                      SizedBox(
+                                        height: 24,
+                                        child: Marquee(         // chạy dòng chữ
+                                          text: song.title,
+                                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                                            fontFamily: 'Roboto',
+                                            fontSize: 17
+                                          ),
+                                          blankSpace: 120.0,
+                                          velocity: 50.0,     // chạy nhanh hay chậm
+                                          fadingEdgeStartFraction: 0.1,
+                                          fadingEdgeEndFraction: 0.1,
                                         ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
                                       ),
                                       const SizedBox(height: 5),
                                       Center(
@@ -233,9 +259,9 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                                             color: Theme.of(context).textTheme.bodyMedium!.color,
                                             fontFamily: 'Roboto',
-                                            overflow: TextOverflow.ellipsis,
                                           ),
                                           maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -243,15 +269,35 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 );
                               },
                             ),
-
                             const SizedBox(width: 10),
+
+                            // Thêm nút yêu thích ở đây
                             IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.favorite_border_outlined,
-                                size: 20,
-                                color: Theme.of(context).textTheme.bodyMedium!.color,
-                              ),
+                              icon: Obx(() {
+                                final isFav = _favoriteController.isFavorite(_currentSong.id);
+                                return AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 0),
+                                  child: Icon(
+                                    isFav ? Icons.favorite : Icons.favorite_border,
+                                    key: ValueKey<bool>(isFav),
+                                    color: isFav ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                                    size: 26,
+                                  ),
+                                );
+                              }),
+                              onPressed: () async {
+                                HapticFeedback.lightImpact();
+                                try {
+                                  await _favoriteController.toggleFavorite(_currentSong.id);
+                                  setState(() {
+                                    _currentSong = _currentSong.copyWith(
+                                      isFavorite: _favoriteController.isFavorite(_currentSong.id),
+                                    );
+                                  });
+                                } catch (e) {
+                                  Get.snackbar('Error', 'Failed to update favorite');
+                                }
+                              },
                             ),
                           ],
                         ),
@@ -259,7 +305,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 30, left: 30, right: 30, bottom: 20),
-                      child: StreamBuilder<DurationState>(                // sử dụng Stream để đồng bộ (tự động cập nhật khi có thay đổi)
+                      child: StreamBuilder<DurationState>(
                         stream: Stream.periodic(const Duration(milliseconds: 100), (_) => DurationState(
                           progress: controller.player.position,
                           buffered: controller.player.bufferedPosition,
@@ -316,9 +362,13 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               iconSize: 35,
                             ),
                             IconButton(
-                              icon: const Icon(
-                                Icons.skip_previous_outlined,
-                                color: Colors.black,
+                              icon: SvgPicture.asset(
+                                AppImage.previousSong,
+                                height: 55,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               onPressed: () => controller.setPreviousSong(widget.songs),
                               iconSize: 60,
@@ -337,7 +387,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
 
                                 final playState = snapshot.data!;
                                 final processingState = playState.processingState;
-                                final playing = playState.playing;
+                                final isPlaying = playState.playing;
 
                                 if (processingState == ProcessingState.loading || processingState == ProcessingState.buffering) {
                                   return Container(
@@ -349,7 +399,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 }
 
                                 if (processingState == ProcessingState.completed) {
-                                  // controller.stopRotationAnim();
                                   controller.setNextSong(widget.songs);
                                   return IconButton(
                                     icon: const Icon(Icons.replay, color: Colors.black),
@@ -362,12 +411,16 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                   );
                                 }
                                 return IconButton(
-                                  icon: Icon(
-                                    playing ? Icons.pause : Icons.play_arrow_sharp,
-                                    color: Colors.black,
+                                  icon: SvgPicture.asset(
+                                    isPlaying ? AppImage.pauseSong : AppImage.playSong,
+                                    height: 60,
+                                    colorFilter: const ColorFilter.mode(
+                                      Colors.black,
+                                      BlendMode.srcIn,
+                                    ),
                                   ),
                                   onPressed: () async {
-                                    if (playing) {
+                                    if (isPlaying) {
                                       await controller.player.pause();
                                       controller.pauseRotationAnim();
                                     } else {
@@ -379,11 +432,14 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                 );
                               },
                             ),
-
                             IconButton(
-                              icon: const Icon(
-                                Icons.skip_next_outlined,
-                                color: Colors.black,
+                              icon: SvgPicture.asset(
+                                AppImage.nextSong,
+                                height: 55,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.black,
+                                  BlendMode.srcIn,
+                                ),
                               ),
                               onPressed: () => controller.setNextSong(widget.songs),
                               iconSize: 60,

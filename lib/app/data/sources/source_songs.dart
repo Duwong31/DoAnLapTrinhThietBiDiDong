@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../models/song.dart';
+import '../repositories/repositories.dart';
+import 'package:get/get.dart';
 
 abstract interface class DataSource{
   Future<List<Song>?> loadData({
@@ -19,46 +21,42 @@ class RemoteDataSource implements DataSource{
   final String _allSongsUrl = "https://thantrieu.com/resources/braniumapis/songs.json";
   
   @override
-  Future<List<Song>?> loadData({required int page, required int perPage}) async {
-    const url = 'https://6802849e0a99cb7408e9d276.mockapi.io/api/songs';
+  Future<List<Song>> loadData({required int page, required int perPage}) async {
+    const url = 'https://api.jsonbin.io/v3/b/681ba8c08a456b7966996409';
     final uri = Uri.parse(url);
 
     try {
-      final response = await http.get(uri);
+      final response = await http.get(uri, headers: {
+        'X-Master-Key': 'your_master_key', // Thêm header nếu API yêu cầu key xác thực.
+      });
 
       if (response.statusCode == 200) {
         final bodyContent = utf8.decode(response.bodyBytes);
         final jsonData = jsonDecode(bodyContent);
 
-        List<Song> allSongs = [];
+        // Kiểm tra xem dữ liệu trả về có đúng cấu trúc không
+        if (jsonData['record'] != null) {
+          final songData = jsonData['record']['songs'];
 
-        if (jsonData is List) {
-          // API trả về mảng các object có 'songs'
-          if (jsonData.isNotEmpty && jsonData[0]['songs'] != null) {
-            for (var item in jsonData) {
-              allSongs.addAll((item['songs'] as List).map((s) => Song.fromJson(s)));
-            }
-          }
-          // API trả về mảng bài hát trực tiếp
-          else {
-            allSongs = jsonData.map((s) => Song.fromJson(s)).toList();
-          }
+          // Chuyển đổi dữ liệu từ json sang danh sách bài hát
+          List<Song> allSongs = songData.map<Song>((s) => Song.fromJson(s)).toList();
+
+          // Phân trang (tương tự như trước)
+          final start = (page - 1) * perPage;
+          final end = (start + perPage).clamp(0, allSongs.length);
+          return allSongs.sublist(start, end);
+        } else {
+          throw Exception('Invalid response format');
         }
-
-        // Phân trang
-        final start = (page - 1) * perPage;
-        final end = start + perPage;
-        return (start >= allSongs.length)
-            ? []
-            : allSongs.sublist(start, end.clamp(0, allSongs.length));
       } else {
-        return null;
+        throw Exception("API returned ${response.statusCode}");
       }
     } catch (e) {
       print('Error loading remote data: $e');
-      return null;
+      return [];
     }
   }
+
 
   Future<List<dynamic>> fetchAllSongsData() async {
     try {

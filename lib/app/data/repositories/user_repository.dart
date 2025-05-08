@@ -22,9 +22,16 @@ abstract class UserBase {
   Future<bool> removeTrackFromPlaylist(int playlistId, String trackId);
   Future<bool> deletePlaylist(int playlistId);
   Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId);
+
+  Future<FavoriteResponse> getFavorites();
+  Future<bool> addToFavorite(String trackId);
+  Future<bool> removeFavorite(String trackId);
 }
 
 class UserRepository extends BaseRepository implements UserBase {
+  final ApiClient _apiClient;
+  UserRepository(this._apiClient);
+
   @override
   Future<UserModel> getDetail() {
     return handleCall(() => ApiProvider.getDetail());
@@ -119,5 +126,49 @@ class UserRepository extends BaseRepository implements UserBase {
   Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) {
     // Gọi đến ApiProvider, handleCall sẽ xử lý lỗi chung
     return handleCall(() => ApiProvider.addTrackToPlaylist(playlistId, trackId));
+  }
+
+  Future<FavoriteResponse> getFavorites() async {
+    return handleCall(() async {
+      final responseData = await ApiProvider.getFavorites();
+      return FavoriteResponse.fromJson(responseData);
+    });
+  }
+
+  @override
+  Future<bool> addToFavorite(String trackId) async {
+    return handleCall(() async {
+      await ApiProvider.addToFavorite(trackId);
+      return true; // Giả định thành công nếu không có exception
+    });
+  }
+
+  @override
+  Future<bool> removeFavorite(String trackId) async {
+    return handleCall(() async {
+      await ApiProvider.removeFavorite(trackId);
+      return true; // Hoặc xử lý response nếu API trả về
+    });
+  }
+
+  Future<List<Map<String, dynamic>>> getSongs(List<String> songIds) async {
+    final response = await _apiClient.post('/songs/by-ids', data: {
+      'ids': songIds,
+    });
+
+    if (response.statusCode == 200) {
+      return List<Map<String, dynamic>>.from(response.data['songs']);
+    } else {
+      throw Exception('Failed to fetch songs');
+    }
+  }
+  Future<Map<String, dynamic>> getSong(String songId) async {
+    final response = await _apiClient.get('/songs/$songId');
+
+    if (response.statusCode == 200) {
+      return Map<String, dynamic>.from(response.data);
+    } else {
+      throw Exception('Failed to fetch song');
+    }
   }
 }

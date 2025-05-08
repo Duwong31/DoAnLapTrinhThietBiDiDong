@@ -4,7 +4,10 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class NowPlayingController extends GetxController with SingleGetTickerProviderMixin{
   final AudioService _audioService = AudioService();
@@ -12,6 +15,8 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
   double _currentAnimationPosition = 0.0;
   late List<Song> songs;
   late Song currentSong;
+  List<String> favoriteSongIds = [];
+  final FavoriteController _favoriteController = Get.find<FavoriteController>();
 
   // Đồng bộ với AudioService
   Stream<Song> get currentSongStream => _audioService.currentSongStream;
@@ -38,6 +43,15 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
       duration: const Duration(seconds: 10),
     )..repeat();
 
+    // Thêm listener cho stream bài hát hiện tại
+    _audioService.currentSongStream.listen((song) {
+      currentSong = song.copyWith(
+        isFavorite: _favoriteController.isFavorite(song.id),
+      );
+      update();
+    });
+
+    // Thêm listener cho trạng thái phát nhạc
     _audioService.playerStateStream.listen((state) {
       if (state.playing) {
         _playRotationAnim();
@@ -69,6 +83,41 @@ class NowPlayingController extends GetxController with SingleGetTickerProviderMi
       if (kDebugMode) {
         print('Error initializing player: $e');
       }
+    }
+  }
+
+  Future<void> fetchFavorites() async {
+    final url = Uri.parse('https://your-api.com/favorites');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      favoriteSongIds = List<String>.from(data['favorites']);
+      updateFavoritesInSongs();
+    }
+  }
+
+  Future<void> toggleFavorite(String songId) async {
+    final url = Uri.parse('https://your-api.com/favorites');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'song_id': songId}),
+    );
+
+    if (response.statusCode == 200) {
+      favoriteSongIds.add(songId);
+      updateFavoritesInSongs();
+    } else {
+      if (kDebugMode) {
+        print('Failed to add favorite');
+      }
+    }
+  }
+
+  void updateFavoritesInSongs() {
+    for (var song in songs) {
+      song.isFavorite = favoriteSongIds.contains(song.id);
     }
   }
 

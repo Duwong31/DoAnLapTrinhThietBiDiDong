@@ -4,6 +4,13 @@ import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:dio/dio.dart';
+import 'package:extended_image/extended_image.dart';
+import 'package:extended_image/extended_image.dart' as _apiClient;
+
+import '../models/favorite_model.dart';
+import '../../modules/favorite/controller/favorite_controller.dart';
+import '../http_client/http_client.dart';
 import '../models/dashboard_model.dart';
 import '../models/models.dart';
 import '../models/playlist.dart';
@@ -31,7 +38,7 @@ class Repo {
   static final Repo _instance = Repo._internal();
 
   static final _auth = AuthRepository();
-  static final _user = UserRepository();
+  static final _user = UserRepository(ApiClient());
   static final _notify = NotificationRepository();
   // static final _car = CarRepository();
   // static final _lifeStyle = LifeStyleRepository();

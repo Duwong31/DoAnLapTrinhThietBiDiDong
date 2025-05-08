@@ -55,13 +55,15 @@ class AppImage {
   static const String orderEmpty = 'assets/images/order.png';
   static const String relationShip = 'assets/images/relationship.png';
   static const String google = 'assets/images/google.png';
-  static const String secondaryBackground =
-      'assets/images/secondary_background.png';
-  static const String primaryBackground =
-      'assets/images/primary_background.png';
+  static const String secondaryBackground = 'assets/images/secondary_background.png';
+  static const String primaryBackground = 'assets/images/primary_background.png';
   static const String otpPhone = 'assets/images/otp_phone.png';
   static const String resetPassword = 'assets/images/reset_password.png';
   static const String upload = 'assets/images/upload.png';
   static const String more = 'assets/images/more.png';
   static const String testImage = 'assets/images/lovelydog.jpg';
+  static const String playSong = 'assets/images/play_song.svg';
+  static const String pauseSong = 'assets/images/pause_song.svg';
+  static const String nextSong = 'assets/images/next_song.svg';
+  static const String previousSong = 'assets/images/previous_song.svg';
 }

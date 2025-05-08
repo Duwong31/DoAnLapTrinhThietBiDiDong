@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
@@ -10,26 +11,39 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Center(
-            child: Image.asset(
-              AppImage.logo,
-              width: 80,
-              color: AppTheme.primary,
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white,      // Trắng ở trên
+              Colors.yellow,     // Vàng ở giữa
+              Colors.orange,     // Cam ở dưới
+            ],
           ),
-          const Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: Text(
-                'from DHPT',
-                style: TextStyle(fontSize: 16),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Image.asset(
+                AppImage.logo,
+                width: 80,
+                color: AppTheme.primary,
               ),
             ),
-          ),
-        ],
+            const Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: Text(
+                  'from DHPT',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
