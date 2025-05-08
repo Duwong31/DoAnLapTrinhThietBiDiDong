@@ -220,7 +220,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     onTap: () => _launchURL('https://3okvip.info/'),
                 ),
 
-                SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
+                // SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
                 SizedBox(
                   height: 122,
                   child: Obx(() {

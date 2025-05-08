@@ -12,9 +12,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -50,93 +51,90 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                   SizedBox(height: screenHeight * 0.03),
                   Text(
                     // Đã thay đổi tiêu đề
-                    'Forgot Your Password?',
+                    'forgot_your_password?'.tr,
                     style: TextStyle(
                       fontFamily: 'Noto Sans',
-                      fontSize: screenWidth * 0.055, // Tăng kích thước font một chút
+                      fontSize: screenWidth * 0.055,
                       fontWeight: FontWeight.w700,
-                      color: Colors.black,
+                      color: isDarkMode ? Colors.white : Colors.black,
                       height: 1.5,
                     ),
                     textAlign: TextAlign.center,
                   ),
-                   SizedBox(height: screenHeight * 0.015), // Giảm khoảng cách
-                   Text(
+                  SizedBox(height: screenHeight * 0.015),
+                  Text(
                     // Đã thay đổi hướng dẫn
-                    'Enter your email or phone number below to receive your password reset instructions.',
+                    'enter_your_email_or_phone_number_below_to_receive_your_password_reset_instructions.'
+                        .tr,
                     style: TextStyle(
                       fontFamily: 'Noto Sans',
                       fontSize: screenWidth * 0.035,
                       fontWeight: FontWeight.w400,
-                      color: Colors.grey[600], // Màu chữ nhẹ hơn
+                      color: isDarkMode ? Colors.grey[300] : Colors.grey[600],
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: screenHeight * 0.04), // Tăng khoảng cách
+                  SizedBox(height: screenHeight * 0.04),
                   ConstrainedBox(
                     constraints: BoxConstraints(
                       maxWidth: screenWidth * 0.9,
                     ),
                     child: TextFormField(
-                      // Đã đổi tên controller
                       controller: controller.inputController,
-                      // Đã đổi kiểu bàn phím
-                      keyboardType: TextInputType.emailAddress, // Cho phép @ và ký tự khác
-                      autocorrect: false, // Tắt tự động sửa lỗi
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
                       decoration: InputDecoration(
-                        // Đã đổi hint text
-                        hintText: 'Enter Email or Phone Number',
+                        hintText: 'enter_email_or_phone_number'.tr,
                         hintStyle: TextStyle(
                           fontFamily: 'Noto Sans',
                           fontSize: screenWidth * 0.038,
                           fontWeight: FontWeight.w400,
-                          // height: 2, // Bỏ height để căn giữa tốt hơn
-                          color: const Color(0xFFC9A895), // Màu hint mới
+                          color: isDarkMode
+                              ? Colors.grey[500]
+                              : const Color(0xFFC9A895),
                         ),
                         filled: true,
-                        fillColor: const Color(0xFFFFF5EF), // Màu nền mới nhẹ nhàng hơn
+                        fillColor: isDarkMode
+                            ? Colors.grey[800]
+                            : const Color(0xFFFFF5EF),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: Icon(Icons.person_outline, color: AppTheme.primary.withOpacity(0.7)), // Thêm icon
+                        prefixIcon: Icon(
+                          Icons.person_outline,
+                          color: AppTheme.primary.withOpacity(0.7),
+                        ),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: screenWidth * 0.04,
-                          vertical: screenHeight * 0.018, // Tăng padding dọc
+                          vertical: screenHeight * 0.018,
                         ),
                       ),
-                      // Đã đổi hàm validate
                       validator: controller.validateInput,
                     ),
                   ),
-                  // Dimes.height5, // Có thể bỏ nếu không cần khoảng cách nhỏ này
-                  // Đã thay đổi văn bản hướng dẫn phụ
-                  // const Text(
-                  //   'We\'ll send you a code to reset your password',
-                  //   textAlign: TextAlign.center,
-                  //   style: TextStyle(fontSize: 12),
-                  // ),
-                  SizedBox(height: screenHeight * 0.04), // Tăng khoảng cách trước nút
+                  SizedBox(height: screenHeight * 0.04),
                   Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: screenWidth * 0.04,
                     ),
                     child: Obx(
                       () => ElevatedButton(
-                        // Sử dụng controller.isLoading để hiển thị trạng thái loading
-                        onPressed: controller.isLoading.value ? null : controller.onSubmit,
+                        onPressed: controller.isLoading.value
+                            ? null
+                            : controller.onSubmit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primary,
-                          disabledBackgroundColor: AppTheme.primary.withOpacity(0.5), // Màu khi disable
+                          disabledBackgroundColor:
+                              AppTheme.primary.withOpacity(0.5),
                           minimumSize: Size(
                             screenWidth * 0.8,
-                            screenHeight * 0.06, // Tăng chiều cao nút
+                            screenHeight * 0.06,
                           ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
                           ),
                         ),
-                        // Hiển thị loading hoặc text
                         child: controller.isLoading.value
                             ? const SizedBox(
                                 height: 24,
@@ -147,10 +145,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                                 ),
                               )
                             : Text(
-                                'Send Code', // Đổi text nút
+                                'send_code'.tr,
                                 style: TextStyle(
                                   fontFamily: 'Noto Sans',
-                                  fontSize: screenWidth * 0.045, // Điều chỉnh font size
+                                  fontSize: screenWidth * 0.045,
                                   fontWeight: FontWeight.w700,
                                   color: Colors.white,
                                 ),

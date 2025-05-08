@@ -107,11 +107,6 @@ class ThemesView extends StatelessWidget {
           return Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              // Text(
-              //   'Current Theme: ${isDarkMode ? 'Dark' : 'Light'}',
-              //   style: Theme.of(context).textTheme.headlineSmall,
-              // ),
-              // const SizedBox(height: 20),
               SwitchListTile(
                 title: Text(isDarkMode ? 'switch_to_light_mode'.tr : 'switch_to_dark_mode'.tr),
                 value: isDarkMode,
