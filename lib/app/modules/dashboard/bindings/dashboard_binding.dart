@@ -23,7 +23,6 @@ class DashboardBinding extends Bindings {
     Get.lazyPut(() => SearchPageController());
     Get.lazyPut(() => ThemeController());
     Get.lazyPut(() => AlbumController());
-    Get.lazyPut(() => PlayListController());
     Get.lazyPut<DefaultRepository>(() => DefaultRepository(), fenix: true);
     Get.lazyPut<UserRepository>(() => UserRepository(ApiClient()), fenix: true);
     Get.lazyPut(() => FavoriteController());
