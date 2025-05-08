@@ -9,13 +9,13 @@ import '../controllers/songs_controller.dart';
 
 class AudioService {
   static final AudioService _instance = AudioService._internal();
-  final AudioPlayer player;
-  Song? currentSong;
-  List<Song> songs = [];
-  Duration? currentPosition;
-  int currentIndex = 0;
-  bool _isShuffle = false;
-  LoopMode _loopMode = LoopMode.off;
+  final AudioPlayer player;         // player: giúp điều khiển phát, dừng, tua, lấy trạng thái phát, v.v.
+  Song? currentSong;                // Bài hát hiện tại đang phát.
+  List<Song> songs = [];            // Danh sách tất cả bài hát trong playlist.
+  Duration? currentPosition;        // vị trí thời gian của bài hát
+  int currentIndex = 0;             // Vị trí bài hát hiện tại trong danh sách songs
+  bool _isShuffle = false;          // Có đang bật chế độ trộn bài (shuffle) hay không.
+  LoopMode _loopMode = LoopMode.off;      // Chế độ lặp hiện tại (off, one, all)
   final _currentSongController = StreamController<Song>.broadcast();      // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
   final _shuffleSubject = BehaviorSubject<bool>.seeded(false);            // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
 
@@ -136,7 +136,6 @@ class AudioService {
     }
   }
 
-  // Tắt chế độ shuffle
   Future<void> togglePlayPause() async {
     if (player.playing) {
       await player.pause();

@@ -11,9 +11,16 @@ import 'dio_custom_interceptor.dart';
 enum ApiMethod { get, post, put, delete, patch }
 
 class ApiClient {
+  final Dio _dio = Dio();
+
   factory ApiClient() => _instance;
 
-  ApiClient._internal();
+  ApiClient._internal() {
+    _dio.options.connectTimeout = connectTimeOut;
+    _dio.options.receiveTimeout = receiveTimeOut;
+    _dio.interceptors.add(CustomInterceptors());
+  }
+
   static const methodData = {
     ApiMethod.get: 'get',
     ApiMethod.post: 'post',
@@ -21,21 +28,21 @@ class ApiClient {
     ApiMethod.delete: 'delete',
     ApiMethod.patch: 'patch',
   };
+
   static const Duration connectTimeOut = Duration(seconds: 30);
   static const Duration receiveTimeOut = Duration(seconds: 30);
+
   static final ApiClient _instance = ApiClient._internal();
-  static final dio = Dio()
+
+  static final Dio dio = Dio()
     ..options.connectTimeout = connectTimeOut
     ..options.receiveTimeout = receiveTimeOut
     ..interceptors.add(CustomInterceptors());
+
   static void setBaseUrl(String url) => dio.options.baseUrl = url;
-  // static BaseOptions exportOption() {
-  //   final token = Application.pref.get(Application.token);
-  //   baseOptions.headers["Content-Type"] = "application/x-www-form-urlencoded";
-  //   baseOptions.headers["Authorization"] = '$token';
-  //   return baseOptions;
-  // }
+
   static String getBaseUrl() => dio.options.baseUrl;
+
   static Options options(String? method, String? token) {
     return Options(
       method: method,
@@ -45,16 +52,25 @@ class ApiClient {
     );
   }
 
+  /// ĐÃ SỬA: Đảm bảo `post` và `get` dùng đúng instance
+  Future<Response> get(String path, {Map<String, dynamic>? queryParameters}) {
+    return _dio.get(path, queryParameters: queryParameters);
+  }
+
+  Future<Response> post(String path, {dynamic data}) {
+    return _dio.post(path, data: data);
+  }
+
   static Future<Response> connect(
-    String url, {
-    ApiMethod method = ApiMethod.get,
-    Map<String, String>? headers,
-    Map<String, dynamic>? query,
-    data,
-    bool cache = false,
-    CancelToken? cancelToken,
-    Options? options,
-  }) async {
+      String url, {
+        ApiMethod method = ApiMethod.get,
+        Map<String, String>? headers,
+        Map<String, dynamic>? query,
+        data,
+        bool cache = false,
+        CancelToken? cancelToken,
+        Options? options,
+      }) async {
     try {
       Map<String, dynamic>? map;
       if (query != null) {
@@ -69,20 +85,21 @@ class ApiClient {
         'Authorization': 'Bearer ${Preferences.getString(StringUtils.token)}',
         'timezone': DateTime.now().timeZoneName
       };
+
       if (map.containsKey('lat') && map.containsKey('long')) {
-        header.addAll(
-          {
-            'lat': map['lat'].toString(),
-            'long': map['long'].toString(),
-          },
-        );
+        header.addAll({
+          'lat': map['lat'].toString(),
+          'long': map['long'].toString(),
+        });
       }
+
       options ??= Options(
         method: methodData[method],
         responseType: ResponseType.json,
         contentType: 'application/json',
         headers: header,
       );
+
       final request = await dio.request(
         url,
         options: options,
@@ -90,6 +107,7 @@ class ApiClient {
         queryParameters: query,
         cancelToken: cancelToken,
       );
+
       debugPrint(
           '$url\nmethod: ${options.method}\nheader: ${options.headers}\ndata: $data\nrequest:$request');
       return request;
@@ -118,6 +136,7 @@ ErrorEntity createErrorEntity(DioException error) {
       try {
         final errData = error.response?.data;
         final errCode = error.response?.statusCode;
+
         if (errCode == null) {
           return ErrorEntity(code: -2, message: error.message);
         } else if (errCode == 401) {
@@ -126,6 +145,7 @@ ErrorEntity createErrorEntity(DioException error) {
             getx.Get.offAndToNamed(Routes.welcome);
           }
         }
+
         if (errData != null &&
             errData is! String &&
             errData['errors'] != null &&
@@ -138,34 +158,26 @@ ErrorEntity createErrorEntity(DioException error) {
             );
           }
         }
+
         switch (errCode) {
           case 400:
             return ErrorEntity(code: errCode, message: 'Bad Request');
-
           case 401:
             return ErrorEntity(code: errCode, message: 'Unauthorized');
-
           case 403:
             return ErrorEntity(code: errCode, message: 'Forbidden');
-
           case 404:
             return ErrorEntity(code: errCode, message: 'Not Found');
-
           case 405:
             return ErrorEntity(code: errCode, message: 'Method Not Allowed');
-
           case 500:
             return ErrorEntity(code: errCode, message: 'Internal Server Error');
-
           case 502:
             return ErrorEntity(code: errCode, message: 'Bad Gateway');
-
           case 503:
             return ErrorEntity(code: errCode, message: 'Service Unavailable');
-
           case 505:
-            return ErrorEntity(code: errCode, message: 'HTTP  Not Supported');
-
+            return ErrorEntity(code: errCode, message: 'HTTP Not Supported');
           default:
             return ErrorEntity(
               code: errCode,
@@ -173,8 +185,8 @@ ErrorEntity createErrorEntity(DioException error) {
                   'Something Went Wrong, Please Try Again Later?',
             );
         }
-      } on Exception catch (error) {
-        return ErrorEntity(code: -1, message: error.toString());
+      } on Exception catch (e) {
+        return ErrorEntity(code: -1, message: e.toString());
       }
   }
 }
@@ -182,12 +194,11 @@ ErrorEntity createErrorEntity(DioException error) {
 class ErrorEntity implements Exception {
   int code;
   String? message;
+
   ErrorEntity({required this.code, this.message});
 
   @override
   String toString() {
-    if (message == null) return 'Exception';
-
-    return '$message';
+    return message ?? 'Exception';
   }
 }

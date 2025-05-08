@@ -45,6 +45,7 @@ class Song {
   final String source;
   final String image;
   final int duration;
+  bool isFavorite;
 
   Song({
     required this.id,
@@ -54,6 +55,7 @@ class Song {
     required this.source,
     required this.image,
     required this.duration,
+    required this.isFavorite
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
@@ -65,16 +67,42 @@ class Song {
       source: json['source'],
       image: json['image'],
       duration: int.tryParse(json['duration'].toString()) ?? 0,
+      isFavorite: json['favorite']?.toString().toLowerCase() == 'true',
+    );
+  }
+
+  Song copyWith({bool? isFavorite}) {
+    return Song(
+      id: id,
+      title: title,
+      album: album,
+      artist: artist,
+      source: source,
+      image: image,
+      duration: duration,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 
   @override
   String toString() {
-    return 'Song{id: $id, title: $title, album: $album, artist: $artist, duration: $duration}';
+    return 'Song{id: $id, title: $title, album: $album, artist: $artist, duration: $duration, isFavorite: $isFavorite}';
   }
 }
 
+class FavoriteResponse {
+  final bool success;
+  final List<String> songIds;
 
+  FavoriteResponse({required this.success, required this.songIds});
+
+  factory FavoriteResponse.fromJson(Map<String, dynamic> json) {
+    return FavoriteResponse(
+      success: json['success'] ?? false,
+      songIds: List<String>.from(json['song_ids'] ?? []),
+    );
+  }
+}
 
 //
 // class Song {

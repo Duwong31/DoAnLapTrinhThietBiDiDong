@@ -1,13 +1,11 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:marquee/marquee.dart';
 import '../../../../models/song.dart';
+import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
 import '../bindings/audio_service.dart';
-import '../bindings/songs_binding.dart';
-import 'songs_view.dart';
 
 class MiniPlayer extends StatefulWidget {
   final Song song;
@@ -78,20 +76,16 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 StreamBuilder<bool>(
                   stream: _audioService.playerStateStream.map((state) => state.playing),
                   builder: (context, snapshot) {
-                    final isPlaying = snapshot.data ?? false;
-                    return RotationTransition(
-                      turns: const AlwaysStoppedAnimation(0),
-                      child: Container(
-                        width: isSmallScreen ? 20 : 35,
-                        height: isSmallScreen ? 20 : 35,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          image: DecorationImage(
-                            image: song.image.startsWith('http')
-                                ? NetworkImage(song.image) as ImageProvider
-                                : const AssetImage("assets/image/img.png"),
-                            fit: BoxFit.cover,
-                          ),
+                    return Container(
+                      width: isSmallScreen ? 20 : 35,
+                      height: isSmallScreen ? 20 : 35,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                          image: song.image.startsWith('http')
+                              ? NetworkImage(song.image) as ImageProvider
+                              : const AssetImage("assets/image/img.png"),
+                          fit: BoxFit.cover,
                         ),
                       ),
                     );
@@ -103,44 +97,20 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      StreamBuilder<bool>(
-                        stream: _audioService.playerStateStream.map((state) => state.playing),
-                        builder: (context, snapshot) {
-                          final isPlaying = snapshot.data ?? false;
-
-                          return isPlaying
-                              ? SizedBox(
-                            height: isSmallScreen ? 14 : 18,
-                            width: double.infinity,
-                            child: Marquee(
-                              text: song.title,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: isSmallScreen ? 10 : 13,
-                                color: Colors.black, // Màu cố định cho tiêu đề
-                              ),
-                              scrollAxis: Axis.horizontal,
-                              blankSpace: 20.0,
-                              velocity: 30.0,
-                              pauseAfterRound: const Duration(seconds: 0),
-                              startPadding: 10.0,
-                              accelerationDuration: const Duration(seconds: 0),
-                              accelerationCurve: Curves.linear,
-                              decelerationDuration: const Duration(milliseconds: 1000),
-                              decelerationCurve: Curves.easeOut,
-                            ),
-                          )
-                              : Text(
-                            song.title,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: isSmallScreen ? 10 : 13,
-                              color: Colors.black, // Màu cố định cho tiêu đề
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          );
-                        },
+                      SizedBox(
+                        height: isSmallScreen ? 14 : 18,
+                        width: double.infinity,
+                        child: Marquee(
+                          text: song.title,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: isSmallScreen ? 10 : 13,
+                          ),
+                          blankSpace: 50.0,
+                          velocity: 55.0,
+                          fadingEdgeStartFraction: 0.1,
+                          fadingEdgeEndFraction: 0.1,
+                        ),
                       ),
                       Text(
                         song.artist,
@@ -156,17 +126,27 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 ),
                 IconButton(
                   onPressed: () => _audioService.playPreviousSong(),
-                  icon: const Icon(Icons.skip_previous_outlined),
-                  iconSize: 30,
+                  icon: SvgPicture.asset(
+                    AppImage.previousSong,            // icon previous_song
+                    height: 35,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.black,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
                 StreamBuilder<bool>(
                   stream: _audioService.playerStateStream.map((state) => state.playing),
                   builder: (context, snapshot) {
                     final isPlaying = snapshot.data ?? false;
                     return IconButton(
-                      icon: Icon(
-                        isPlaying ? Icons.pause : Icons.play_arrow, // Nếu đang phát nhạc (isPlaying == true) → hiển thị nút pause (Icons.pause) và ngược lại
-                        size: 33,
+                      icon: SvgPicture.asset(
+                        isPlaying ? AppImage.pauseSong : AppImage.playSong,         // icon pause_song/play_song
+                        height: 35,
+                        colorFilter: const ColorFilter.mode(
+                          Colors.black,
+                          BlendMode.srcIn,
+                        ),
                       ),
                       onPressed: () => _audioService.togglePlayPause(),
                     );
@@ -174,8 +154,14 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 ),
                 IconButton(
                   onPressed: () => _audioService.playNextSong(),
-                  icon: const Icon(Icons.skip_next_outlined),
-                  iconSize: 30,
+                  icon: SvgPicture.asset(
+                    AppImage.nextSong,                // icon next_song
+                    height: 35,
+                    colorFilter: const ColorFilter.mode(
+                      Colors.black,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
               ],
             ),

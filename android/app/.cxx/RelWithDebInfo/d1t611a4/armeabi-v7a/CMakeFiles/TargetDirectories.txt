@@ -1,0 +1,2 @@
+C:/app_soundflow/DoAnLapTrinhThietBiDiDong/android/app/.cxx/RelWithDebInfo/d1t611a4/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/app_soundflow/DoAnLapTrinhThietBiDiDong/android/app/.cxx/RelWithDebInfo/d1t611a4/armeabi-v7a/CMakeFiles/rebuild_cache.dir
