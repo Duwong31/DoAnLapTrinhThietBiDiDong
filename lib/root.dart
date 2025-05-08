@@ -44,7 +44,7 @@ class RootApp extends StatelessWidget {
         darkTheme: ThemeData.dark(),
         themeMode: themeController.themeMode.value,
 
-        initialRoute: Preferences.isAuth() ? Routes.splash : Routes.dashboard,
+        initialRoute: Routes.splash,
         getPages: AppPages.routes,
         customTransition: ZoomTransitions(),
         navigatorObservers: [FirebaseAnalyticService.observer],

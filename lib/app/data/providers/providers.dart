@@ -551,16 +551,25 @@ class UserApiService extends BaseApiService {
   }
 
   Future<void> logout() async {
-    FirebaseMessaging.instance.deleteToken();
     try {
+      // Delete Firebase token
+      await FirebaseMessaging.instance.deleteToken();
+      
+      // Call logout API
       await ApiClient.connect(ApiUrl.logout, method: ApiMethod.delete);
-      Preferences.clear();
-
-      Get.offNamedUntil(Routes.login, (route) => false);
+      
+      // Clear all stored data
+      await GetStorage().erase();
+      await Preferences.clear();
+      
+      // Force navigation to login screen
+      Get.offAllNamed(Routes.login);
     } catch (e) {
-      Preferences.clear();
-      Get.offNamedUntil(Routes.login, (route) => false);
-      rethrow;
+      debugPrint('Error during logout: $e');
+      // Even if API call fails, still clear local data and redirect
+      await GetStorage().erase();
+      await Preferences.clear();
+      Get.offAllNamed(Routes.login);
     }
   }
 
