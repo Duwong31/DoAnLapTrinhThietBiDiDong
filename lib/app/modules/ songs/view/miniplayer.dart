@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 import '../../../../models/song.dart';
+import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
 import '../../favorite/controller/favorite_controller.dart';
@@ -136,7 +137,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   return IconButton(
                     icon: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                      color: isFavorite ? Colors.red : AppTheme.labelColor ?? Colors.white,
                       size: 26,
                     ),
                     onPressed: () async {

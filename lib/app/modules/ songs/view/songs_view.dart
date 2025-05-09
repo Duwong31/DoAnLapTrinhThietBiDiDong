@@ -152,6 +152,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
               );
             },
             icon: const Icon(Icons.more_horiz),
+            color: AppTheme.labelColor,
           ),
         ),
         leading: Padding(
@@ -163,6 +164,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
             icon: const Icon(
               Icons.keyboard_arrow_down_outlined,
               size: 40,
+              color: AppTheme.labelColor,
             ),
           ),
         ),
@@ -221,10 +223,10 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                           children: <Widget>[
                             IconButton(
                               onPressed: () {},
-                              icon: Icon(
+                              icon: const Icon(
                                 Icons.share_rounded,
                                 size: 23,
-                                color: Theme.of(context).textTheme.bodyMedium!.color,
+                                color: AppTheme.labelColor,
                               ),
                             ),
                             const SizedBox(width: 10),
@@ -241,7 +243,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                         child: Marquee(         // chạy dòng chữ
                                           text: song.title,
                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                                              color: AppTheme.labelColor,
                                             fontFamily: 'Roboto',
                                             fontSize: 17
                                           ),
@@ -256,7 +258,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                         child: Text(
                                           song.artist,
                                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                                            color: Theme.of(context).textTheme.bodyMedium!.color,
+                                            color: AppTheme.labelColor,
                                             fontFamily: 'Roboto',
                                           ),
                                           maxLines: 1,
@@ -276,7 +278,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               return IconButton(
                                 icon: Icon(
                                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                                  color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                                  color: isFavorite ? Colors.red : AppTheme.labelColor ?? Colors.black,
                                   size: 26,
                                 ),
                                 onPressed: () async {
@@ -345,8 +347,8 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                             thumbGlowColor: Colors.green.withAlpha((0.3 * 255).toInt()),
                             thumbRadius: 10.0,
                             timeLabelLocation: TimeLabelLocation.sides,
-                            timeLabelTextStyle: TextStyle(
-                              color: Theme.of(context).textTheme.bodyMedium!.color,
+                            timeLabelTextStyle: const TextStyle(
+                              color: AppTheme.labelColor,
                               fontSize: 12,
                             ),
                           );
