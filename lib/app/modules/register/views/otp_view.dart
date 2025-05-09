@@ -4,7 +4,7 @@ import 'package:pinput/pinput.dart';
 
 import '../../../core/styles/style.dart';
 import '../controllers/otp_controller.dart';
- // Sửa tên file controller nếu cần
+// Sửa tên file controller nếu cần
 
 class OtpLoginView extends GetView<OtpLoginController> {
   const OtpLoginView({super.key});
@@ -13,6 +13,8 @@ class OtpLoginView extends GetView<OtpLoginController> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     // --- Pinput Theme ---
     final defaultPinTheme = PinTheme(
@@ -21,10 +23,10 @@ class OtpLoginView extends GetView<OtpLoginController> {
       textStyle: TextStyle(
         fontSize: screenWidth * 0.05,
         fontWeight: FontWeight.w600,
-        color: Colors.black,
+        color: theme.textTheme.bodyLarge?.color ?? Colors.black,
       ),
       decoration: BoxDecoration(
-        color: const Color(0xFFF0F0F0), // Sử dụng màu nền bạn đã dùng
+        color: isDark ? Colors.grey[850] : const Color(0xFFF0F0F0),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.transparent),
       ),
@@ -36,19 +38,19 @@ class OtpLoginView extends GetView<OtpLoginController> {
     );
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration!.copyWith(
-        color: const Color(0xFFE0E0E0),
+        color: isDark ? Colors.grey[800] : const Color(0xFFE0E0E0),
       ),
     );
     // --- Kết thúc Pinput Theme ---
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Enter Verification Code'),
+        title: Text('enter_verification_code'.tr),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
           onPressed: () => Get.back(),
         ),
       ),
@@ -64,12 +66,12 @@ class OtpLoginView extends GetView<OtpLoginController> {
               children: [
                 SizedBox(height: screenHeight * 0.05),
                 Text(
-                  "Enter Code",
+                  "enter_code".tr,
                   style: TextStyle(
                     fontFamily: 'Noto Sans',
                     fontSize: screenWidth * 0.06,
                     fontWeight: FontWeight.w700,
-                    color: Colors.black,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -82,7 +84,7 @@ class OtpLoginView extends GetView<OtpLoginController> {
                   style: TextStyle(
                     fontFamily: 'Noto Sans',
                     fontSize: screenWidth * 0.038,
-                    color: Colors.grey[700],
+                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                     height: 1.4,
                   ),
                 ),
@@ -123,7 +125,7 @@ class OtpLoginView extends GetView<OtpLoginController> {
                     horizontal: screenWidth * 0.04,
                   ),
                   child: Obx( // Obx này cần thiết
-                    () => ElevatedButton(
+                        () => ElevatedButton(
                       onPressed: controller.isLoading.value ? null : controller.verifyOTP,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primary,
@@ -138,22 +140,22 @@ class OtpLoginView extends GetView<OtpLoginController> {
                       ),
                       child: controller.isLoading.value
                           ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 3,
-                              ),
-                            )
+                        height: 24,
+                        width: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 3,
+                        ),
+                      )
                           : Text(
-                              'Verify',
-                              style: TextStyle(
-                                fontFamily: 'Noto Sans',
-                                fontSize: screenWidth * 0.045,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.white,
-                              ),
-                            ),
+                        'verify'.tr,
+                        style: TextStyle(
+                          fontFamily: 'Noto Sans',
+                          fontSize: screenWidth * 0.045,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -169,12 +171,12 @@ class OtpLoginView extends GetView<OtpLoginController> {
                       child: TextButton(
                         onPressed: controller.resendOTP,
                         child: Text(
-                          "Resend",
+                          "resend".tr,
                           style: TextStyle(
                             fontFamily: 'Noto Sans',
                             fontSize: screenWidth * 0.038,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                            color: theme.textTheme.bodyLarge?.color,
                           ),
                         ),
                       ),
@@ -186,32 +188,12 @@ class OtpLoginView extends GetView<OtpLoginController> {
                         style: TextStyle(
                           fontFamily: 'Noto Sans',
                           fontSize: screenWidth * 0.038,
-                          color: Colors.grey[600],
+                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
                         ),
                       ),
                     );
                   }
                 }),
-                // SizedBox(height: screenHeight * 0.02),
-
-                // // --- Hiển thị thông báo Test Mode (Dùng if thay Obx) ---
-                // // ---->> BỎ Obx, dùng if trực tiếp <<----
-                // if (controller.isTestMode.value && controller.email != null)
-                //   Padding(
-                //     padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.04, vertical: 10),
-                //     child: Text(
-                //       "Test Mode: Enter '123456' to proceed.",
-                //       textAlign: TextAlign.center,
-                //       style: TextStyle(
-                //         color: Colors.orange.shade800,
-                //         fontWeight: FontWeight.bold,
-                //         fontSize: screenWidth * 0.035
-                //       ),
-                //     ),
-                //   )
-                // else
-                //   const SizedBox.shrink(), // Vẫn dùng SizedBox.shrink nếu không thỏa mãn đk
-
               ],
             ),
           ),

@@ -9,7 +9,7 @@ class AlbumNowController extends GetxController {
   var songs = <SongModel>[].obs;
 
   final String baseUrl = 'https://spotify23.p.rapidapi.com';
-  final String apiKey = 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7';
+  final String apiKey = '5abe5894c0mshc6c4628d8b42b9bp1b44ecjsnd3f322d3da57';
 
   @override
   void onInit() {
@@ -29,7 +29,7 @@ class AlbumNowController extends GetxController {
       final res = await http.get(
         Uri.parse('$baseUrl/albums/?ids=$id'),
         headers: {
-          'X-RapidAPI-Key': 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7',
+          'X-RapidAPI-Key': '5abe5894c0mshc6c4628d8b42b9bp1b44ecjsnd3f322d3da57',
           'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
         },
       );

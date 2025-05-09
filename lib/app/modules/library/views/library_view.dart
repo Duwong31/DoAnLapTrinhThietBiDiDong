@@ -47,12 +47,12 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   Column(
                     children: [
-                      _buildMenuItem(context, 'Favorite songs', FavoriteView()),
-                      _buildMenuItem(context, 'Playlists', const PlayListView()),
+                      _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
+                      _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
                       _buildMenuItem(context, 'Albums', const AlbumView()),
-                      _buildMenuItem(context, 'Following', const FollowView()),
-                      _buildMenuItem(context, 'Stations', const StationView()),
-                      _buildMenuItem(context, 'Uploads', const UploadView()),
+                      _buildMenuItem(context, 'following'.tr, const FollowView()),
+                      _buildMenuItem(context, 'stations'.tr, const StationView()),
+                      _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
                     ],
                   ),
                   Divider(
