@@ -40,9 +40,9 @@ class DashboardController extends GetxController
   @override
   void onInit() {
     items = [
-      BottomBarModel(AppImage.home, 'Home', 0),
-      BottomBarModel(AppImage.search, 'Search', 0),
-      BottomBarModel(AppImage.library, 'Library', 0),
+      BottomBarModel(AppImage.home, 'home'.tr, 0),
+      BottomBarModel(AppImage.search, 'search'.tr, 0),
+      BottomBarModel(AppImage.library, 'library'.tr, 0),
       BottomBarModel(AppImage.logo1, 'Premium', 0),
     ];
 

@@ -54,7 +54,7 @@ class _FavoriteViewState extends State<FavoriteView> {
           onPressed: () => Get.back(),
         ),
         title: Text(
-          'Favorite tracks',
+          'favorite_tracks'.tr,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             fontSize: 20,
           ),
@@ -62,9 +62,15 @@ class _FavoriteViewState extends State<FavoriteView> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5),
-            child: IconButton(
-              icon: const Icon(Icons.refresh, color: AppTheme.labelColor, size: 30),
-              onPressed: _controller.refreshFavorites,
+            child: Builder(
+              builder: (context) => IconButton(
+                icon: Icon(
+                  Icons.refresh,
+                  color: Theme.of(context).iconTheme.color, // Tự động đổi theo theme
+                  size: 30,
+                ),
+                onPressed: _controller.refreshFavorites,
+              ),
             ),
           ),
         ],
@@ -91,8 +97,8 @@ class _FavoriteViewState extends State<FavoriteView> {
                       Expanded(
                         child: TextField(
                           onChanged: _controller.searchSongs,
-                          decoration: const InputDecoration(
-                            hintText: "Search Tracks",
+                          decoration: InputDecoration(
+                            hintText: 'search_tracks'.tr,
                             border: InputBorder.none,
                           ),
                         ),
@@ -116,21 +122,21 @@ class _FavoriteViewState extends State<FavoriteView> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.favorite_border,
                             size: 48,
-                            color: Theme.of(context).primaryColor,
+                            color: AppTheme.primary,
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No liked tracks',
+                            'no_liked_tracks'.tr,
                             style: Theme.of(context).textTheme.bodyLarge,
                           ),
                           if (_controller.searchKeyword.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(top: 8.0),
                               child: Text(
-                                'No results found for "${_controller.searchKeyword.value}"',
+                                'no_results_found_for ".tr${_controller.searchKeyword.value}"',
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ),
