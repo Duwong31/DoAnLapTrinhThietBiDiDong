@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/utilities.dart';
@@ -10,7 +10,7 @@ import '../../../data/models/models.dart';
 import '../../../data/models/playlist.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/firebase_analytics_service.dart';
-import '../../../data/services/share_service.dart';
+// import '../../../data/services/share_service.dart';
 import '../../../routes/app_pages.dart';
 import '../delete_account/delete_account_binding.dart';
 import '../delete_account/delete_account_view.dart';
@@ -178,20 +178,20 @@ class ProfileController extends GetxController with ScrollMixin {
   Future<void> onTopScroll() async {}
 
   // Share profile
-  void shareProfile() {
-    if (user.value != null) {
-      ShareService.shareProfile(
-        user.value!.id ?? '',
-        userName: user.value!.fullName,
-      );
-    }
-  }
+  // void shareProfile() {
+  //   if (user.value != null) {
+  //     ShareService.shareProfile(
+  //       user.value!.id ?? '',
+  //       userName: user.value!.fullName,
+  //     );
+  //   }
+  // }
 
-  // Share playlist
-  void sharePlaylist(Playlist playlist) {
-    ShareService.sharePlaylist(
-      playlist.id.toString(),
-      playlist.name,
-    );
-  }
+  // // Share playlist
+  // void sharePlaylist(Playlist playlist) {
+  //   ShareService.sharePlaylist(
+  //     playlist.id.toString(),
+  //     playlist.name,
+  //   );
+  // }
 }

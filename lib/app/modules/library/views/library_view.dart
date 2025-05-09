@@ -12,6 +12,9 @@ import '../../favorite/controller/favorite_controller.dart';
 import '../../favorite/views/favorite_view.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/library_controller.dart';
+import '../../albums & playlist/controllers/playlist_page_controller.dart';
+import '../../../data/models/playlist.dart';
+import '../../../widgets/playlist_cover_widget.dart';
 
 class LibraryView extends StatefulWidget {
   const LibraryView({super.key});
@@ -22,16 +25,17 @@ class LibraryView extends StatefulWidget {
 
 class _LibraryViewState extends State<LibraryView> {
   final LibraryController controller = Get.put(LibraryController());
+  final PlayListController playlistController = Get.put(PlayListController());
   final AudioService _audioService = Get.find<AudioService>();
   final HomeController homeController = Get.find<HomeController>();
   late List<Song> _songs;
-
 
   @override
   void initState() {
     super.initState();
     _songs = homeController.songs.toList();
     Get.put(FavoriteController());
+    playlistController.fetchPlaylists(); // Fetch playlists when view initializes
   }
 
   @override
@@ -79,7 +83,9 @@ class _LibraryViewState extends State<LibraryView> {
                               ),
                             ),
                             TextButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.toNamed(Routes.playlist);
+                              },
                               child: Container(
                                 width: 60,
                                 height: 30,
@@ -97,30 +103,50 @@ class _LibraryViewState extends State<LibraryView> {
                         ),
                       ),
                       Dimes.height10,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/f/8/8/5/f885e8888832588c8de1c26765a8aa90.jpg',
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
+                      Obx(() {
+                        if (playlistController.isLoadingPlaylists.value) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        
+                        final playlists = playlistController.playlists.take(3).toList();
+                        
+                        return Column(
+                          children: playlists.map((playlist) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            child: GestureDetector(
+                              onTap: () {
+                                Get.toNamed(Routes.playlistnow, arguments: playlist);
+                              },
+                              child: Row(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: SizedBox(
+                                      width: 60,
+                                      height: 60,
+                                      child: PlaylistCoverWidget(
+                                        firstTrackId: playlist.firstTrackId,
+                                      ),
+                                    ),
+                                  ),
+                                  Dimes.width10,
+                                  Expanded(
+                                    child: Text(
+                                      playlist.name,
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Dimes.width10,
-                            Text(
-                              'best_song_of_jack'.tr,
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                          )).toList(),
+                        );
+                      }),
                       const SizedBox(height: 180),
                     ],
                   ),

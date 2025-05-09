@@ -137,7 +137,7 @@ class _ProfileViewState extends State<ProfileView>
                               return;
                             }
                             
-                            ctr.shareProfile();
+                            // ctr.shareProfile();
                           } catch (e, stack) {
                             print('ProfileView: Error in share button: $e');
                             print('ProfileView: Stack trace: $stack');
