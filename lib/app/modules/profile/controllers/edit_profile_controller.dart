@@ -86,15 +86,12 @@ class EditProfileController extends GetxController{
 
     Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false);
     int? uploadedAvatarId;
-    // 5. Call your repository/API to update the profile
-    //    - Pass the updatedFullName
-    //    - If newAvatarFile is not null, upload the avatar file and pass the resulting URL/ID
+    
     try {
       if (newAvatarFile != null) {
          debugPrint(">>> [EditProfileController] Attempting to upload new avatar...");
-         uploadedAvatarId = await Repo.user.uploadFile(newAvatarFile); // No folderId needed usually for avatar
+         uploadedAvatarId = await Repo.user.uploadFile(newAvatarFile);
          if (uploadedAvatarId == null) {
-           // Handle upload failure specifically
            debugPrint(">>> [EditProfileController] Avatar upload failed (returned null ID).");
            throw Exception("Failed to upload avatar.");
          }
@@ -110,53 +107,44 @@ class EditProfileController extends GetxController{
       if (uploadedAvatarId != null) {
         dataToUpdate['avatar_id'] = uploadedAvatarId;
       }
-       // If newAvatarFile is null (user didn't pick a new one),
-       // we DON'T send avatar_id, preserving the existing one on the backend.
-       // If you want to allow REMOVING the avatar, you'd need a separate mechanism
-       // or agree on sending avatar_id: null or avatar_id: 0.
 
-      // --- Step 3: Call the profile update API ---
       debugPrint(">>> [EditProfileController] Calling updateUserProfile with data: $dataToUpdate");
-
       await Repo.user.updateUserProfile(dataToUpdate);
       debugPrint(">>> [EditProfileController] Profile update API call successful.");
-      // --- Xử lý khi thành công ---
+
+      // Đóng loading dialog trước khi thực hiện các thao tác khác
       if (Get.isDialogOpen ?? false) {
-        Get.back(); // Đóng loading dialog
+        Get.back();
       }
 
-      // Cập nhật dữ liệu user trong ProfileController (nếu có) để UI cập nhật ngay
-       try {
+      // Cập nhật dữ liệu user trong ProfileController
+      try {
         final profileController = Get.find<ProfileController>();
-        await profileController.getUserDetail(); // Gọi hàm để làm mới dữ liệu
+        await profileController.getUserDetail();
         debugPrint(">>> [EditProfileController] Đã làm mới dữ liệu ProfileController.");
       } catch (e) {
-         debugPrint(">>> [EditProfileController] Không tìm thấy/làm mới được ProfileController: $e");
-         // Không sao cả, màn hình Profile sẽ tự load lại khi quay về
+        debugPrint(">>> [EditProfileController] Không tìm thấy/làm mới được ProfileController: $e");
       }
-      avatar.value = null;
 
-      Get.back(); // Navigate back to the previous screen (ProfileView)
-      AppUtils.toast('Profile updated successfully'); // Show success message
+      avatar.value = null;
+      Get.back(); // Navigate back to the previous screen
+      Get.snackbar('Thông báo', 'Profile updated successfully');
 
     } catch (e) {
-      // --- Step 5: Handle errors ---
+      // Đóng loading dialog nếu có lỗi
       if (Get.isDialogOpen ?? false) {
-        Get.back(); // Close loading dialog
+        Get.back();
       }
 
       String errorMessage = 'Failed to update profile.';
-      if (e is DioException) { // Handle Dio specific errors
+      if (e is DioException) {
          errorMessage = e.response?.data?['message'] ?? e.message ?? errorMessage;
-          debugPrint(">>> [EditProfileController] DioException: ${e.response?.statusCode} - ${e.response?.data}");
-      } else { // Handle general errors
+         debugPrint(">>> [EditProfileController] DioException: ${e.response?.statusCode} - ${e.response?.data}");
+      } else {
          errorMessage = e.toString();
-          debugPrint(">>> [EditProfileController] General Exception: $e");
+         debugPrint(">>> [EditProfileController] General Exception: $e");
       }
-      AppUtils.toast(errorMessage); // Show error message
-
+      AppUtils.toast(errorMessage);
     }
-    // NO finally block needed to reset avatar.value here,
-    // it should only be reset on SUCCESS to avoid losing the selection if save fails.
   }
 }
