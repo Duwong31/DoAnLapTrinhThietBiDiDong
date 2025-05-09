@@ -22,6 +22,7 @@ abstract class UserBase {
   Future<bool> removeTrackFromPlaylist(int playlistId, String trackId);
   Future<bool> deletePlaylist(int playlistId);
   Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId);
+  Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName);
 
   Future<FavoriteResponse> getFavorites();
   Future<bool> addToFavorite(String trackId);
@@ -124,8 +125,12 @@ class UserRepository extends BaseRepository implements UserBase {
 
   @override
   Future<AddTrackResult> addTrackToPlaylist(int playlistId, String trackId) {
-    // Gọi đến ApiProvider, handleCall sẽ xử lý lỗi chung
     return handleCall(() => ApiProvider.addTrackToPlaylist(playlistId, trackId));
+  }
+
+  @override
+  Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) {
+    return handleCall(() => ApiProvider.updatePlaylist(playlistId, newName));
   }
 
   Future<FavoriteResponse> getFavorites() async {

@@ -224,7 +224,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               onPressed: () {},
                               icon: Icon(
                                 Icons.share_rounded,
-                                size: 20,
+                                size: 23,
                                 color: Theme.of(context).textTheme.bodyMedium!.color,
                               ),
                             ),
@@ -276,11 +276,12 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                               icon: Obx(() {
                                 final isFav = _favoriteController.isFavorite(_currentSong.id);
                                 return AnimatedSwitcher(
-                                  duration: const Duration(milliseconds: 300),
+                                  duration: const Duration(milliseconds: 0),
                                   child: Icon(
                                     isFav ? Icons.favorite : Icons.favorite_border,
                                     key: ValueKey<bool>(isFav),
                                     color: isFav ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                                    size: 26,
                                   ),
                                 );
                               }),
