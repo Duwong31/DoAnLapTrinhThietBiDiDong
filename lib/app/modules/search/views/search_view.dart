@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
+import '../../home/controllers/home_controller.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
@@ -16,24 +17,22 @@ class SearchView extends StatefulWidget {
 
 class _SearchViewState extends State<SearchView> {
   final SearchPageController controller = Get.put(SearchPageController());
-  late List<Song> _songs = [];
-  Song? _currentlyPlaying;
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  late List<Song> _songs;
+
+  @override
+  void initState() {
+    super.initState();
+    _songs = homeController.songs.toList();
+    if (AudioService().currentSong != null) {
+      _navigateToMiniPlayer(AudioService().currentSong!, AudioService().currentPlaylist);
+    }
+  }
 
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-    await AudioService().setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
-    await AudioService().player.play();
-
-    final returnedSong = await Get.toNamed(
-      Routes.songs_view,
-      arguments: {
-        'playingSong': song,
-        'songs': allSongs,
-      },
-    );
-
-    setState(() {
-      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-    });
+    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+    await _audioService.player.play();
   }
 
   @override
@@ -94,35 +93,49 @@ class _SearchViewState extends State<SearchView> {
               ),
             ),
           ),
-          StreamBuilder<Song>(
+
+          // MiniPlayer với chức năng xóa
+          StreamBuilder<Song?>(
             stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
+              Song? currentSong = snapshot.data ?? AudioService().currentSong;
+
+              if (currentSong == null) {
+                return const SizedBox.shrink();
+              }
+
               return Positioned(
                 left: 8,
                 right: 8,
                 bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _songs,
-                      },
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-                    });
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    try {
+                      await AudioService().stop();
+                      AudioService().clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                    }
                   },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: AudioService().currentPlaylist,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {'playingSong': currentSong, 'songs': AudioService().currentPlaylist},
+                      );
+                      if (returnedSong != null) {
+                        AudioService().currentSong = returnedSong;
+                      }
+                    },
+                  ),
                 ),
               );
             },
-          ),
+          )
         ],
       ),
     );
@@ -204,8 +217,8 @@ class _SearchViewState extends State<SearchView> {
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();
-              _songs = results;
-              _navigateToMiniPlayer(song, _songs);
+              _songs = results; // Cập nhật _songs với kết quả tìm kiếm
+              _navigateToMiniPlayer(song, results);
             },
           );
         },

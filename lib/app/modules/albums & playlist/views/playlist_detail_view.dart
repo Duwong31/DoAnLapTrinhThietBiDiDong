@@ -11,6 +11,7 @@ import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart'; // <-- Import model Song chính
 import '../../../data/models/playlist.dart';
 import '../../../routes/app_pages.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/playlist_page_controller.dart';
 import '../../../core/styles/style.dart'; // <-- Cho Dimes (nếu dùng)
 // import '../../../widgets/bottom_song_options.dart'; // Đảm bảo import đúng nếu dùng SongOptionsSheet
@@ -24,7 +25,9 @@ class PlayListNow extends StatefulWidget {
 
 class _PlayListNowState extends State<PlayListNow> {
   final scrollController = ScrollController();
-  final AudioService _audioService = AudioService();
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  late List<Song> _songs;
   bool showTitle = false;
   // *** Lấy instance của PlayListController ***
   final PlayListController _controller = Get.find<PlayListController>();
@@ -34,6 +37,7 @@ class _PlayListNowState extends State<PlayListNow> {
   @override
   void initState() {
     super.initState();
+    _songs = homeController.songs.toList();
     // Lấy arguments và xử lý lỗi
     try {
       // Lấy dữ liệu Playlist được truyền qua arguments
@@ -337,35 +341,54 @@ class _PlayListNowState extends State<PlayListNow> {
             ],
           ),
 
-          StreamBuilder<Song>(
-            stream: _audioService.currentSongStream,
-            builder: (context, snapshot) {
-              final current = snapshot.data ?? _audioService.currentSong;
-              if (current == null) return const SizedBox.shrink();
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _controller.songsInCurrentPlaylist,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _controller.songsInCurrentPlaylist,
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: AudioService().currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
                       },
-                    );
-                    if (returnedSong != null) {
-                      _audioService.currentSong = returnedSong;
-                    }
-                  },
-                ),
-              );
-            },
-          ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );

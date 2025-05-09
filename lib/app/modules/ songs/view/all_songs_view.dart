@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
 import '../../../data/sources/source_songs.dart';
 import '../../../routes/app_pages.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
 import 'MiniPlayer.dart';
 
@@ -29,6 +30,7 @@ class _AllSongsViewState extends State<AllSongsView> {
   @override
   void initState() {
     super.initState();
+    Get.put(FavoriteController());
     _loadMoreSongs();
     _scrollController.addListener(_scrollListener);
     _player = _audioService.player;

@@ -29,7 +29,7 @@ class SearchPageController extends GetxController {
   }
 
   void onSearchChanged(String query) async {
-    isSearching.value = true; // ✅ Bắt buộc để giữ giao diện tìm kiếm
+    isSearching.value = true;
 
     if (query.isEmpty) {
       suggestions.clear();

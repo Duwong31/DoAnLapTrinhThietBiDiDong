@@ -6,6 +6,7 @@ import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
+import '../../home/controllers/home_controller.dart';
 import '../bindings/favorite_bindings.dart';
 import '../controller/favorite_controller.dart';
 
@@ -16,13 +17,15 @@ class FavoriteView extends StatefulWidget {
 
 class _FavoriteViewState extends State<FavoriteView> {
   final FavoriteController _controller = Get.find<FavoriteController>();
-  final AudioService _audioService = AudioService();
-  late final List<Song> _songs = [];
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  late List<Song> _songs;
   Song? _currentlyPlaying;
 
   @override
   void initState() {
     super.initState();
+    _songs = homeController.songs.toList();
     _controller.fetchFavoriteSongs();
     ever(_controller.favoriteSongIds, (_) {
       if (mounted) setState(() {});
@@ -252,32 +255,54 @@ class _FavoriteViewState extends State<FavoriteView> {
               ),
             ],
           ),
-          StreamBuilder<Song>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {'playingSong': current, 'songs': _songs},
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-                    });
-                  },
-                ),
-              );
-            },
-          ),
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: AudioService().currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );

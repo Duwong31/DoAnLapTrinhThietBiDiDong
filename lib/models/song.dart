@@ -1,8 +1,8 @@
 class SongCollection {
   final String id;
   final String title;
-  final String album;             // Tên album chứa bài hát này
-  final String artist;            // Nghệ sĩ/ca sĩ thể hiện bài hát
+  final String album;
+  final String artist;
   final String source;
   final String image;
   final int duration;
@@ -40,8 +40,8 @@ class SongCollection {
 class Song {
   final String id;
   final String title;
-  final String album;
-  final String artist;
+  final String album;     // Tên album chứa bài hát này
+  final String artist;    // Nghệ sĩ/ca sĩ thể hiện bài hát
   final String source;
   final String image;
   final int duration;

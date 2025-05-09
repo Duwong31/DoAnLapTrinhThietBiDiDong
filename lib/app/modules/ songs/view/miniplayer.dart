@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:marquee/marquee.dart';
 import '../../../../models/song.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
 
 class MiniPlayer extends StatefulWidget {
@@ -25,11 +27,14 @@ class MiniPlayer extends StatefulWidget {
 
 class _MiniPlayerState extends State<MiniPlayer> {
   late final AudioService _audioService;
+  late final FavoriteController _favoriteController = Get.put(FavoriteController());
+  late Song _currentSong;
 
   @override
   void initState() {
     super.initState();
     _audioService = AudioService();
+    _currentSong = widget.song;
   }
 
   Future<void> _navigateToNowPlaying() async {
@@ -37,7 +42,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
       Routes.songs_view,
       arguments: {
         'songs': widget.songs,
-        'playingSong': widget.song,
+        'playingSong': _currentSong,
       },
     );
   }
@@ -52,16 +57,18 @@ class _MiniPlayerState extends State<MiniPlayer> {
       initialData: widget.song,
       builder: (context, snapshot) {
         final song = snapshot.data ?? widget.song;
+        _currentSong = song;
 
         return GestureDetector(
           onTap: _navigateToNowPlaying,
           child: Container(
+            width: screenWidth - 16, // Giới hạn chiều rộng theo màn hình, trừ padding
             padding: EdgeInsets.symmetric(
               horizontal: isSmallScreen ? 4 : 6,
               vertical: isSmallScreen ? 0 : 1,
             ),
             decoration: BoxDecoration(
-              color: const Color(0xFFFFE0B2), // Màu cố định (Orange Light)
+              color: const Color(0xFFFFE0B2),
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
@@ -92,19 +99,19 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   },
                 ),
                 SizedBox(width: isSmallScreen ? 8 : 12),
-                Expanded(
+                Expanded( // Sử dụng Expanded để quản lý không gian cho Column
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
                         height: isSmallScreen ? 14 : 18,
-                        width: double.infinity,
                         child: Marquee(
                           text: song.title,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: isSmallScreen ? 10 : 13,
+                            color: Colors.black,
                           ),
                           blankSpace: 50.0,
                           velocity: 55.0,
@@ -115,7 +122,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       Text(
                         song.artist,
                         style: TextStyle(
-                          color: Colors.grey[700], // Màu cố định cho artist
+                          color: Colors.grey[700],
                           fontSize: isSmallScreen ? 8 : 10,
                         ),
                         maxLines: 1,
@@ -124,10 +131,43 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     ],
                   ),
                 ),
+                Obx(() {
+                  final isFavorite = _favoriteController.isFavorite(_currentSong.id);
+                  return IconButton(
+                    icon: Icon(
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.red : Theme.of(context).iconTheme.color ?? Colors.white,
+                      size: 26,
+                    ),
+                    onPressed: () async {
+                      HapticFeedback.lightImpact();
+                      try {
+                        await _favoriteController.toggleFavorite(_currentSong.id);
+                        Get.snackbar(
+                          isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
+                          '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
+                          colorText: Colors.white,
+                          margin: const EdgeInsets.all(10),
+                          icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
+                        );
+                      } catch (e) {
+                        Get.snackbar(
+                          'Lỗi',
+                          'Không thể cập nhật trạng thái yêu thích',
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.red,
+                          colorText: Colors.white,
+                        );
+                      }
+                    },
+                  );
+                }),
                 IconButton(
                   onPressed: () => _audioService.playPreviousSong(),
                   icon: SvgPicture.asset(
-                    AppImage.previousSong,            // icon previous_song
+                    AppImage.previousSong,
                     height: 35,
                     colorFilter: const ColorFilter.mode(
                       Colors.black,
@@ -141,7 +181,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                     final isPlaying = snapshot.data ?? false;
                     return IconButton(
                       icon: SvgPicture.asset(
-                        isPlaying ? AppImage.pauseSong : AppImage.playSong,         // icon pause_song/play_song
+                        isPlaying ? AppImage.pauseSong : AppImage.playSong,
                         height: 35,
                         colorFilter: const ColorFilter.mode(
                           Colors.black,
@@ -155,7 +195,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 IconButton(
                   onPressed: () => _audioService.playNextSong(),
                   icon: SvgPicture.asset(
-                    AppImage.nextSong,                // icon next_song
+                    AppImage.nextSong,
                     height: 35,
                     colorFilter: const ColorFilter.mode(
                       Colors.black,
