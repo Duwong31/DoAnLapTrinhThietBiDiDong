@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
+import '../../../core/utilities/utilities.dart';
 import '../../../data/services/firebase_analytics_service.dart';
 import '../../../routes/app_pages.dart';
 import '../../../widgets/widgets.dart';
+import '../../../widgets/playlist_cover_widget.dart';
 import '../controllers/profile_controller.dart';
 import '../widgets/widgets.dart';
 
@@ -116,9 +118,31 @@ class _ProfileViewState extends State<ProfileView>
                       ),
                       4.widthBox,
                       IconButton(
-                        icon: const Icon(Icons.more_horiz),
+                        icon: const Icon(Icons.share),
                         onPressed: () {
-                          // handle more
+                          try {
+                            print('ProfileView: Share button pressed');
+                            if (ctr.user.value == null) {
+                              print('ProfileView: User is null');
+                              AppUtils.toast('User information not available');
+                              return;
+                            }
+                            
+                            print('ProfileView: User ID: ${ctr.user.value?.id}');
+                            print('ProfileView: User Name: ${ctr.user.value?.fullName}');
+                            
+                            if (ctr.user.value?.id == null || ctr.user.value?.id?.isEmpty == true) {
+                              print('ProfileView: User ID is null or empty');
+                              AppUtils.toast('User ID not available');
+                              return;
+                            }
+                            
+                            ctr.shareProfile();
+                          } catch (e, stack) {
+                            print('ProfileView: Error in share button: $e');
+                            print('ProfileView: Stack trace: $stack');
+                            AppUtils.toast('Failed to share: ${e.toString()}');
+                          }
                         },
                       ),
                     ],
@@ -129,43 +153,80 @@ class _ProfileViewState extends State<ProfileView>
                   'playlists'.tr.text.lg.bold.make(),
                   Dimes.height10,
 
-                  // Playlist demo item
-                  Container(
-                    child: Row(
-                      children: [
-                        SizedBox(
-                          width: 44,
-                          child: Image.asset(AppImage.testImage),
+                  // Playlist list
+                  Obx(() {
+                    if (ctr.isLoadingPlaylists.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    
+                    if (ctr.playlists.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No playlists found',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: textTheme.bodySmall?.color,
+                          ),
                         ),
-                        Dimes.width10,
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            'Người ta nghe gì'.text.medium.make(),
-                            Text(
-                              '0 saves',
-                              style: textTheme.bodySmall?.copyWith(
-                                color: textTheme.bodySmall?.color
-                                    ?.withOpacity(0.6),
+                      );
+                    }
+
+                    // Show up to 3 playlists
+                    final displayPlaylists = ctr.playlists.take(3).toList();
+                    
+                    return Column(
+                      children: displayPlaylists.map((playlist) => GestureDetector(
+                        onTap: () {
+                          Get.toNamed(Routes.playlistnow, arguments: playlist);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: PlaylistCoverWidget(
+                                    firstTrackId: playlist.trackIds.isNotEmpty ? playlist.trackIds.first.toString() : null,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
+                              Dimes.width10,
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    playlist.name.text.medium.make(),
+                                    Text(
+                                      '${playlist.trackCount} saves',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: textTheme.bodySmall?.color,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              // IconButton(
+                              //   icon: const Icon(Icons.share),
+                              //   onPressed: () => ctr.sharePlaylist(playlist),
+                              // ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
+                      )).toList(),
+                    );
+                  }),
+
                   Dimes.height10,
 
                   // See all playlists button
                   Center(
                     child: ElevatedButton(
-                      onPressed: () {
-                        // navigate to playlists
-                      },
+                      onPressed: () => ctr.goToPlaylistsPage(),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: colorScheme.surface,
-                        side:
-                        BorderSide(color: colorScheme.onSurface),
+                        side: BorderSide(color: colorScheme.onSurface),
                       ),
                       child: Text(
                         'see_all_playlists'.tr,

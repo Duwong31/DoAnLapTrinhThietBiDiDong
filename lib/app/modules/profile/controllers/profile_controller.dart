@@ -7,23 +7,28 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/utilities.dart';
 import '../../../data/models/models.dart';
+import '../../../data/models/playlist.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/services/firebase_analytics_service.dart';
+import '../../../data/services/share_service.dart';
 import '../../../routes/app_pages.dart';
 import '../delete_account/delete_account_binding.dart';
 import '../delete_account/delete_account_view.dart';
 
 class ProfileController extends GetxController with ScrollMixin {
   final user = Rxn<UserModel>();
+  final playlists = <Playlist>[].obs;
+  final isLoadingPlaylists = true.obs;
+
   @override
   void onInit() {
     super.onInit();
     if (Preferences.isAuth()) {
       debugPrint(">>> [ProfileController.onInit] User is authenticated, calling getUserDetail...");
       getUserDetail();
+      fetchPlaylists();
     } else {
       debugPrint(">>> [ProfileController.onInit] User is not authenticated.");
-      // user.value = null;
     }
   }
   
@@ -147,9 +152,46 @@ class ProfileController extends GetxController with ScrollMixin {
       Get.snackbar('Thông báo', 'Đang tải dữ liệu người dùng, vui lòng thử lại sau.');
     }
   }
+
+  Future<void> fetchPlaylists() async {
+    try {
+      isLoadingPlaylists(true);
+      final fetchedPlaylists = await Repo.user.getPlaylists();
+      playlists.assignAll(fetchedPlaylists);
+    } catch (e, stackTrace) {
+      debugPrint(">>> [ProfileController] Error fetching playlists: $e\n$stackTrace");
+      FirebaseCrashlytics.instance.recordError(e, stackTrace, reason: 'Failed to fetch playlists');
+      AppUtils.toast("Không thể tải danh sách playlist: ${e.toString()}");
+    } finally {
+      isLoadingPlaylists(false);
+    }
+  }
+
+  void goToPlaylistsPage() {
+    Get.toNamed(Routes.playlist);
+  }
+
   @override
   Future<void> onEndScroll() async {}
 
   @override
   Future<void> onTopScroll() async {}
+
+  // Share profile
+  void shareProfile() {
+    if (user.value != null) {
+      ShareService.shareProfile(
+        user.value!.id ?? '',
+        userName: user.value!.fullName,
+      );
+    }
+  }
+
+  // Share playlist
+  void sharePlaylist(Playlist playlist) {
+    ShareService.sharePlaylist(
+      playlist.id.toString(),
+      playlist.name,
+    );
+  }
 }
