@@ -7,7 +7,7 @@ import 'package:rxdart/rxdart.dart';
 import '../../../../models/song.dart';
 import '../controllers/songs_controller.dart';
 
-class AudioService {
+class AudioService extends GetxService {
   static final AudioService _instance = AudioService._internal();
   final AudioPlayer player;         // player: giúp điều khiển phát, dừng, tua, lấy trạng thái phát, v.v.
   Song? currentSong;                // Bài hát hiện tại đang phát.
@@ -56,7 +56,8 @@ class AudioService {
     player.currentIndexStream.listen((index) {
       if (index != null && index < songs.length) {
         currentSong = songs[index];
-        _currentSongController.add(currentSong!);
+        _currentSongController.add(currentSong!); // Cập nhật stream
+        _currentSongBehavior.add(currentSong); // Cập nhật BehaviorSubject
       }
     });
   }
@@ -137,6 +138,8 @@ class AudioService {
     if (currentSong?.id != song.id) {
       await player.setUrl(url);
       currentSong = song;
+      _currentSongController.add(song); // Đảm bảo stream được cập nhật
+      _currentSongBehavior.add(song); // Thêm dòng này
     }
     if (currentPosition != null) {
       await player.seek(currentPosition!);
@@ -171,6 +174,7 @@ class AudioService {
 
   // Xóa bài hát hiện tại
   void clearCurrentSong() {
+    currentSong = null;
     _currentSongBehavior.add(null);
   }
 

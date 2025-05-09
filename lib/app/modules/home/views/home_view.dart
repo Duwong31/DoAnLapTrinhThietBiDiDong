@@ -19,7 +19,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
-  final AudioService _audioService = AudioService();
+  final AudioService _audioService = Get.find<AudioService>();
 
   @override
   bool get wantKeepAlive => true;
@@ -264,51 +264,51 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                   ]),
                 ),
 
-                Dimes.height10,
+                Dimes.height120,
               ],
             ),
           ),
 
           // MiniPlayer
-          StreamBuilder<Song?>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data == null) {
-                return const SizedBox.shrink();
-              }
-              final currentSong = snapshot.data!;
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: Dismissible(
-                  key: Key('miniplayer_${currentSong.id}'),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) async {
-                    try {
-                      await _audioService.stop();
-                      _audioService.clearCurrentSong();
-                    } catch (e) {
-                      debugPrint('Error stopping audio: $e');
-                    }
-                  },
-                  child: MiniPlayer(
-                    song: currentSong,
-                    songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
-                    onTap: () async {
-                      final returnedSong = await Get.toNamed(
-                        Routes.songs_view,
-                        arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
-                      );
-                      if (returnedSong != null) {
-                        _audioService.currentSong = returnedSong;
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
+          // StreamBuilder<Song?>(
+          //   stream: _audioService.currentSongStream,
+          //   builder: (context, snapshot) {
+          //     if (!snapshot.hasData || snapshot.data == null) {
+          //       return const SizedBox.shrink();
+          //     }
+          //     final currentSong = snapshot.data!;
+          //     return Positioned(
+          //       left: 8,
+          //       right: 8,
+          //       bottom: 8,
+          //       child: Dismissible(
+          //         key: Key('miniplayer_${currentSong.id}'),
+          //         direction: DismissDirection.endToStart,
+          //         onDismissed: (_) async {
+          //           try {
+          //             await _audioService.stop();
+          //             _audioService.clearCurrentSong();
+          //           } catch (e) {
+          //             debugPrint('Error stopping audio: $e');
+          //           }
+          //         },
+          //         child: MiniPlayer(
+          //           song: currentSong,
+          //           songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
+          //           onTap: () async {
+          //             final returnedSong = await Get.toNamed(
+          //               Routes.songs_view,
+          //               arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
+          //             );
+          //             if (returnedSong != null) {
+          //               _audioService.currentSong = returnedSong;
+          //             }
+          //           },
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
         ],
       ),
     );

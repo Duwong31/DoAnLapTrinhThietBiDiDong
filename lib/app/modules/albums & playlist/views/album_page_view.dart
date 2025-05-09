@@ -1,13 +1,27 @@
 import 'package:dartz/dartz.dart' as album;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../ songs/bindings/audio_service.dart';
+import '../../ songs/view/MiniPlayer.dart';
+import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/album_page_controller.dart';
 import '../../../../models/album.dart';
 
-class AlbumView extends GetView<AlbumController> {
+class AlbumView extends StatefulWidget {
   const AlbumView({Key? key}) : super(key: key);
+
+  @override
+  State<AlbumView> createState() => _AlbumViewState();
+}
+
+class _AlbumViewState extends State<AlbumView> {
+  final AlbumController controller = Get.find<AlbumController>();
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>();
+  late List<Song> _songs;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +29,8 @@ class AlbumView extends GetView<AlbumController> {
       appBar: AppBar(
         elevation: 0.1,
         centerTitle: true,
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor ??
+            Theme.of(context).scaffoldBackgroundColor,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_new_outlined,
@@ -37,16 +52,68 @@ class AlbumView extends GetView<AlbumController> {
           ),
         ),
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
+      body: Stack(
+        children: [
+          Obx(() {
+            if (controller.isLoading.value) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          child: _buildAlbumList(context),
-        );
-      }),
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: _buildAlbumList(context),
+            );
+          }),
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: AudioService().currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+        ],
+      ),
     );
   }
 
@@ -79,7 +146,7 @@ class AlbumView extends GetView<AlbumController> {
   Widget _buildAlbumCard(BuildContext context, AlbumModel item) {
     return GestureDetector(
       onTap: () {
-        Get.toNamed(Routes.albumnow , arguments: item.id);
+        Get.toNamed(Routes.albumnow, arguments: item.id);
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),

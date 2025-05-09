@@ -65,7 +65,7 @@ class FavoriteController extends GetxController {
 
       _updateStream.add(null); // Thông báo cho listener
     } catch (e) {
-      Get.snackbar('Lỗi', 'Cập nhật yêu thích thất bại');
+      // Get.snackbar('Lỗi', 'Cập nhật yêu thích thất bại');
       // Khôi phục trạng thái nếu có lỗi
       _updateFavoriteStatus(songId, isFavorite(songId));
     }
@@ -97,7 +97,7 @@ class FavoriteController extends GetxController {
     } catch (e, stack) {
       debugPrint('Lỗi khi tải danh sách yêu thích: $e');
       debugPrint('Chi tiết lỗi: $stack');
-      Get.snackbar('Lỗi', 'Không thể tải danh sách yêu thích');
+      // Get.snackbar('Lỗi', 'Không thể tải danh sách yêu thích');
     } finally {
       isLoading(false);
     }

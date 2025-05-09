@@ -286,15 +286,15 @@ class _NowPlayingPageState extends State<NowPlayingPage> {
                                   try {
                                     await _favoriteController.toggleFavorite(_currentSong.id);
                                     // Thông báo khi thay đổi trạng thái
-                                    Get.snackbar(
-                                      isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
-                                      '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
-                                      snackPosition: SnackPosition.TOP,
-                                      backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
-                                      colorText: Colors.white,
-                                      margin: const EdgeInsets.all(10),
-                                      icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
-                                    );
+                                    // Get.snackbar(
+                                    //   isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
+                                    //   '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
+                                    //   snackPosition: SnackPosition.TOP,
+                                    //   backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
+                                    //   colorText: Colors.white,
+                                    //   margin: const EdgeInsets.all(10),
+                                    //   icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
+                                    // );
                                   } catch (e) {
                                     Get.snackbar(
                                       'Lỗi',

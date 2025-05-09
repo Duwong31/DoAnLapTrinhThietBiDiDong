@@ -26,7 +26,6 @@ class _LibraryViewState extends State<LibraryView> {
   final HomeController homeController = Get.find<HomeController>();
   late List<Song> _songs;
 
-
   @override
   void initState() {
     super.initState();
@@ -37,145 +36,147 @@ class _LibraryViewState extends State<LibraryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
+      body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(5),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Column(
-                    children: [
-                      _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
-                      _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
-                      _buildMenuItem(context, 'Albums', const AlbumView()),
-                      _buildMenuItem(context, 'following'.tr, const FollowView()),
-                      _buildMenuItem(context, 'stations'.tr, const StationView()),
-                      _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
-                    ],
-                  ),
-                  Divider(
-                    color: Theme.of(context).dividerColor,
-                    height: 1,
-                    thickness: 0.5,
-                    indent: 15,
-                    endIndent: 15,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "my_playlist".tr,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primary,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {},
-                              child: Container(
-                                width: 60,
-                                height: 30,
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFE8E8E8),
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Center(
-                                  child: Text('see_all'.tr,
-                                      style: const TextStyle(color: AppTheme.labelColor)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(5),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      children: [
+                        _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
+                        _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
+                        _buildMenuItem(context, 'Albums', const AlbumView()),
+                        _buildMenuItem(context, 'following'.tr, const FollowView()),
+                        _buildMenuItem(context, 'stations'.tr, const StationView()),
+                        _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
+                      ],
+                    ),
+                    Divider(
+                      color: Theme.of(context).dividerColor,
+                      height: 1,
+                      thickness: 0.5,
+                      indent: 15,
+                      endIndent: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 18),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "my_playlist".tr,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primary,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Dimes.height10,
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/f/8/8/5/f885e8888832588c8de1c26765a8aa90.jpg',
-                                width: 60,
-                                height: 60,
-                                fit: BoxFit.cover,
+                              TextButton(
+                                onPressed: () {},
+                                child: Container(
+                                  width: 60,
+                                  height: 30,
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFFE8E8E8),
+                                    borderRadius: BorderRadius.circular(50),
+                                  ),
+                                  child: Center(
+                                    child: Text('see_all'.tr,
+                                        style: const TextStyle(color: AppTheme.labelColor)),
+                                  ),
+                                ),
                               ),
-                            ),
-                            Dimes.width10,
-                            Text(
-                              'best_song_of_jack'.tr,
-                              style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 180),
-                    ],
-                  ),
-                ],
+                        Dimes.height10,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Row(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/f/8/8/5/f885e8888832588c8de1c26765a8aa90.jpg',
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Dimes.width10,
+                              Text(
+                                'best_song_of_jack'.tr,
+                                style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 180),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          Obx(() {
-            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
-            _songs = homeController.songs.toList();
-            return StreamBuilder<Song?>(
-              stream: AudioService().currentSongStream,
-              builder: (context, snapshot) {
-                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
-                Song? currentSong = snapshot.hasData && snapshot.data != null
-                    ? snapshot.data
-                    : _audioService.currentSong;
-
-                if (currentSong == null) {
-                  return const SizedBox.shrink();
-                }
-
-                return Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Dismissible(
-                    key: Key('miniplayer_${currentSong.id}'),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) async {
-                      try {
-                        await _audioService.stop();
-                        _audioService.clearCurrentSong();
-                      } catch (e) {
-                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
-                      }
-                    },
-                    child: MiniPlayer(
-                      song: currentSong,
-                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
-                      onTap: () async {
-                        final returnedSong = await Get.toNamed(
-                          Routes.songs_view,
-                          arguments: {'playingSong': currentSong, 'songs': _songs},
-                        );
-                        if (returnedSong != null) {
-                          _audioService.currentSong = returnedSong;
-                        }
-                      },
-                    ),
-                  ),
-                );
-              },
-            );
-          }),
+          // Obx(() {
+          //   // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+          //   _songs = homeController.songs.toList();
+          //   return StreamBuilder<Song?>(
+          //     stream: _audioService.currentSongStream,
+          //     builder: (context, snapshot) {
+          //       // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+          //       Song? currentSong = snapshot.hasData && snapshot.data != null
+          //           ? snapshot.data
+          //           : _audioService.currentSong;
+          //
+          //       if (currentSong == null) {
+          //         return const SizedBox.shrink();
+          //       }
+          //
+          //       return Positioned(
+          //         left: 8,
+          //         right: 8,
+          //         bottom: 8,
+          //         child: Dismissible(
+          //           key: Key('miniplayer_${currentSong.id}'),
+          //           direction: DismissDirection.endToStart,
+          //           onDismissed: (_) async {
+          //             try {
+          //               await _audioService.stop();
+          //               _audioService.clearCurrentSong();
+          //             } catch (e) {
+          //               debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+          //             }
+          //           },
+          //           child: MiniPlayer(
+          //             song: currentSong,
+          //             songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+          //             onTap: () async {
+          //               final returnedSong = await Get.toNamed(
+          //                 Routes.songs_view,
+          //                 arguments: {'playingSong': currentSong, 'songs': _songs},
+          //               );
+          //               if (returnedSong != null) {
+          //                 _audioService.currentSong = returnedSong;
+          //               }
+          //             },
+          //           ),
+          //         ),
+          //       );
+          //     },
+          //   );
+          // }),
         ],
       ),
     );
