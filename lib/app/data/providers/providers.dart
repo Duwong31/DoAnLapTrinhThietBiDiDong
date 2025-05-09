@@ -551,16 +551,25 @@ class UserApiService extends BaseApiService {
   }
 
   Future<void> logout() async {
-    FirebaseMessaging.instance.deleteToken();
     try {
+      // Delete Firebase token
+      await FirebaseMessaging.instance.deleteToken();
+      
+      // Call logout API
       await ApiClient.connect(ApiUrl.logout, method: ApiMethod.delete);
-      Preferences.clear();
-
-      Get.offNamedUntil(Routes.login, (route) => false);
+      
+      // Clear all stored data
+      await GetStorage().erase();
+      await Preferences.clear();
+      
+      // Force navigation to login screen
+      Get.offAllNamed(Routes.login);
     } catch (e) {
-      Preferences.clear();
-      Get.offNamedUntil(Routes.login, (route) => false);
-      rethrow;
+      debugPrint('Error during logout: $e');
+      // Even if API call fails, still clear local data and redirect
+      await GetStorage().erase();
+      await Preferences.clear();
+      Get.offAllNamed(Routes.login);
     }
   }
 
@@ -875,6 +884,25 @@ class UserApiService extends BaseApiService {
        AppUtils.log('Exception caught during addTrackToPlaylist API call: $e');
        return AddTrackResult.failure;
     }
+  }
+
+  Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) async {
+    return handleApiError(() async {
+      AppUtils.log('API Request to ${ApiUrl.updatePlaylist(playlistId)} with data: {"name": "$newName"}');
+
+      final response = await put<dynamic>(
+        ApiUrl.updatePlaylist(playlistId),
+        data: {'name': newName},
+      );
+
+      AppUtils.log('API Response from update playlist: ${response.data}');
+
+      if (response.statusCode == 200 && response.data['status'] == 1) {
+        return response.data;
+      } else {
+        throw Exception(response.data['message'] ?? 'Failed to update playlist');
+      }
+    });
   }
 }
 
@@ -1297,4 +1325,7 @@ class ApiProvider {
   static Future<Map<String, dynamic>> getFavorites() => _userService.getFavorites();
   static Future<bool> addToFavorite(String trackId) => _userService.addToFavorite(trackId);
   static Future<bool> removeFavorite(String songId) => _userService.removeFavorite(songId);
+
+  static Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) =>
+      _userService.updatePlaylist(playlistId, newName);
 }

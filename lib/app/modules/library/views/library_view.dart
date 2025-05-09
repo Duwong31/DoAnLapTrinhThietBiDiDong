@@ -191,6 +191,10 @@ class _LibraryViewState extends State<LibraryView> {
                 () => FavoriteView(),
             binding: FavoriteBinding(),
           );
+        } else if (destination is PlayListView) {
+          Get.toNamed(Routes.playlist);
+        } else if (destination is AlbumView) {
+          Get.toNamed(Routes.album);
         } else {
           Get.to(() => destination);
         }

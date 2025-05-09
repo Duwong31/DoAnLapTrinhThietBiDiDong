@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../core/styles/style.dart';
 import '../data/models/playlist.dart';
 import '../modules/albums%20&%20playlist/controllers/playlist_page_controller.dart';
+import '../modules/albums%20&%20playlist/views/playlist_edit_view.dart';
 
 class PlaylistOptionsSheet extends StatelessWidget {
   final Playlist playlist;
@@ -18,7 +19,12 @@ class PlaylistOptionsSheet extends StatelessWidget {
             leading: const Icon(Icons.edit),
             title: const Text('Edit playlist'),
             onTap: () {
-              Get.back(); 
+              Get.back(); // Đóng bottom sheet
+              Get.to(() => PlaylistEditView(playlist: playlist))?.then((updated) {
+                if (updated == true) {
+                  controller.fetchPlaylists();
+                }
+              });
             },
           ),
           Obx(() => ListTile( // Sử dụng Obx để disable khi đang xóa
