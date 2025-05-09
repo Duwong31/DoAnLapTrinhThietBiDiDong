@@ -84,7 +84,8 @@ class AlbumView extends GetView<AlbumController> {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          // Xoá màu hoặc đặt thành Colors.transparent
+          // color: Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -123,10 +124,11 @@ class AlbumView extends GetView<AlbumController> {
                     ?.copyWith(color: Colors.grey),
               ),
             ),
-            Dimes.height8
+            Dimes.height8,
           ],
         ),
       ),
+
     );
   }
 }
