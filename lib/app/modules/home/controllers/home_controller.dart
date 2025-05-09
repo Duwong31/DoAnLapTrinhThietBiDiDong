@@ -5,6 +5,7 @@ import '../../../data/sources/source_songs.dart';
 class HomeController extends GetxController {
   final RemoteDataSource _dataSource = RemoteDataSource();
   final RxList<Song> songs = <Song>[].obs;
+  final Rxn<Song> currentSong = Rxn<Song>();
 
   @override
   void onInit() {

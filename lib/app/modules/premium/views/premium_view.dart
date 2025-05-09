@@ -7,6 +7,7 @@ import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
+import '../../home/controllers/home_controller.dart';
 import '../../profile/widgets/widgets.dart';
 
 const darkTextColor = Colors.black87;
@@ -21,8 +22,16 @@ class PremiumView extends StatefulWidget {
 }
 
 class _PremiumViewState extends State<PremiumView> {
-  final List<Song> _songs = [];
-  Song? _currentlyPlaying;
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  late List<Song> _songs;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _songs = homeController.songs.toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,35 +135,54 @@ class _PremiumViewState extends State<PremiumView> {
               ],
             ),
           ),
-          StreamBuilder<Song>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _songs,
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: AudioService().currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
                       },
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-                    });
-                  },
-                ),
-              );
-            },
-          ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );

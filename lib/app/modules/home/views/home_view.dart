@@ -21,7 +21,6 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   final ArtistController artistController = Get.put(ArtistController());
   final AudioService _audioService = AudioService();
   late final List<Song> _songs = [];
-  Song? _currentlyPlaying;
 
   @override
   bool get wantKeepAlive => true;
@@ -272,28 +271,69 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
           ),
 
           // MiniPlayer
-          StreamBuilder<Song>(
+          StreamBuilder<Song?>(
             stream: AudioService().currentSongStream,
             builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
+              if (!snapshot.hasData || snapshot.data == null) {
+                return const SizedBox.shrink();
+              }
+              final currentSong = snapshot.data!;
               return Positioned(
                 left: 8,
                 right: 8,
                 bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {'playingSong': current, 'songs': _songs},
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-                    });
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  // background: Container(
+                  //   decoration: BoxDecoration(
+                  //     color: Colors.red,
+                  //     borderRadius: BorderRadius.circular(8),
+                  //   ),
+                  //   alignment: Alignment.centerRight,
+                  //   padding: const EdgeInsets.only(right: 20),
+                  //   child: const Icon(Icons.delete, color: Colors.white),
+                  // ),
+                  // confirmDismiss: (direction) async {
+                  //   return await showDialog(
+                  //     context: context,
+                  //     builder: (context) => AlertDialog(
+                  //       title: const Text('Xác nhận'),
+                  //       content: const Text('Bạn có chắc muốn dừng phát nhạc?'),
+                  //       actions: [
+                  //         TextButton(
+                  //           onPressed: () => Navigator.of(context).pop(false),
+                  //           child: const Text('Hủy'),
+                  //         ),
+                  //         TextButton(
+                  //           onPressed: () => Navigator.of(context).pop(true),
+                  //           child: const Text('Đồng ý'),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   );
+                  // },
+                  onDismissed: (_) async {
+                    try {
+                      await _audioService.stop();
+                      _audioService.clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('Error stopping audio: $e');
+                    }
                   },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: _songs,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {'playingSong': currentSong, 'songs': _songs},
+                      );
+                      if (returnedSong != null) {
+                        _audioService.currentSong = returnedSong;
+                      }
+                    },
+                  ),
                 ),
               );
             },

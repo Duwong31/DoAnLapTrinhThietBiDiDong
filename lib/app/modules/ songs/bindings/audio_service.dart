@@ -18,6 +18,8 @@ class AudioService {
   LoopMode _loopMode = LoopMode.off;      // Chế độ lặp hiện tại (off, one, all)
   final _currentSongController = StreamController<Song>.broadcast();      // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
   final _shuffleSubject = BehaviorSubject<bool>.seeded(false);            // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
+  final _currentSongBehavior = BehaviorSubject<Song?>();
+
 
   Stream<bool> get shuffleStream => _shuffleSubject.stream;
   Stream<Song> get currentSongStream => _currentSongController.stream;
@@ -154,6 +156,17 @@ class AudioService {
   void setLoopMode(LoopMode loopMode) {
     _loopMode = loopMode;
     player.setLoopMode(loopMode);
+  }
+
+  // Dừng phát nhạc
+  Future<void> stop() async {
+    await player.stop();
+    currentSong = null;
+  }
+
+  // Xóa bài hát hiện tại
+  void clearCurrentSong() {
+    _currentSongBehavior.add(null);
   }
 
   // Hủy bỏ Stream và giải phóng tài nguyên
