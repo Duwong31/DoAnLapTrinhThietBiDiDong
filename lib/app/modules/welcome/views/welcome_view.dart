@@ -14,13 +14,13 @@ class WelcomeView extends GetView<WelcomeController> {
     return Scaffold(
       body: SafeArea(
         child: Center(
-          child: Column(         
+          child: Column(
             children: [
               const SizedBox(height: 300),
               Image.asset(
                 AppImage.logo,
                 width: 80,
-                color: AppTheme.primary, 
+                color: AppTheme.primary,
               ),
               const SizedBox(height: 20),
               const Text(
@@ -39,62 +39,62 @@ class WelcomeView extends GetView<WelcomeController> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primary,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    controller.toSignUpPage();
-                  },
-                  child: const Text(
-                    "Sign up free",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.textColor,
+                    onPressed: () {
+                      controller.toSignUpPage();
+                    },
+                    child: const Text(
+                      "Sign up free",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textColor,
+                      ),
                     ),
                   ),
                 ),
               ),
-                ),
-                Dimes.height10,
+              Dimes.height10,
               //LOG IN BUTTON
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: OutlinedButton(
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                      color: Colors.deepOrange, 
-                      width: 2,
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: Colors.deepOrange,
+                        width: 2,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                  ),
-                  onPressed: () {
-                    controller.toLoginPage();
-                  },
-                  child: const Text(
-                    "Log in",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.primary,
+                    onPressed: () {
+                      controller.toLoginPage();
+                    },
+                    child: const Text(
+                      "Log in",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primary,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
             ],
-          ),          
+          ),
         ),
       ),
     );

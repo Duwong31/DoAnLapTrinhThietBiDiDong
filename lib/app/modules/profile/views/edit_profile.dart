@@ -81,9 +81,9 @@ class EditProfilePage extends StatelessWidget {
                     const SizedBox(height: 8),
                     GestureDetector(
                       onTap: ctr.changeAvatar,
-                      child: const Text(
-                        'change photo',
-                        style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w500),
+                      child: Text(
+                        'change_photo'.tr,
+                        style: const TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w500),
                       ),
                     ),
                   ],

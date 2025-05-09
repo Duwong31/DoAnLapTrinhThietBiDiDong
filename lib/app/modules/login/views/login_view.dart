@@ -20,7 +20,11 @@ class LoginView extends GetView<LoginController> {
       Get.lazyPut(() => LoginController());
     }
     final bool showKeyboard = MediaQuery.of(context).viewInsets.bottom != 0;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -31,15 +35,16 @@ class LoginView extends GetView<LoginController> {
                 child: Padding(
                   padding: const EdgeInsets.all(30),
                   child: Image.asset(
-                    AppImage.logo,
-                    width: 80),
+                      AppImage.logo,
+                      width: 80),
                 ),
               ),
             ),
             Container(
-              child: 'Log in to SoundFlow'
+              child: 'log_in_to_soundFlow'.tr
                   .text
                   .style(custom_text_style.TGTextStyle.header)
+                  .color(theme.textTheme.bodyLarge?.color)
                   .make(),
             ),
             Expanded(
@@ -59,102 +64,106 @@ class LoginView extends GetView<LoginController> {
                           child: 'Email'
                               .text
                               .style(custom_text_style.TGTextStyle.body3)
+                              .color(theme.textTheme.bodyLarge?.color)
                               .make(),
                         ),
                         Dimes.height10,
                         InputCustom(
-                            fillColor: AppTheme.inputBoxColor,  
-                            contentPadding: const EdgeInsets.all(Dimes.size15),
-                            onChanged: (String email) {
-                              controller.emailController.text = email;
-                            },
-                            validator: (email) =>
-                                controller.validateEmail(email),),
+                          fillColor: isDark ? Colors.grey[800] : AppTheme.inputBoxColor,
+                          contentPadding: const EdgeInsets.all(Dimes.size15),
+                          onChanged: (String email) {
+                            controller.emailController.text = email;
+                          },
+                          validator: (email) =>
+                              controller.validateEmail(email),
+                        ),
                         Dimes.height20,
                         Container(
                           alignment: Alignment.centerLeft,
-                          child: 'Password'
+                          child: 'password'.tr
                               .text
                               .style(custom_text_style.TGTextStyle.body3)
+                              .color(theme.textTheme.bodyLarge?.color)
                               .make(),
                         ),
                         Dimes.height10,
                         InputCustom(
-                            fillColor: AppTheme.inputBoxColor,
-                            contentPadding: const EdgeInsets.all(Dimes.size15),
-                            isPassword: true,
-                            isShowSuffixIcon: true,
-                            onChanged: (String password) {
-                              controller.passwordController.text = password;
-                            },
-                            validator: (password) =>
-                                controller.validatePassword(password),),
+                          fillColor: isDark ? Colors.grey[800] : AppTheme.inputBoxColor,
+                          contentPadding: const EdgeInsets.all(Dimes.size15),
+                          isPassword: true,
+                          isShowSuffixIcon: true,
+                          onChanged: (String password) {
+                            controller.passwordController.text = password;
+                          },
+                          validator: (password) =>
+                              controller.validatePassword(password),
+                        ),
                         Container(
                           alignment: Alignment.topRight,
                           child: Obx(() => AppButton(
-                                'Forgot Password?',
-                                type: ButtonType.text,
-                                axisSize: MainAxisSize.min,
-                                fontSize: 12,
-                                textColor: AppTheme.primary,
-                                loading: controller.isLoading.value,
-                                onPressed: controller.goToForgotPassword,
-                              )),
+                            'forgot_password?'.tr,
+                            type: ButtonType.text,
+                            axisSize: MainAxisSize.min,
+                            fontSize: 12,
+                            textColor: AppTheme.primary,
+                            loading: controller.isLoading.value,
+                            onPressed: controller.goToForgotPassword,
+                          )),
                         ),
                         Dimes.height10,
                         ContainerButton(
                           child: Obx(() => AppButton(
-                                'Login',
-                                color: Colors.transparent,
-                                loading: controller.isLoading.value,                               
-                                onPressed: () {
-                                  final isValid = keyform.currentState?.validate() ?? false;
+                            'login'.tr,
+                            color: Colors.transparent,
+                            loading: controller.isLoading.value,
+                            onPressed: () {
+                              final isValid = keyform.currentState?.validate() ?? false;
 
-                                  // 2. If the form is valid, call the controller's login method
-                                  if (isValid) {
-                                    controller.login(); // <-- Call the actual login logic
-                                  } else {
-                                    // Optional: You could show a generic snackbar here
-                                    // if validation fails, but individual field errors
-                                    // are usually sufficient.
-                                    print("Form validation failed");
-                                  }
-                                  // Get.toNamed(Routes.dashboard);
-                                },
-                              )),
+                              // 2. If the form is valid, call the controller's login method
+                              if (isValid) {
+                                controller.login(); // <-- Call the actual login logic
+                              } else {
+                                // Optional: You could show a generic snackbar here
+                                // if validation fails, but individual field errors
+                                // are usually sufficient.
+                                print("form_validation_failed".tr);
+                              }
+                              // Get.toNamed(Routes.dashboard);
+                            },
+                          )),
                         ),
                         Dimes.height15,
-                        const Row(
+                        Row(
                           children: [
-                            Expanded(child: Divider(color: Colors.grey)),
+                            const Expanded(child: Divider(color: Colors.grey)),
                             Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 8.0),
-                              child: Text('or'),
+                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Text('or'.tr),
                             ),
-                            Expanded(child: Divider(color: Colors.grey)),
+                            const Expanded(child: Divider(color: Colors.grey)),
                           ],
                         ),
-                        _continueWithPhone(onPressed: (){}),
-                        _continueWithGoogle(),
+                        _continueWithPhone(context, onPressed: () {}),
+                        _continueWithGoogle(context),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.max,
                           children: [
-                            'Don\'t have an account?'
+                            "don't_have_an_account?".tr
                                 .text
                                 .color(AppTheme.subtitleColor)
                                 .size(16)
                                 .medium
                                 .make(),
                             Obx(() => AppButton(
-                                  'Sign up',
-                                  type: ButtonType.text,
-                                  fontSize: 16,
-                                  axisSize: MainAxisSize.min,
-                                  textColor: AppTheme.primary,
-                                  loading: controller.isLoading.value,
-                                  onPressed: controller.goToRegisterView,
-                                )),
+                              'sign_up'.tr,
+                              type: ButtonType.text,
+                              fontSize: 16,
+                              axisSize: MainAxisSize.min,
+                              textColor: AppTheme.primary,
+                              loading: controller.isLoading.value,
+                              onPressed: controller.goToRegisterView,
+                            )),
                           ],
                         ),
                       ],
@@ -168,17 +177,16 @@ class LoginView extends GetView<LoginController> {
       ),
     );
   }
-  
-  Widget _continueWithPhone({required VoidCallback onPressed}) {
+
+  Widget _continueWithPhone(BuildContext context, {required VoidCallback onPressed}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextButton(
-      onPressed: () async{
-      
-        },
+      onPressed: onPressed,
       child: Container(
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.grey[200], 
+          color: isDark ? Colors.grey[800] : Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -188,13 +196,12 @@ class LoginView extends GetView<LoginController> {
               AppImage.phone,
               width: 24,
             ),
-            const SizedBox(width: 8),
-            // Text
-            const Text(
-              "Continue with phone",
-              style: const TextStyle(
+            Dimes.width8,
+            Text(
+              "continue_with_phone".tr,
+              style: TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
           ],
@@ -202,16 +209,19 @@ class LoginView extends GetView<LoginController> {
       ),
     );
   }
-  Widget _continueWithGoogle() {
+
+  Widget _continueWithGoogle(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return TextButton(
-      onPressed: () async{
+      onPressed: () async {
         controller.signInWithGoogle();
       },
       child: Container(
         height: 48,
+        margin: const EdgeInsets.only(top: 10),
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.grey[200], 
+          color: isDark ? Colors.grey[800] : Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -221,12 +231,12 @@ class LoginView extends GetView<LoginController> {
               AppImage.google,
               width: 24,
             ),
-            const SizedBox(width: 8),
-            const Text(
-              "Continue with Google",
+            Dimes.width8,
+            Text(
+              "continue_with_google".tr,
               style: TextStyle(
                 fontSize: 16,
-                color: Colors.black87,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
           ],

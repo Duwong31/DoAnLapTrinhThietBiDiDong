@@ -10,6 +10,7 @@ import '../../albums & playlist/views/playlist_page_view.dart';
 import '../../favorite/bindings/favorite_bindings.dart';
 import '../../favorite/controller/favorite_controller.dart';
 import '../../favorite/views/favorite_view.dart';
+import '../../home/controllers/home_controller.dart';
 import '../controllers/library_controller.dart';
 
 class LibraryView extends StatefulWidget {
@@ -21,13 +22,15 @@ class LibraryView extends StatefulWidget {
 
 class _LibraryViewState extends State<LibraryView> {
   final LibraryController controller = Get.put(LibraryController());
-  final List<Song> _songs = [];
-  Song? _currentlyPlaying;
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>();
+  late List<Song> _songs;
 
 
   @override
   void initState() {
     super.initState();
+    _songs = homeController.songs.toList();
     Get.put(FavoriteController());
   }
 
@@ -44,12 +47,12 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   Column(
                     children: [
-                      _buildMenuItem(context, 'Favorite songs', FavoriteView()),
-                      _buildMenuItem(context, 'Playlists', const PlayListView()),
+                      _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
+                      _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
                       _buildMenuItem(context, 'Albums', const AlbumView()),
-                      _buildMenuItem(context, 'Following', const FollowView()),
-                      _buildMenuItem(context, 'Stations', const StationView()),
-                      _buildMenuItem(context, 'Uploads', const UploadView()),
+                      _buildMenuItem(context, 'following'.tr, const FollowView()),
+                      _buildMenuItem(context, 'stations'.tr, const StationView()),
+                      _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
                     ],
                   ),
                   Divider(
@@ -125,35 +128,54 @@ class _LibraryViewState extends State<LibraryView> {
               ),
             ),
           ),
-          StreamBuilder<Song>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _songs,
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: AudioService().currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
                       },
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;
-                    });
-                  },
-                ),
-              );
-            },
-          ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
     );

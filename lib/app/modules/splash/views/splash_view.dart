@@ -13,13 +13,13 @@ class SplashView extends GetView<SplashController> {
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          gradient: RadialGradient(
+            center: Alignment.center,
+            radius: 1.2,
             colors: [
-              Colors.white,      // Trắng ở trên
-              Colors.yellow,     // Vàng ở giữa
-              Colors.orange,     // Cam ở dưới
+              Colors.white,
+              Colors.yellow,
+              Colors.orange,
             ],
           ),
         ),

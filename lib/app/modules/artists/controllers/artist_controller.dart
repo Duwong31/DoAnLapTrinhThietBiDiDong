@@ -9,19 +9,19 @@ class ArtistController extends GetxController {
   final errorMessage = ''.obs;
 
   final List<String> artistIds = [
-    '2w9zwq3AktTeYYMuhMjju8',
-    '2JVLB6xMAa3vXDD89dktLZ',
-    '0du5cEVh5yTK9QJze8zA0C',
-    '3Z73qbDrey1ubsAofhOoz6',
-    '3zE5jV6Uw9hhdWCXM8hS3j',
-    '5t1D0pmHVT0FmuCMAPsGqo',
-    '7tYKF4w9nC0nq9CsPZTHyP',
-    '4w6T2GcMFd9ZEsOuZ5RDxg',
-    '06HL4z0CvFAxyc27GXpf02',
-    '4ypou4nriO8G6UiKe570cz',
-    '1Xyo4u8uXC1ZmMpatF05PJ',
-    '699OTQXzgjhIYAHMy9RyPD',
-    '5K4W6rqBFWDnAN6FQUkS6x',
+    '3KJopZ2uUclqEtLxQg0FNn',
+    '5dfZ5uSmzR7VQK0udbAVpf',
+    '0aNyWetkjBvIdZvJY00yEa',
+    '0slOzRzTQb1RBBVJbvRITP',
+    '5HZtdKfC4xU0wvhEyYDWiY',
+    '4KPyQxL1zqEiBcTwW6c9HE',
+    '14W31zJumZnGDgZuPXclTJ',
+    '0jF7Zlz8P5p74zcH7YwcMU',
+    '5FWPIKz9czXWaiNtw45KQs',
+    '4R3mugkUqCALXgkwSptTbg',
+    '2mx5AAdmlMxMcrcd7AQh1j',
+    '6JTiPLdbZD2e0tDsN15U1s',
+    '3Cl5NZZOw8sXweFM13Y61d',
   ];
 
   @override
@@ -61,7 +61,7 @@ class ArtistController extends GetxController {
     );
 
     final headers = {
-      'X-RapidAPI-Key': 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7',
+      'X-RapidAPI-Key': '5abe5894c0mshc6c4628d8b42b9bp1b44ecjsnd3f322d3da57',
       'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
     };
 

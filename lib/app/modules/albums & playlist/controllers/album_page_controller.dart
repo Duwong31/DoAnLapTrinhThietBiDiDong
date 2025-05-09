@@ -18,17 +18,16 @@ class AlbumController extends GetxController {
       isLoading(true);
 
       final albumIds = [
-        '62Xr5p6185023RWu1KzhcP',
-        '3IBcauSj5M2A6lTeffJzdv',
-        '2XGEyGU76kj55OdHWynX0S',
-        '3OxfaVgvTxUTy7276t7SPU',
-        '1OARrXe5sB0gyy3MhQ8h92',
-        '7tzVd1fwkxsorytCBjEJkU',
-        '3p4vOm7XU41jAEMtDZHiJT',
-        '0P3oVJBFOv3TDXlYRhGL7s',
-        '3iv1Dt4wzwNecgtK5rc0n1',
-        '7zCODUHkfuRxsUjtuzNqbd',
-        '2nLOHgzXzwFEpl62zAgCEC',
+        '7i3TK6Jvdxixy02nUwBJGF',
+        '0O3IzHXaHspsJCKd1wbhfl',
+        '4faMbTZifuYsBllYHZsFKJ',
+        '1AaxmI2e1HRhbwe9XJGPnT',
+        '1saojFqMcYhXsYkpUZEOI3',
+        '3lof3SRNSDhgx3l7f3Lw08',
+        '1z4B1TU1K39ZQi2AHiiTHG',
+        '2b1Cru2BclR9ax5spjRCbF',
+        '10Dwjqs7dJNxn2g1PkvRCw',
+        '03XBexG3TeHsf88bY4xjmQ',
       ];
 
       final idsString = albumIds.join(',');
@@ -36,7 +35,7 @@ class AlbumController extends GetxController {
       final res = await http.get(
         Uri.parse('https://spotify23.p.rapidapi.com/albums/?ids=$idsString'),
         headers: {
-          'X-RapidAPI-Key': 'd6e121976bmsh15032ff06cf1319p1b5915jsn87fe28db57d7',
+          'X-RapidAPI-Key': '5abe5894c0mshc6c4628d8b42b9bp1b44ecjsnd3f322d3da57',
           'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
         },
       );
