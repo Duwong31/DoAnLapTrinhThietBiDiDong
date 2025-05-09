@@ -6,6 +6,8 @@ import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
+import '../../genre/controllers/genre_controller.dart';
+import '../../genre/views/genre_view.dart';
 import '../controllers/home_controller.dart';
 import '../../artists/controllers/artist_controller.dart';
 
@@ -19,6 +21,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
+  final GenreController genreController = Get.put(GenreController());
   final AudioService _audioService = AudioService();
 
   @override
@@ -113,13 +116,19 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, String imageUrl, String label, String routeName) {
+  Widget _buildCategoryItem(
+      BuildContext context,
+      String imageUrl,
+      String label,
+      String routeName, {
+        String? genreArgument,
+      }) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
+
     return Container(
       width: 100,
       margin: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: ElevatedButton(
@@ -131,7 +140,16 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        onPressed: () => Get.toNamed(routeName),
+        onPressed: () {
+          if (routeName == Routes.genrenow && genreArgument != null) {
+            // Gọi fetchSongsByGenre trước khi điều hướng
+            genreController.fetchSongsByGenre(genreArgument).then((_) {
+              Get.toNamed(routeName, arguments: genreArgument);
+            });
+          } else {
+            Get.toNamed(routeName);
+          }
+        },
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -142,9 +160,11 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                const Icon(Icons.music_note, size: 50, color: Colors.grey),
               ),
             ),
-            Dimes.height5,
+            const SizedBox(height: 5),
             SizedBox(
               width: 85,
               child: Text(
@@ -156,23 +176,6 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAdBanner(String imageUrl, {VoidCallback? onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        height: 200,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          image: DecorationImage(
-            image: NetworkImage(imageUrl),
-            fit: BoxFit.cover,
-          ),
         ),
       ),
     );
@@ -195,28 +198,37 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
 
                 Dimes.height10,
 
-                // QUẢNG CÁO BANNER 1
-                _buildAdBanner('https://tongweivietnam.com/wp-content/uploads/2025/03/hello88-%E2%80%93-cai-ten-khong-phai-dang-vua-trong-lang-ca-cuoc.jpg',
-                    onTap: () => _launchURL('https://mcafee6.uk.net/'),
-                ),
-
                 SectionHeader(title: "music_genre".tr, textColor: textColor, route: Routes.genre),
                 SizedBox(
                   height: 122,
-                  child: ListView(scrollDirection: Axis.horizontal, children: [
-                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-GonKEYBHzuAh2slh-Dw0lGA-t500x500.jpg', 'Pop', Routes.albumnow),
-                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-ZJmK1lnTJZe6oJ95-qXl4lA-t500x500.jpg', 'HipHop', Routes.albumnow),
-                    _buildCategoryItem(context, 'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg', 'EDM', Routes.albumnow),
-                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg', 'Jazz', Routes.albumnow),
-                    _buildCategoryItem(context, 'https://i1.sndcdn.com/artworks-000434822688-6nltvh-t500x500.jpg', 'Rock', Routes.albumnow),
-                  ]),
+                  child: Obx(() {
+                    if (genreController.isLoading.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (genreController.genreList.isEmpty) {
+                      return const Center(child: Text('No genres found'));
+                    }
+
+                    final displayGenres = genreController.genreList.take(4).toList();
+
+                    return ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: displayGenres.map((genre) {
+                        final imageIndex = genreController.genreList.indexOf(genre) % GenreView.genreImages.length;
+                        final imageUrl = GenreView.genreImages[imageIndex];
+
+                        return _buildCategoryItem(
+                          context,
+                          imageUrl,
+                          genre,
+                          Routes.genrenow, // Thay đổi từ albumnow sang genreNow
+                          genreArgument: genre, // Truyền thể loại làm argument
+                        );
+                      }).toList(),
+                    );
+                  }),
                 ),
                 Dimes.height10,
-
-                // QUẢNG CÁO BANNER 1
-                _buildAdBanner('https://lh7-us.googleusercontent.com/docsz/AD_4nXezl_SrxAm9dKv-wMeFKThHwP6U7Np5w7KUVGjJa8-8R00MribXOdkm17HXQJid_wJM7i4xAmB-Oz0K9J1nEhqBLNsUzLGxA8EBXNPKDQ64I1l9YV5DP0UuGcgOcarXWiJU5qOG2NMCIVOmwABdYzYx1ESG?key=jR9BtSOkPttHBYWeWMkvrA',
-                    onTap: () => _launchURL('https://3okvip.info/'),
-                ),
 
                 SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
                 SizedBox(

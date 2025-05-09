@@ -6,36 +6,23 @@ import '../../../routes/app_pages.dart';
 import '../../../../models/song.dart';
 import '../controllers/genre_controller.dart';
 
-class GenreView extends StatefulWidget {
-  const GenreView({super.key});
-
-  // Danh sách ảnh mặc định (cố định)
-  static const List<String> genreImages = [
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQA8x-2OXJ2Af3QZvRFqIzOvsByG6RZZwjO1g&s',
-    'https://i1.sndcdn.com/avatars-000564497757-bc1rh5-t240x240.jpg',
-    'https://i.scdn.co/image/ab67616d00001e02027bdee29f4be23f96dec3cb',
-    'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/6/8/e/468ea0a5efa7e617b3e884f4253093f4.jpg',
-    'https://i1.sndcdn.com/avatars-000314373332-ucnx5x-t240x240.jpg',
-    'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/b/c/b/4/bcb4299339f7b77642e6842a06be5a01.jpg',
-    'https://i1.sndcdn.com/artworks-yo8hJSrQzWDyqiza-8noYsQ-t500x500.jpg',
-    'https://i1.sndcdn.com/artworks-U61yweg4nTKp8nri-eSLjeA-t500x500.jpg',
-    'https://i1.sndcdn.com/artworks-WcuxdFA0FrIX8nkN-fyreIQ-t500x500.jpg',
-    'https://i1.sndcdn.com/avatars-000785877394-twiiu7-t240x240.jpg',
-    'https://i1.sndcdn.com/avatars-000296280782-1a82nz-t240x240.jpg',
-  ];
+class GenreNowView extends StatefulWidget {
+  const GenreNowView({super.key});
 
   @override
-  State<GenreView> createState() => _GenreViewState();
+  State<GenreNowView> createState() => _GenreNowViewState();
 }
 
-class _GenreViewState extends State<GenreView> {
+class _GenreNowViewState extends State<GenreNowView> {
   final GenreController controller = Get.find<GenreController>();
   late final AudioService _audioService;
+  String genre = 'Unknown Genre';
 
   @override
   void initState() {
     super.initState();
     _audioService = Get.find<AudioService>();
+    genre = Get.arguments as String? ?? 'Unknown Genre';
   }
 
   @override
@@ -56,7 +43,7 @@ class _GenreViewState extends State<GenreView> {
           },
         ),
         title: Text(
-          'Genre',
+          genre, // Hiển thị tên thể loại nhạc
           style: TextStyle(
             color: Theme.of(context).textTheme.titleLarge?.color ?? Colors.black,
             fontSize: 20,
@@ -65,50 +52,51 @@ class _GenreViewState extends State<GenreView> {
       ),
       body: Stack(
         children: [
+          // Danh sách bài hát theo thể loại
           Obx(() {
-            if (controller.isLoading.value) {
+            if (controller.isGenreLoading.value) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (controller.genreList.isEmpty) {
-              return const Center(child: Text("No genres available."));
+            if (controller.songsByGenre.isEmpty) {
+              return const Center(child: Text('No songs found in this genre'));
             }
 
             return ListView.builder(
               padding: const EdgeInsets.only(bottom: 80), // Space for MiniPlayer
-              itemCount: controller.genreList.length,
+              itemCount: controller.songsByGenre.length,
               itemBuilder: (context, index) {
-                final genre = controller.genreList[index];
-                final imageUrl = GenreView.genreImages[index % GenreView.genreImages.length];
-
+                final song = controller.songsByGenre[index];
                 return ListTile(
                   leading: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      imageUrl,
+                      song.image,
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
                       errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.image_not_supported),
+                      const Icon(Icons.music_note),
                     ),
                   ),
                   title: Text(
-                    genre,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                    song.title,
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  onTap: () async {
-                    await controller.fetchSongsByGenre(genre);
-                    Get.toNamed(Routes.genrenow, arguments: genre);
+                  subtitle: Text(
+                    song.artist,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  onTap: () {
+                    _audioService.setPlaylist(controller.songsByGenre, startIndex: index);
+                    _audioService.player.play();
                   },
                 );
               },
             );
           }),
 
-          // MiniPlayer - identical to GenreNowView implementation
+          // MiniPlayer
           StreamBuilder<Song?>(
             stream: _audioService.currentSongStream,
             builder: (context, snapshot) {
