@@ -4,7 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import '../../../../models/song.dart';
 import '../../../data/sources/source_songs.dart';
 import '../../../routes/app_pages.dart';
-import '../../home/controllers/home_controller.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../bindings/audio_service.dart';
 import 'MiniPlayer.dart';
 
@@ -16,14 +16,13 @@ class AllSongsView extends StatefulWidget {
 }
 
 class _AllSongsViewState extends State<AllSongsView> {
-  final AudioService _audioService = Get.find<AudioService>();          // quản lý logic phát nhạc
-  final HomeController homeController = Get.find<HomeController>();     // Lưu dưới dạng biến instance
-  late List<Song> _songs;
+  late List<Song> _songs = [];
   bool _isLoading = false;          // để biết app có đang tải dữ liệu hay không
   bool _hasMore = true;             //  dùng để xác định xem còn dữ liệu để tải tiếp không
   int _currentPage = 1;
   final int _perPage = 20;
 
+  final AudioService _audioService = AudioService();     // quản lý logic phát nhạc
   late final AudioPlayer _player;               // Đối tượng từ thư viện phát nhạc, như just_audio
   Song? _currentlyPlaying;                      // Lưu bài hát hiện đang phát. null nếu chưa phát bài nào.
   final ScrollController _scrollController = ScrollController();      // Điều khiển scroll của ListView, dùng để detect người dùng cuộn đến cuối danh sách để tải thêm bài mới.
@@ -31,7 +30,7 @@ class _AllSongsViewState extends State<AllSongsView> {
   @override
   void initState() {
     super.initState();
-    _songs = homeController.songs.toList();
+    Get.put(FavoriteController());
     _loadMoreSongs();
     _scrollController.addListener(_scrollListener);
     _player = _audioService.player;
@@ -206,54 +205,35 @@ class _AllSongsViewState extends State<AllSongsView> {
             ),
           ),
 
-          Obx(() {
-            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
-            _songs = homeController.songs.toList();
-            return StreamBuilder<Song?>(
-              stream: AudioService().currentSongStream,
-              builder: (context, snapshot) {
-                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
-                Song? currentSong = snapshot.hasData && snapshot.data != null
-                    ? snapshot.data
-                    : _audioService.currentSong;
-
-                if (currentSong == null) {
-                  return const SizedBox.shrink();
-                }
-
-                return Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Dismissible(
-                    key: Key('miniplayer_${currentSong.id}'),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) async {
-                      try {
-                        await _audioService.stop();
-                        _audioService.clearCurrentSong();
-                      } catch (e) {
-                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
-                      }
-                    },
-                    child: MiniPlayer(
-                      song: currentSong,
-                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
-                      onTap: () async {
-                        final returnedSong = await Get.toNamed(
-                          Routes.songs_view,
-                          arguments: {'playingSong': currentSong, 'songs': _songs},
-                        );
-                        if (returnedSong != null) {
-                          _audioService.currentSong = returnedSong;
-                        }
+          StreamBuilder<Song>(
+            stream: AudioService().currentSongStream,
+            builder: (context, snapshot) {
+              final current = snapshot.data ?? AudioService().currentSong;
+              if (current == null) return const SizedBox.shrink();
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: MiniPlayer(
+                  key: ValueKey(current.id),
+                  song: current,
+                  songs: _songs,
+                  onTap: () async {
+                    final returnedSong = await Get.toNamed(
+                      Routes.songs_view,
+                      arguments: {
+                        'playingSong': current,
+                        'songs': _songs,
                       },
-                    ),
-                  ),
-                );
-              },
-            );
-          }),
+                    );
+                    setState(() {
+                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;     // cập nhật lại bài hát hiện tại đang phát
+                    });
+                  },
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

@@ -16,19 +16,21 @@ class AudioService {
   int currentIndex = 0;             // Vị trí bài hát hiện tại trong danh sách songs
   bool _isShuffle = false;          // Có đang bật chế độ trộn bài (shuffle) hay không.
   LoopMode _loopMode = LoopMode.off;      // Chế độ lặp hiện tại (off, one, all)
-  final _currentSongController = StreamController<Song>.broadcast();      // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
-  final _shuffleSubject = BehaviorSubject<bool>.seeded(false);            // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
+  final _currentSongController = StreamController<Song>.broadcast();          // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
+  final _shuffleSubject = BehaviorSubject<bool>.seeded(false);                // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
   final _currentSongBehavior = BehaviorSubject<Song?>();
 
+  final _playlistController = StreamController<List<Song>>.broadcast();       // cho phép nhiều listener (ví dụ các màn hình khác nhau) cùng lúc theo dõi danh sách bài hát hiện tại
 
-  Stream<bool> get shuffleStream => _shuffleSubject.stream;
-  Stream<Song> get currentSongStream => _currentSongController.stream;
-  Future<void> playNextSong() => _playNextSong();
-  Future<void> playPreviousSong() => _playPreviousSong();
-  Stream<PlayerState> get playerStateStream => player.playerStateStream;
-  bool get isPlaying => player.playing;
-  bool get isShuffle => _isShuffle;
-  LoopMode get loopMode => _loopMode;
+  // Cung cấp danh sách songs
+  List<Song> get currentPlaylist => songs;                                    //  Dùng để phát ra danh sách playlist mới mỗi khi có sự thay đổi.
+
+  Stream<bool> get shuffleStream => _shuffleSubject.stream;                   // Stream dùng để lắng nghe trạng thái bật/tắt shuffle( trộn bài ).
+  Stream<Song> get currentSongStream => _currentSongController.stream;        // Stream cung cấp bài hát đang phát hiện tại (Dùng trong MiniPlayer để hiển thị bài hát hiện tại theo thời gian thực (StreamBuilder))
+  Stream<PlayerState> get playerStateStream => player.playerStateStream;      // Stream trạng thái trình phát (playing, paused, completed, buffering, v.v.)
+  bool get isPlaying => player.playing;                                       // Trả về true nếu trình phát đang phát nhạc.
+  bool get isShuffle => _isShuffle;                                           // Getter cho trạng thái shuffle hiện tại (đang bật hay tắt)
+  LoopMode get loopMode => _loopMode;                                         // Trả về trạng thái vòng lặp hiện tại: không lặp, lặp một bài, hoặc lặp danh sách
 
   AudioService._internal() : player = AudioPlayer() {
     Get.put<AudioPlayer>(player, permanent: true);
@@ -79,6 +81,9 @@ class AudioService {
     if (currentPosition != null) {
       await player.seek(currentPosition!);
     }
+
+    // Thông báo cho các listener về danh sách phát đã cập nhật
+    _playlistController.add(songs);
   }
 
   // Phát bài hát tiếp theo
@@ -169,10 +174,14 @@ class AudioService {
     _currentSongBehavior.add(null);
   }
 
+  Future<void> playNextSong() => _playNextSong();
+  Future<void> playPreviousSong() => _playPreviousSong();
+
   // Hủy bỏ Stream và giải phóng tài nguyên
   Future<void> dispose() async {
     await _currentSongController.close();
     await _shuffleSubject.close(); // Đóng stream khi dispose
+    await _playlistController.close();
     await player.dispose();
   }
 }

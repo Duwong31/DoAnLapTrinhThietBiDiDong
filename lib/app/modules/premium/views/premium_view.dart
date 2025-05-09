@@ -7,6 +7,7 @@ import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
 import '../../../routes/app_pages.dart';
+import '../../favorite/controller/favorite_controller.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../profile/widgets/widgets.dart';
 
@@ -23,7 +24,7 @@ class PremiumView extends StatefulWidget {
 
 class _PremiumViewState extends State<PremiumView> {
   final AudioService _audioService = Get.find<AudioService>();
-  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  final HomeController homeController = Get.find<HomeController>();
   late List<Song> _songs;
 
 
@@ -31,6 +32,7 @@ class _PremiumViewState extends State<PremiumView> {
   void initState() {
     super.initState();
     _songs = homeController.songs.toList();
+    Get.put(FavoriteController());
   }
 
   @override

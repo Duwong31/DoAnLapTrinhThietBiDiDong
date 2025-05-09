@@ -14,6 +14,7 @@ import 'app/data/providers/notification_provider.dart';
 import 'app/data/services/song_service.dart';
 import 'app/data/sources/source_songs.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
+import 'app/modules/favorite/controller/favorite_controller.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
 import 'root.dart';
@@ -68,7 +69,7 @@ void main() async {
 
   Get.lazyPut<RemoteDataSource>(() => RemoteDataSource(), fenix: true);
   // Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
-  Get.lazyPut(() => AudioService());
+  Get.put(AudioService(), permanent: true);
   Get.put(ApiClient(), permanent: true);
   Get.lazyPut(() => SongService(ApiClient()), fenix: true);
 

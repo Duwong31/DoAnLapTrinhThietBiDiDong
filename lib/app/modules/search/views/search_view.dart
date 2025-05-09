@@ -24,8 +24,10 @@ class _SearchViewState extends State<SearchView> {
   @override
   void initState() {
     super.initState();
-    // Khởi tạo _songs với danh sách phát hiện tại từ HomeController
     _songs = homeController.songs.toList();
+    if (AudioService().currentSong != null) {
+      _navigateToMiniPlayer(AudioService().currentSong!, AudioService().currentPlaylist);
+    }
   }
 
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
@@ -93,54 +95,47 @@ class _SearchViewState extends State<SearchView> {
           ),
 
           // MiniPlayer với chức năng xóa
-          Obx(() {
-            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
-            _songs = homeController.songs.toList();
-            return StreamBuilder<Song?>(
-              stream: AudioService().currentSongStream,
-              builder: (context, snapshot) {
-                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
-                Song? currentSong = snapshot.hasData && snapshot.data != null
-                    ? snapshot.data
-                    : _audioService.currentSong;
+          StreamBuilder<Song?>(
+            stream: AudioService().currentSongStream,
+            builder: (context, snapshot) {
+              Song? currentSong = snapshot.data ?? AudioService().currentSong;
 
-                if (currentSong == null) {
-                  return const SizedBox.shrink();
-                }
+              if (currentSong == null) {
+                return const SizedBox.shrink();
+              }
 
-                return Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Dismissible(
-                    key: Key('miniplayer_${currentSong.id}'),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) async {
-                      try {
-                        await _audioService.stop();
-                        _audioService.clearCurrentSong();
-                      } catch (e) {
-                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    try {
+                      await AudioService().stop();
+                      AudioService().clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                    }
+                  },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: AudioService().currentPlaylist,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {'playingSong': currentSong, 'songs': AudioService().currentPlaylist},
+                      );
+                      if (returnedSong != null) {
+                        AudioService().currentSong = returnedSong;
                       }
                     },
-                    child: MiniPlayer(
-                      song: currentSong,
-                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
-                      onTap: () async {
-                        final returnedSong = await Get.toNamed(
-                          Routes.songs_view,
-                          arguments: {'playingSong': currentSong, 'songs': _songs},
-                        );
-                        if (returnedSong != null) {
-                          _audioService.currentSong = returnedSong;
-                        }
-                      },
-                    ),
                   ),
-                );
-              },
-            );
-          }),
+                ),
+              );
+            },
+          )
         ],
       ),
     );
@@ -223,7 +218,7 @@ class _SearchViewState extends State<SearchView> {
               controller.saveSearch(song.title);
               controller.startSearch();
               _songs = results; // Cập nhật _songs với kết quả tìm kiếm
-              _navigateToMiniPlayer(song, _songs);
+              _navigateToMiniPlayer(song, results);
             },
           );
         },

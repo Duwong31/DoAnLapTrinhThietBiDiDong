@@ -20,7 +20,6 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
   final AudioService _audioService = AudioService();
-  late final List<Song> _songs = [];
 
   @override
   bool get wantKeepAlive => true;
@@ -285,34 +284,6 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                 child: Dismissible(
                   key: Key('miniplayer_${currentSong.id}'),
                   direction: DismissDirection.endToStart,
-                  // background: Container(
-                  //   decoration: BoxDecoration(
-                  //     color: Colors.red,
-                  //     borderRadius: BorderRadius.circular(8),
-                  //   ),
-                  //   alignment: Alignment.centerRight,
-                  //   padding: const EdgeInsets.only(right: 20),
-                  //   child: const Icon(Icons.delete, color: Colors.white),
-                  // ),
-                  // confirmDismiss: (direction) async {
-                  //   return await showDialog(
-                  //     context: context,
-                  //     builder: (context) => AlertDialog(
-                  //       title: const Text('Xác nhận'),
-                  //       content: const Text('Bạn có chắc muốn dừng phát nhạc?'),
-                  //       actions: [
-                  //         TextButton(
-                  //           onPressed: () => Navigator.of(context).pop(false),
-                  //           child: const Text('Hủy'),
-                  //         ),
-                  //         TextButton(
-                  //           onPressed: () => Navigator.of(context).pop(true),
-                  //           child: const Text('Đồng ý'),
-                  //         ),
-                  //       ],
-                  //     ),
-                  //   );
-                  // },
                   onDismissed: (_) async {
                     try {
                       await _audioService.stop();
@@ -323,11 +294,11 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                   },
                   child: MiniPlayer(
                     song: currentSong,
-                    songs: _songs,
+                    songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
                     onTap: () async {
                       final returnedSong = await Get.toNamed(
                         Routes.songs_view,
-                        arguments: {'playingSong': currentSong, 'songs': _songs},
+                        arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
                       );
                       if (returnedSong != null) {
                         _audioService.currentSong = returnedSong;
