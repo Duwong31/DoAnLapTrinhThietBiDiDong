@@ -47,10 +47,10 @@ class _PremiumViewState extends State<PremiumView> {
                       errorBuilder: (context, error, stackTrace) =>
                       const Icon(Icons.music_note, size: 32, color: AppTheme.primary),
                     ),
-                    Dimes.height8,
-                    Text(
-                      'premium'.tr, // <-- Dùng GetX tr
-                      style: const TextStyle(
+                    Dimes.width8,
+                    const Text(
+                      'Premium',
+                      style: TextStyle(
                         fontSize: 26,
                         fontWeight: FontWeight.bold,
                         color: AppTheme.primary,

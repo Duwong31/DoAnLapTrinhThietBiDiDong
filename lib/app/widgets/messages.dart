@@ -21,9 +21,8 @@ class Messages extends Translations {
       'enter_keyword_to_show_suggestions': "Enter keyword to show suggestions",
 
       // library
-      'liked_tracks': 'Liked Tracks',
+      'favorite_songs': 'Favorite songs',
       'playlists': 'Playlists',
-      'albums': 'Albums',
       'following': 'Following',
       'stations': 'Stations',
       'uploads': 'Uploads',
@@ -35,7 +34,6 @@ class Messages extends Translations {
       'no_liked_song': 'No liked songs',
 
       // premium
-      'premium': 'Premium',
       'elevate_music': 'Elevate Your Music Experience',
       'why_premium': 'Why Premium?',
       'ad_free': 'Ad-Free Listening',
@@ -125,21 +123,18 @@ class Messages extends Translations {
       'enter_keyword_to_show_suggestions': "Nhập từ khóa để hiển thị gọi ý",
 
       // library
-      'liked_tracks': 'Bài hát đã thích',
       'playlists': 'Danh sách phát',
-      'albums': 'Album',
       'following': 'Đang theo dõi',
       'stations': 'Đài phát',
       'uploads': 'Tải lên',
       'my_playlist': 'Danh sách phát của tôi',
       'see_all': 'Tất cả',
       'best_song_of_jack': 'Những bài hát hay nhất của Jack - J97',
-      'your_uploads': 'Các bài đã tải lên',
+      'your_uploads': 'Tải lên của bạn',
 
       'no_liked_song': 'Không có bài hát nào được thích',
 
       // premium
-      'premium': 'Cao cấp',
       'elevate_music': 'Nâng tầm trải nghiệm âm nhạc',
       'why_premium': 'Tại sao chọn Cao cấp?',
       'ad_free': 'Nghe nhạc không quảng cáo',

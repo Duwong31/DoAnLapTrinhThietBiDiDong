@@ -196,7 +196,7 @@ class LoginView extends GetView<LoginController> {
               AppImage.phone,
               width: 24,
             ),
-            const SizedBox(width: 8),
+            Dimes.width8,
             Text(
               "continue_with_phone".tr,
               style: TextStyle(
@@ -231,7 +231,7 @@ class LoginView extends GetView<LoginController> {
               AppImage.google,
               width: 24,
             ),
-            const SizedBox(width: 8),
+            Dimes.width8,
             Text(
               "continue_with_google".tr,
               style: TextStyle(

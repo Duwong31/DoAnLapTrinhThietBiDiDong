@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
-import '../../../core/styles/text_style.dart' as custom_text_style;
 import '../../../core/utilities/image.dart';
-// import '../../../core/utilities/screen.dart'; // screen.dart was not used directly
 import '../../../routes/app_pages.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/container_button.dart';
@@ -28,7 +26,6 @@ class RegisterView extends GetView<RegisterController> {
       body: SafeArea(
         child: Column(
           children: [
-            // Logo
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               height: showKeyboard ? 100 : context.screenHeight * .25,
@@ -44,12 +41,12 @@ class RegisterView extends GetView<RegisterController> {
               ),
             ),
             // Title
-            Container(
-              child: 'sign_up_to_soundflow'.tr
-                  .text
-                  .color(Theme.of(context).textTheme.bodyMedium?.color)
-                  .style(custom_text_style.TGTextStyle.header)
-                  .make(),
+            Text(
+              'sign_up_to_soundflow'.tr,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: textColor,
+              ),
             ),
             Expanded(
               child: Container(
@@ -60,8 +57,7 @@ class RegisterView extends GetView<RegisterController> {
                     key: controller.formKey,
                     child: Column(
                       children: [
-                        // UserName
-                        _buildLabel('user_name'.tr, textColor),
+                        _buildLabel('user_name'.tr, textColor, context),
                         Dimes.height10,
                         InputCustom(
                           fillColor: fillColor,
@@ -70,8 +66,7 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height20,
 
-                        // Email
-                        _buildLabel('Email', textColor),
+                        _buildLabel('Email', textColor, context),
                         Dimes.height10,
                         InputCustom(
                           fillColor: fillColor,
@@ -80,8 +75,7 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height20,
 
-                        // Password
-                        _buildLabel('password'.tr, textColor),
+                        _buildLabel('password'.tr, textColor, context),
                         Dimes.height10,
                         InputCustom(
                           fillColor: fillColor,
@@ -93,8 +87,7 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height20,
 
-                        // Confirm Password
-                        _buildLabel('confirm_password'.tr, textColor),
+                        _buildLabel('confirm_password'.tr, textColor, context),
                         Dimes.height10,
                         InputCustom(
                           fillColor: fillColor,
@@ -106,7 +99,6 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height15,
 
-                        // Sign up button
                         ContainerButton(
                           child: Obx(() => AppButton(
                             'sign_up'.tr,
@@ -117,7 +109,6 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height15,
 
-                        // Divider
                         Row(
                           children: [
                             const Expanded(child: Divider()),
@@ -130,22 +121,22 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height15,
 
-                        // Continue with Phone and Google
                         _continueWithPhone(onPressed: () {}),
                         Dimes.height5,
                         _continueWithGoogle(),
                         Dimes.height15,
 
-                        // Go to Login
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            'already_have_an_account?'.tr
-                                .text
-                                .color(textColor)
-                                .size(16)
-                                .medium
-                                .make(),
+                            Text(
+                              'already_have_an_account?'.tr,
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: textColor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                             Obx(() => AppButton(
                               'login'.tr,
                               type: ButtonType.text,
@@ -171,14 +162,21 @@ class RegisterView extends GetView<RegisterController> {
     );
   }
 
-  Widget _buildLabel(String text, Color color) {
+  Widget _buildLabel(String text, Color color, BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
-      child: text.text.color(color).style(custom_text_style.TGTextStyle.body3).make(),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   Widget _continueWithPhone({required VoidCallback onPressed}) {
+    final isDark = Get.isDarkMode;
     return TextButton(
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
@@ -189,20 +187,19 @@ class RegisterView extends GetView<RegisterController> {
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Get.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+          color: isDark ? Colors.grey[800] : Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(AppImage.phone, width: 24, height: 24),
-            const SizedBox(width: 12),
+            Dimes.width8,
             Text(
               "continue_with_phone".tr,
               style: TextStyle(
                 fontSize: 16,
-                color: Get.isDarkMode ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
           ],
@@ -212,6 +209,7 @@ class RegisterView extends GetView<RegisterController> {
   }
 
   Widget _continueWithGoogle() {
+    final isDark = Get.isDarkMode;
     return Obx(() => TextButton(
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
@@ -224,7 +222,7 @@ class RegisterView extends GetView<RegisterController> {
         height: 48,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Get.isDarkMode ? Colors.grey[800] : Colors.grey[200],
+          color: isDark ? Colors.grey[800] : Colors.grey[200],
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -238,13 +236,12 @@ class RegisterView extends GetView<RegisterController> {
               )
             else
               Image.asset(AppImage.google, width: 24, height: 24),
-            const SizedBox(width: 12),
+            Dimes.width8,
             Text(
               controller.isGoogleLoading.value ? "processing...".tr : "continue_with_google".tr,
               style: TextStyle(
                 fontSize: 16,
-                color: Get.isDarkMode ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w500,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
           ],
