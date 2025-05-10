@@ -34,9 +34,7 @@ class LoginView extends GetView<LoginController> {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.all(30),
-                  child: Image.asset(
-                      AppImage.logo,
-                      width: 80),
+                  child: Image.asset(AppImage.logo, width: 80),
                 ),
               ),
             ),
@@ -49,10 +47,7 @@ class LoginView extends GetView<LoginController> {
             ),
             Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 30,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
                   child: Form(
@@ -69,13 +64,13 @@ class LoginView extends GetView<LoginController> {
                         ),
                         Dimes.height10,
                         InputCustom(
-                          fillColor: isDark ? Colors.grey[800] : AppTheme.inputBoxColor,
+                          fillColor: isDark ? Colors.grey[850] : AppTheme.inputBoxColor,
                           contentPadding: const EdgeInsets.all(Dimes.size15),
+                          controller: controller.emailController,
                           onChanged: (String email) {
                             controller.emailController.text = email;
                           },
-                          validator: (email) =>
-                              controller.validateEmail(email),
+                          validator: (email) => controller.validateEmail(email),
                         ),
                         Dimes.height20,
                         Container(
@@ -87,17 +82,18 @@ class LoginView extends GetView<LoginController> {
                               .make(),
                         ),
                         Dimes.height10,
-                        InputCustom(
-                          fillColor: isDark ? Colors.grey[800] : AppTheme.inputBoxColor,
+                        Obx(() => InputCustom(
+                          fillColor: isDark ? Colors.grey[850] : AppTheme.inputBoxColor,
                           contentPadding: const EdgeInsets.all(Dimes.size15),
-                          isPassword: true,
+                          controller: controller.passwordController,
+                          isPassword: !controller.isPasswordVisible.value,
                           isShowSuffixIcon: true,
+                          onSuffixTap: controller.togglePasswordVisibility,
                           onChanged: (String password) {
                             controller.passwordController.text = password;
                           },
-                          validator: (password) =>
-                              controller.validatePassword(password),
-                        ),
+                          validator: (password) => controller.validatePassword(password),
+                        )),
                         Container(
                           alignment: Alignment.topRight,
                           child: Obx(() => AppButton(
@@ -118,17 +114,11 @@ class LoginView extends GetView<LoginController> {
                             loading: controller.isLoading.value,
                             onPressed: () {
                               final isValid = keyform.currentState?.validate() ?? false;
-
-                              // 2. If the form is valid, call the controller's login method
                               if (isValid) {
-                                controller.login(); // <-- Call the actual login logic
+                                controller.login();
                               } else {
-                                // Optional: You could show a generic snackbar here
-                                // if validation fails, but individual field errors
-                                // are usually sufficient.
                                 print("form_validation_failed".tr);
                               }
-                              // Get.toNamed(Routes.dashboard);
                             },
                           )),
                         ),
@@ -147,7 +137,6 @@ class LoginView extends GetView<LoginController> {
                         _continueWithGoogle(context),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.max,
                           children: [
                             "don't_have_an_account?".tr
                                 .text
@@ -192,10 +181,7 @@ class LoginView extends GetView<LoginController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              AppImage.phone,
-              width: 24,
-            ),
+            Image.asset(AppImage.phone, width: 24),
             Dimes.width8,
             Text(
               "continue_with_phone".tr,
@@ -227,10 +213,7 @@ class LoginView extends GetView<LoginController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              AppImage.google,
-              width: 24,
-            ),
+            Image.asset(AppImage.google, width: 24),
             Dimes.width8,
             Text(
               "continue_with_google".tr,
