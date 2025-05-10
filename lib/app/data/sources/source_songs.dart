@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../models/song.dart';
+import 'package:flutter/foundation.dart';
 
 abstract interface class DataSource{
   Future<List<Song>?> loadData({
@@ -121,6 +122,32 @@ class RemoteDataSource implements DataSource{
     } catch (e, stackTrace) {
       // Log các lỗi khác (ví dụ: lỗi parsing)
       return null;
+    }
+  }
+
+  // Thêm hàm mới để lấy dữ liệu từ endpoint mới
+  Future<List<dynamic>> fetchSongsFromJsonBin() async {
+    try {
+      const url = 'https://api.jsonbin.io/v3/b/681ba8c08a456b7966996409';
+      final response = await http.get(Uri.parse(url), headers: {
+        'X-Master-Key': 'your_master_key',
+      });
+
+      if (response.statusCode == 200) {
+        final bodyContent = utf8.decode(response.bodyBytes);
+        final jsonData = jsonDecode(bodyContent);
+
+        if (jsonData['record'] != null && jsonData['record']['songs'] != null) {
+          return jsonData['record']['songs'] as List<dynamic>;
+        } else {
+          throw Exception('Invalid response format');
+        }
+      } else {
+        throw Exception("API returned ${response.statusCode}");
+      }
+    } catch (e) {
+      debugPrint(">>> [RemoteDataSource.fetchSongsFromJsonBin] Error: $e");
+      rethrow;
     }
   }
 }

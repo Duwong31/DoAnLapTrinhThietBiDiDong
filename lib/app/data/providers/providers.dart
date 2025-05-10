@@ -19,6 +19,7 @@ import '../models/models.dart';
 import '../models/review_listing_model.dart';
 import '../models/voucher_model/voucher.dart';
 import '../repositories/repositories.dart';
+import '../models/favorite_genre_model.dart';
 
 abstract class BaseApiService {
   final Dio _dio;
@@ -155,14 +156,18 @@ class HistoryApiService extends BaseApiService {
 
   Future<List<String>> getRecentHistory() async {
     return handleApiError(() async {
+      debugPrint(">>> [HistoryApiService.getRecentHistory] Calling API...");
       final response = await get(ApiUrl.listeningHistory);
+      debugPrint(">>> [HistoryApiService.getRecentHistory] Response: ${response.data}");
       
       if (response.data['status'] == 1 && 
           response.data['data'] != null && 
           response.data['data']['track_ids'] != null) {
         final List<dynamic> trackIds = response.data['data']['track_ids'];
+        debugPrint(">>> [HistoryApiService.getRecentHistory] Found ${trackIds.length} track IDs");
         return trackIds.map((id) => id.toString()).toList();
       }
+      debugPrint(">>> [HistoryApiService.getRecentHistory] No track IDs found in response");
       return [];
     });
   }
@@ -221,7 +226,29 @@ class UserApiService extends BaseApiService {
       rethrow;
     }
   }
-
+  Future<FavoriteGenreResponse> getFavoriteGenre() async {
+    return handleApiError(() async {
+      debugPrint(">>> [UserApiService.getFavoriteGenre] Calling API endpoint: ${ApiUrl.favoriteGenre}");
+      final response = await get(ApiUrl.favoriteGenre);
+      debugPrint(">>> [UserApiService.getFavoriteGenre] Raw API Response: ${response.data}");
+      
+      if (response.statusCode == 200) {
+        try {
+          final result = FavoriteGenreResponse.fromJson(response.data);
+          debugPrint(">>> [UserApiService.getFavoriteGenre] Parsed response: $result");
+          debugPrint(">>> [UserApiService.getFavoriteGenre] Favorite genre: ${result.data.favoriteGenre}");
+          return result;
+        } catch (e, stack) {
+          debugPrint(">>> [UserApiService.getFavoriteGenre] Error parsing response: $e");
+          debugPrint(">>> [UserApiService.getFavoriteGenre] Stack trace: $stack");
+          throw Exception('Failed to parse favorite genre response: $e');
+        }
+      } else {
+        debugPrint(">>> [UserApiService.getFavoriteGenre] API returned error status: ${response.statusCode}");
+        throw Exception(response.data['message'] ?? 'Failed to get favorite genre');
+      }
+    });
+  }
   // Favorite API
     Future<Map<String, dynamic>> getFavorites() async {
       return handleApiError(() async {
@@ -716,7 +743,7 @@ class UserApiService extends BaseApiService {
       );
         debugPrint(">>> [UserApiService.uploadFile] Response: ${response.data}");
 
-        if (response.statusCode == 200 && response.data['uploaded'] == 1 && response.data['data']?['id'] != null) {
+        if (response.statusCode == 200 && response.data['uploaded'] == 1 && response.data?['id'] != null) {
            debugPrint(">>> [UserApiService.uploadFile] Upload success, file ID: ${response.data['data']['id']}");
            return response.data['data']['id'] as int?;
         } else {
@@ -991,6 +1018,7 @@ class UserApiService extends BaseApiService {
       return response.statusCode == 200;
     });
   }
+  
 }
 
 
@@ -1419,4 +1447,5 @@ class ApiProvider {
   static Future<bool> addTrackToHistory(String trackId) =>_historyService.addTrackToHistory(trackId);
   static Future<bool> removeTrackFromHistory(String trackId) => _historyService.removeTrackFromHistory(trackId);
   static Future<bool> clearHistory() => _historyService.clearHistory();
+  static Future<FavoriteGenreResponse> getFavoriteGenre() => _userService.getFavoriteGenre();
 }

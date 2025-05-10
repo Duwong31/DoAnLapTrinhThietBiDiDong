@@ -115,4 +115,5 @@ class ApiUrl {
     static const String addToHistory = '$receipt/listening-history';
     static const String removeFromHistory = '$receipt/listening-history/track';
     static const String clearHistory = '$receipt/listening-history';
+    static const String favoriteGenre = '$receipt/favorite-genre';
 }

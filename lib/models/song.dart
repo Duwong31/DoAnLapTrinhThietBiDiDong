@@ -60,19 +60,19 @@ class Song {
     required this.source,
     required this.image,
     required this.duration,
-    required this.isFavorite
+    this.isFavorite = false
   });
 
   factory Song.fromJson(Map<String, dynamic> json) {
     return Song(
-      id: json['id'].toString(),
-      title: json['title'],
-      album: json['album'],
-      genre: json['genre'],
-      artist: json['artist'],
-      source: json['source'],
-      image: json['image'],
-      duration: int.tryParse(json['duration'].toString()) ?? 0,
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      album: json['album']?.toString() ?? '',
+      genre: json['genre']?.toString() ?? '',
+      artist: json['artist']?.toString() ?? '',
+      source: json['source']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+      duration: int.tryParse(json['duration']?.toString() ?? '0') ?? 0,
       isFavorite: json['favorite']?.toString().toLowerCase() == 'true',
     );
   }

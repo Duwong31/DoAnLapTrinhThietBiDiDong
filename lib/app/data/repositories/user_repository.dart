@@ -29,6 +29,7 @@ abstract class UserBase {
   Future<bool> removeFavorite(String trackId);
 
   Future<List<String>> getRecentHistory();
+  Future<FavoriteGenreResponse> getFavoriteGenre();
 }
 
 class UserRepository extends BaseRepository implements UserBase {
@@ -180,5 +181,10 @@ class UserRepository extends BaseRepository implements UserBase {
     } else {
       throw Exception('Failed to fetch song');
     }
+  }
+
+  @override
+  Future<FavoriteGenreResponse> getFavoriteGenre() async {
+    return handleCall(() => ApiProvider.getFavoriteGenre());
   }
 }

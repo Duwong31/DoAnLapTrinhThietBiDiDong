@@ -1,3 +1,4 @@
+import '../models/favorite_genre_model.dart';
 import '../models/listening_history.dart';
 import '../providers/providers.dart';
 import 'repositories.dart';
@@ -18,5 +19,8 @@ class HistoryRepository extends BaseRepository {
 
   Future<bool> clearHistory() {
     return handleCall(() => ApiProvider.clearHistory());
+  }
+  Future<FavoriteGenreResponse> getFavoriteGenre() {
+    return handleCall(() => ApiProvider.getFavoriteGenre());
   }
 } 

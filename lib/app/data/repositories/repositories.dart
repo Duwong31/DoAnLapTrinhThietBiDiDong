@@ -4,6 +4,7 @@ library repositories;
 import 'dart:io';
 import 'dart:typed_data';
 
+import '../models/favorite_genre_model.dart';
 import '../models/favorite_model.dart';
 import '../http_client/http_client.dart';
 import '../models/dashboard_model.dart';

@@ -277,31 +277,68 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                   ]),
                 ),
                 Dimes.height10,
-                SectionHeader(title: "chill".tr, textColor: textColor, route: Routes.playlist),
+                SectionHeader(title: "From your taste".tr, textColor: textColor, route: Routes.playlist),
                 SizedBox(
                   height: 122,
-                  child: ListView(scrollDirection: Axis.horizontal, children: [
-                    _buildCategoryItem(
-                        context,
-                        'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg',
-                        'Mood Healer',
-                        Routes.playlistnow),
-                    _buildCategoryItem(
-                        context,
-                        'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg',
-                        'Top Chill Vibes',
-                        Routes.playlistnow),
-                    _buildCategoryItem(
-                        context,
-                        'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg',
-                        'Modern Chill',
-                        Routes.playlistnow),
-                    _buildCategoryItem(
-                        context,
-                        'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg',
-                        'Addictive Lofi Vibes',
-                        Routes.playlistnow),
-                  ]),
+                  child: Obx(() {
+                    if (controller.isLoadingRecommended.value) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (controller.recommendedSongs.isEmpty) {
+                      return const Center(child: Text('No recommended songs found'));
+                    }
+                    return ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: controller.recommendedSongs.length,
+                      itemBuilder: (context, index) {
+                        final song = controller.recommendedSongs[index];
+                        return GestureDetector(
+                          onTap: () {
+                            if (controller.recommendedSongs.isNotEmpty) {
+                              _navigateToMiniPlayer(song, controller.recommendedSongs);
+                            } else {
+                              Get.snackbar('Error', 'No songs available to play');
+                            }
+                          },
+                          child: Container(
+                            width: 100,
+                            margin: const EdgeInsets.symmetric(horizontal: 8),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.network(
+                                    song.image.isNotEmpty
+                                        ? song.image
+                                        : 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                Dimes.height5,
+                                SizedBox(
+                                  width: 85,
+                                  child: Text(
+                                    song.title,
+                                    style: TextStyle(fontSize: 12, color: textColor),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }),
                 ),
                 Dimes.height10,
                 // Thêm section Recents
@@ -384,7 +421,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     ],
                   );
                 }),
-                Dimes.height10,
+                Dimes.height120,
               ],
             ),
           ),
