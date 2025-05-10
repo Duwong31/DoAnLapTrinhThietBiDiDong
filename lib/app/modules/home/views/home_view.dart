@@ -1,6 +1,5 @@
-
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
 import '../../../../models/song.dart';
@@ -10,6 +9,7 @@ import '../../genre/controllers/genre_controller.dart';
 import '../../genre/views/genre_view.dart';
 import '../controllers/home_controller.dart';
 import '../../artists/controllers/artist_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -18,8 +18,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView>
-    with AutomaticKeepAliveClientMixin {
+class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
   final GenreController genreController = Get.put(GenreController());
@@ -37,9 +36,17 @@ class _HomeViewState extends State<HomeView>
     }
   }
 
+  // Phát bài hát và hiển thị MiniPlayer
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-    await _audioService.setPlaylist(allSongs,
-        startIndex: allSongs.indexOf(song));
+    // Kiểm tra xem bài hát đã đang phát hay chưa
+    if (_audioService.currentSong?.id == song.id) {
+      if (!_audioService.isPlaying) {
+        await _audioService.player.play();
+      }
+      return;
+    }
+
+    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
   }
 
@@ -47,20 +54,19 @@ class _HomeViewState extends State<HomeView>
     return SizedBox(
       height: 120,
       child: Obx(() => GridView.builder(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.3,
-              mainAxisSpacing: 30,
-            ),
-            itemCount:
-                controller.songs.length > 6 ? 6 : controller.songs.length,
-            itemBuilder: (context, index) {
-              return _buildSongCard(context, controller.songs[index]);
-            },
-          )),
+        shrinkWrap: true,
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.3,
+          mainAxisSpacing: 30,
+        ),
+        itemCount: controller.songs.length > 6 ? 6 : controller.songs.length,
+        itemBuilder: (context, index) {
+          return _buildSongCard(context, controller.songs[index]);
+        },
+      )),
     );
   }
 
@@ -85,22 +91,22 @@ class _HomeViewState extends State<HomeView>
             color: Colors.grey[200],
             child: song.image.isNotEmpty
                 ? Image.network(
-                    song.image,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.music_note,
-                        size: 24,
-                        color: Colors.grey),
-                  )
+              song.image,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.music_note,
+                  size: 24,
+                  color: Colors.grey),
+            )
                 : const Icon(Icons.music_note, size: 24, color: Colors.grey),
           ),
         ),
         title: Text(
           song.title,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: textColor,
-              ),
+            fontWeight: FontWeight.w600,
+            color: textColor,
+          ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -124,12 +130,12 @@ class _HomeViewState extends State<HomeView>
   }
 
   Widget _buildCategoryItem(
-    BuildContext context,
-    String imageUrl,
-    String label,
-    String routeName, {
-    String? genreArgument,
-  }) {
+      BuildContext context,
+      String imageUrl,
+      String label,
+      String routeName, {
+        String? genreArgument,
+      }) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -168,7 +174,7 @@ class _HomeViewState extends State<HomeView>
                 height: 100,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.music_note, size: 50, color: Colors.grey),
+                const Icon(Icons.music_note, size: 50, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 5),
@@ -201,17 +207,12 @@ class _HomeViewState extends State<HomeView>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SectionHeader(
-                    title: "we_think_you_like".tr,
+                    title: "we_think you_like".tr,
                     textColor: textColor,
                     route: Routes.all_song_view),
-                SizedBox(
-                    height: 225,
-                    child: _buildSongGrid(context, controller.songs)),
+                SizedBox(height: 225, child: _buildSongGrid(context, controller.songs)),
                 Dimes.height10,
-                SectionHeader(
-                    title: "music_genre".tr,
-                    textColor: textColor,
-                    route: Routes.genre),
+                SectionHeader(title: "music_genre".tr, textColor: textColor, route: Routes.genre),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -221,34 +222,25 @@ class _HomeViewState extends State<HomeView>
                     if (genreController.genreList.isEmpty) {
                       return const Center(child: Text('No genres found'));
                     }
-
-                    final displayGenres =
-                        genreController.genreList.take(4).toList();
-
+                    final displayGenres = genreController.genreList.take(4).toList();
                     return ListView(
                       scrollDirection: Axis.horizontal,
                       children: displayGenres.map((genre) {
-                        final imageIndex =
-                            genreController.genreList.indexOf(genre) %
-                                GenreView.genreImages.length;
+                        final imageIndex = genreController.genreList.indexOf(genre) % GenreView.genreImages.length;
                         final imageUrl = GenreView.genreImages[imageIndex];
-
                         return _buildCategoryItem(
                           context,
                           imageUrl,
                           genre,
-                          Routes.genrenow, // Thay đổi từ albumnow sang genreNow
-                          genreArgument: genre, // Truyền thể loại làm argument
+                          Routes.genrenow,
+                          genreArgument: genre,
                         );
                       }).toList(),
                     );
                   }),
                 ),
                 Dimes.height10,
-                SectionHeader(
-                    title: "artists".tr,
-                    textColor: textColor,
-                    route: Routes.artist),
+                SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -259,25 +251,16 @@ class _HomeViewState extends State<HomeView>
                     }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: artistController.artistList.length >= 4
-                          ? 4
-                          : artistController.artistList.length,
+                      itemCount: artistController.artistList.length >= 4 ? 4 : artistController.artistList.length,
                       itemBuilder: (context, index) {
                         final artist = artistController.artistList[index];
-                        return _buildCategoryItem(
-                            context,
-                            artist.imageUrl ?? '',
-                            artist.name ?? '',
-                            Routes.albumnow);
+                        return _buildCategoryItem(context, artist.imageUrl ?? '', artist.name ?? '', Routes.albumnow);
                       },
                     );
                   }),
                 ),
                 Dimes.height10,
-                SectionHeader(
-                    title: "you_might_want_to_hear".tr,
-                    textColor: textColor,
-                    route: Routes.playlist),
+                SectionHeader(title: "you_might_want_to_hear".tr, textColor: textColor, route: Routes.playlist),
                 SizedBox(
                   height: 122,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
@@ -294,10 +277,7 @@ class _HomeViewState extends State<HomeView>
                   ]),
                 ),
                 Dimes.height10,
-                SectionHeader(
-                    title: "chill".tr,
-                    textColor: textColor,
-                    route: Routes.playlist),
+                SectionHeader(title: "chill".tr, textColor: textColor, route: Routes.playlist),
                 SizedBox(
                   height: 122,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
@@ -323,18 +303,15 @@ class _HomeViewState extends State<HomeView>
                         Routes.playlistnow),
                   ]),
                 ),
-
                 Dimes.height10,
                 // Thêm section Recents
-                Obx(() {    
+                Obx(() {
                   if (controller.isLoadingRecents.value) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  
                   if (controller.recentSongs.isEmpty) {
                     return const SizedBox.shrink(); // Ẩn section nếu không có bài hát gần đây
                   }
-
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -378,7 +355,9 @@ class _HomeViewState extends State<HomeView>
                                     ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
-                                        song.image.isNotEmpty ? song.image : 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
+                                        song.image.isNotEmpty
+                                            ? song.image
+                                            : 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
                                         width: 100,
                                         height: 100,
                                         fit: BoxFit.cover,
@@ -405,52 +384,53 @@ class _HomeViewState extends State<HomeView>
                     ],
                   );
                 }),
-
                 Dimes.height10,
               ],
             ),
           ),
-
           // MiniPlayer
-          // StreamBuilder<Song?>(
-          //   stream: _audioService.currentSongStream,
-          //   builder: (context, snapshot) {
-          //     if (!snapshot.hasData || snapshot.data == null) {
-          //       return const SizedBox.shrink();
-          //     }
-          //     final currentSong = snapshot.data!;
-          //     return Positioned(
-          //       left: 8,
-          //       right: 8,
-          //       bottom: 8,
-          //       child: Dismissible(
-          //         key: Key('miniplayer_${currentSong.id}'),
-          //         direction: DismissDirection.endToStart,
-          //         onDismissed: (_) async {
-          //           try {
-          //             await _audioService.stop();
-          //             _audioService.clearCurrentSong();
-          //           } catch (e) {
-          //             debugPrint('Error stopping audio: $e');
-          //           }
-          //         },
-          //         child: MiniPlayer(
-          //           song: currentSong,
-          //           songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
-          //           onTap: () async {
-          //             final returnedSong = await Get.toNamed(
-          //               Routes.songs_view,
-          //               arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
-          //             );
-          //             if (returnedSong != null) {
-          //               _audioService.currentSong = returnedSong;
-          //             }
-          //           },
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
+          StreamBuilder<Song>(
+            stream: _audioService.currentSongStream,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData || snapshot.hasError) {
+                return const SizedBox.shrink();
+              }
+              final currentSong = snapshot.data!;
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8,
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    try {
+                      await _audioService.stop();
+                      _audioService.clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('Error stopping audio: $e');
+                    }
+                  },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: _audioService.currentPlaylist,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {
+                          'playingSong': currentSong,
+                          'songs': _audioService.currentPlaylist
+                        },
+                      );
+                      if (returnedSong != null) {
+                        _audioService.currentSong = returnedSong;
+                      }
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
@@ -471,8 +451,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTextColor =
-        textColor ?? Theme.of(context).textTheme.titleMedium?.color;
+    final effectiveTextColor = textColor ?? Theme.of(context).textTheme.titleMedium?.color;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
@@ -481,10 +460,10 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: AppTheme.primary,
-                ),
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: AppTheme.primary,
+            ),
           ),
           TextButton(
             onPressed: () => Get.toNamed(route),

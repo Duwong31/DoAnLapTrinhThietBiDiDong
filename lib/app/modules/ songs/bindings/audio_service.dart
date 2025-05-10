@@ -14,27 +14,26 @@ class AudioService extends GetxService {
   final AudioPlayer player;         // player: giúp điều khiển phát, dừng, tua, lấy trạng thái phát, v.v.
   Song? currentSong;                // Bài hát hiện tại đang phát.
   List<Song> songs = [];            // Danh sách tất cả bài hát trong playlist.
-  Duration? currentPosition;        // vị trí thời gian của bài hát
+  Duration? currentPosition;        // Vị trí thời gian của bài hát
   int currentIndex = 0;             // Vị trí bài hát hiện tại trong danh sách songs
   bool _isShuffle = false;          // Có đang bật chế độ trộn bài (shuffle) hay không.
-  LoopMode _loopMode = LoopMode.off;      // Chế độ lặp hiện tại (off, one, all)
-  final _currentSongController = StreamController<Song>.broadcast();          // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
-  final _shuffleSubject = BehaviorSubject<bool>.seeded(false);                // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
+  LoopMode _loopMode = LoopMode.off; // Chế độ lặp hiện tại (off, one, all)
+  final _currentSongController = StreamController<Song>.broadcast(); // Tạo stream broadcast để nhiều widget có thể lắng nghe cùng lúc (Khi bài hát thay đổi, gọi _currentSongController.add(currentSong!))
+  final _shuffleSubject = BehaviorSubject<bool>.seeded(false);       // Thêm BehaviorSubject để quản lý trạng thái shuffle(trộn)
   final _currentSongBehavior = BehaviorSubject<Song?>();
-
-  final _playlistController = StreamController<List<Song>>.broadcast();       // cho phép nhiều listener (ví dụ các màn hình khác nhau) cùng lúc theo dõi danh sách bài hát hiện tại
+  final _playlistController = StreamController<List<Song>>.broadcast(); // Cho phép nhiều listener (ví dụ các màn hình khác nhau) cùng lúc theo dõi danh sách bài hát hiện tại
 
   // Cung cấp danh sách songs
-  List<Song> get currentPlaylist => songs;                                    //  Dùng để phát ra danh sách playlist mới mỗi khi có sự thay đổi.
+  List<Song> get currentPlaylist => songs; // Dùng để phát ra danh sách playlist mới mỗi khi có sự thay đổi.
 
-  Stream<bool> get shuffleStream => _shuffleSubject.stream;                   // Stream dùng để lắng nghe trạng thái bật/tắt shuffle ( trộn bài ).
-  Stream<Song> get currentSongStream => _currentSongController.stream;        // Stream cung cấp bài hát đang phát hiện tại (Dùng trong MiniPlayer để hiển thị bài hát hiện tại theo thời gian thực (StreamBuilder))
-  Stream<PlayerState> get playerStateStream => player.playerStateStream;      // Stream trạng thái trình phát (playing, paused, completed, buffering, v.v.)
-  bool get isPlaying => player.playing;                                       // Trả về true nếu trình phát đang phát nhạc.
-  bool get isShuffle => _isShuffle;                                           // Getter cho trạng thái shuffle hiện tại (đang bật hay tắt)
-  LoopMode get loopMode => _loopMode;                                         // Trả về trạng thái vòng lặp hiện tại: không lặp, lặp một bài, hoặc lặp danh sách
+  Stream<bool> get shuffleStream => _shuffleSubject.stream;         // Stream dùng để lắng nghe trạng thái bật/tắt shuffle (trộn bài).
+  Stream<Song> get currentSongStream => _currentSongController.stream; // Stream cung cấp bài hát đang phát hiện tại (Dùng trong MiniPlayer để hiển thị bài hát hiện tại theo thời gian thực (StreamBuilder))
+  Stream<PlayerState> get playerStateStream => player.playerStateStream; // Stream trạng thái trình phát (playing, paused, completed, buffering, v.v.)
+  bool get isPlaying => player.playing;                             // Trả về true nếu trình phát đang phát nhạc.
+  bool get isShuffle => _isShuffle;                                 // Getter cho trạng thái shuffle hiện tại (đang bật hay tắt)
+  LoopMode get loopMode => _loopMode;                               // Trả về trạng thái vòng lặp hiện tại: không lặp, lặp một bài, hoặc lặp danh sách
 
-  //history
+  // History
   Timer? _playbackTimer;
   bool _isTrackAddedToHistory = false;
   late final HistoryController _historyController;
@@ -44,19 +43,19 @@ class AudioService extends GetxService {
     if (!Get.isRegistered<HistoryRepository>()) {
       Get.put(HistoryRepository(), permanent: true);
     }
-    
+
     // Khởi tạo HistoryController nếu chưa tồn tại
     if (!Get.isRegistered<HistoryController>()) {
       Get.put(HistoryController(), permanent: true);
     }
     _historyController = Get.find<HistoryController>();
-    
+
     Get.put<AudioPlayer>(player, permanent: true);
     player.positionStream.listen((position) {
       currentPosition = position;
 
       if (position.inSeconds >= 30 && !_isTrackAddedToHistory && currentSong != null) {
-        _addToHistory(); 
+        _addToHistory();
       }
     });
 
@@ -79,7 +78,6 @@ class AudioService extends GetxService {
           _playNextSong();
         }
       }
-
       _shuffleSubject.add(_isShuffle);
     });
 
@@ -95,7 +93,7 @@ class AudioService extends GetxService {
 
   Future<void> _addToHistory() async {
     if (currentSong == null) return;
-    
+
     try {
       _isTrackAddedToHistory = true; // Đặt cờ để tránh gọi lại cho cùng một lần phát
       await _historyController.addTrackToHistory(currentSong!.id);
@@ -108,17 +106,25 @@ class AudioService extends GetxService {
 
   // Khởi tạo danh sách bài hát và phát bài hát đầu tiên
   Future<void> setPlaylist(List<Song> songs, {int startIndex = 0}) async {
+    // Kiểm tra xem playlist mới có giống playlist hiện tại không
+    if (this.songs == songs && currentIndex == startIndex && currentSong != null) {
+      if (!isPlaying) {
+        await player.play();
+      }
+      return;
+    }
+
     this.songs = songs;
     currentIndex = startIndex;
     currentSong = songs.isNotEmpty ? songs[startIndex] : null;
 
     final audioSources = songs
-        .map((song) => AudioSource.uri(Uri.parse(song.source)))   // Chuyển đổi danh sách bài hát thành AudioSource
+        .map((song) => AudioSource.uri(Uri.parse(song.source))) // Chuyển đổi danh sách bài hát thành AudioSource
         .toList();
 
     await player.setAudioSource(
       ConcatenatingAudioSource(children: audioSources),
-      initialIndex: startIndex,     // Lưu vị trí bài hát hiện tại và index
+      initialIndex: startIndex, // Lưu vị trí bài hát hiện tại và index
     );
 
     if (currentPosition != null) {
@@ -127,6 +133,10 @@ class AudioService extends GetxService {
 
     // Thông báo cho các listener về danh sách phát đã cập nhật
     _playlistController.add(songs);
+    if (currentSong != null) {
+      _currentSongController.add(currentSong!);
+      _currentSongBehavior.add(currentSong);
+    }
   }
 
   // Phát bài hát tiếp theo
@@ -212,6 +222,8 @@ class AudioService extends GetxService {
   Future<void> stop() async {
     await player.stop();
     currentSong = null;
+    _currentSongController.addError('No song playing'); // Thông báo lỗi khi dừng phát
+    _currentSongBehavior.add(null);
   }
 
   // Xóa bài hát hiện tại

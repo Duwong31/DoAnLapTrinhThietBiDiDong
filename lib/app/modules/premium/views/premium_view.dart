@@ -144,47 +144,6 @@ class _PremiumViewState extends State<PremiumView> {
               ],
             ),
           ),
-          StreamBuilder<Song?>(
-            stream: _audioService.currentSongStream,
-            builder: (context, snapshot) {
-              final currentSong = snapshot.data ?? _audioService.currentSong;
-              if (currentSong == null) return const SizedBox.shrink();
-
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8, // Thay đổi từ 8 thành 16 để tạo khoảng cách với bottom
-                child: Dismissible(
-                  key: Key('miniplayer_${currentSong.id}'),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) async {
-                    try {
-                      await _audioService.stop();
-                      _audioService.clearCurrentSong();
-                    } catch (e) {
-                      debugPrint('Error stopping audio: $e');
-                    }
-                  },
-                  child: MiniPlayer(
-                    song: currentSong,
-                    songs: _audioService.currentPlaylist,
-                    onTap: () async {
-                      final returnedSong = await Get.toNamed(
-                        Routes.songs_view,
-                        arguments: {
-                          'playingSong': currentSong,
-                          'songs': _audioService.currentPlaylist
-                        },
-                      );
-                      if (returnedSong != null) {
-                        _audioService.currentSong = returnedSong;
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-          )
         ],
       ),
     );
