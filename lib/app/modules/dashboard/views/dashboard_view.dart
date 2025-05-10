@@ -1,19 +1,35 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_badged/badge_position.dart';
 import 'package:flutter_badged/flutter_badge.dart';
 import 'package:get/get.dart';
 
+import '../../ songs/bindings/audio_service.dart';
+import '../../ songs/view/MiniPlayer.dart';
+import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../data/services/firebase_analytics_service.dart';
+import '../../../routes/app_pages.dart';
 import '../../../widgets/widgets.dart';
+import '../../home/controllers/home_controller.dart';
 import '../../home/views/home_view.dart';
 import '../../library/views/library_view.dart';
 import '../../premium/views/premium_view.dart';
 import '../../search/views/search_view.dart';
 import '../controllers/dashboard_controller.dart';
 
-class DashboardView extends GetView<DashboardController> {
-  // ignore: use_super_parameters
+class DashboardView extends StatefulWidget {
   const DashboardView({Key? key}) : super(key: key);
+
+  @override
+  State<DashboardView> createState() => _DashboardViewState();
+}
+
+class _DashboardViewState extends State<DashboardView> {
+  final DashboardController controller = Get.find<DashboardController>();
+  final AudioService _audioService = Get.find<AudioService>();
+  final HomeController homeController = Get.find<HomeController>();
+  late List<Song> _songs;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,28 +60,68 @@ class DashboardView extends GetView<DashboardController> {
             return const SizedBox.shrink();
           }),
         ],
-        // title: Obx(() {
-        //   return Text(
-        //     controller.currentIndex.value == 0
-        //         ? 'Welcome, ${controller.profile.user.value?.fullName ?? ''}!'
-        //         : controller.titleAppBar,
-        //     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-        //       color: Theme.of(context).textTheme.titleLarge?.color,
-        //     ),
-        //   );
-        // }),
       ),
       drawer: DrawerView(drawerKey: controller.drawerKey),
-      body: TabBarView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: controller.tabController,
-        children: const [
-          HomeView(),
-          SearchView(),
-          LibraryView(),
-          // MessagesView(),
-          // NotificationsView(),
-          PremiumView(),
+      body: Stack(
+        children: [
+          TabBarView(
+            physics: const NeverScrollableScrollPhysics(),
+            controller: controller.tabController,
+            children: const [
+              HomeView(),
+              SearchView(),
+              LibraryView(),
+              PremiumView(),
+            ],
+          ),
+          Obx(() {
+            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
+            _songs = homeController.songs.toList();
+            return StreamBuilder<Song?>(
+              stream: _audioService.currentSongStream,
+              builder: (context, snapshot) {
+                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
+                Song? currentSong = snapshot.hasData && snapshot.data != null
+                    ? snapshot.data
+                    : _audioService.currentSong;
+
+                if (currentSong == null) {
+                  return const SizedBox.shrink();
+                }
+
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {'playingSong': currentSong, 'songs': _songs},
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
         ],
       ),
       bottomNavigationBar: const _BottomNavigator(),
@@ -76,6 +132,7 @@ class DashboardView extends GetView<DashboardController> {
 class _BottomNavigator extends StatelessWidget {
   const _BottomNavigator();
   DashboardController get to => Get.find();
+
   @override
   Widget build(BuildContext context) {
     return to.obx(
@@ -119,6 +176,7 @@ class _BottomBarItem extends StatelessWidget {
   final Function(int) onTap;
   final int currentIndex, index;
   final BottomBarModel item;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(

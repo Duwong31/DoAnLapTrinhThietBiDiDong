@@ -38,15 +38,25 @@ class SearchPageController extends GetxController {
 
     try {
       final response = await http.get(
-        Uri.parse('https://thantrieu.com/resources/braniumapis/songs.json'),
+        Uri.parse('https://api.jsonbin.io/v3/b/681ba8c08a456b7966996409'),
       );
 
       if (response.statusCode == 200) {
         final decodedJson = json.decode(utf8.decode(response.bodyBytes));
-        final List<dynamic> songList = decodedJson['songs'];
+
+        // Lấy dữ liệu bài hát từ JSON đúng cấu trúc
+        final List<dynamic> songList = decodedJson['record']['songs'];
 
         final filtered = songList
-            .map((e) => Song.fromJson(e))
+            .map((e) {
+          try {
+            return Song.fromJson(e);
+          } catch (err) {
+            print("Lỗi parse bài hát: $err");
+            return null;
+          }
+        })
+            .whereType<Song>()
             .where((song) =>
         song.title.toLowerCase().contains(query.toLowerCase()) ||
             song.artist.toLowerCase().contains(query.toLowerCase()))
@@ -60,7 +70,6 @@ class SearchPageController extends GetxController {
       print('Lỗi kết nối hoặc phân tích: $e');
     }
   }
-
 
   Future<void> saveSearch(String query) async {
     if (query.isEmpty) return;

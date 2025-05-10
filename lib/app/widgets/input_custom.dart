@@ -80,6 +80,7 @@ class InputCustom extends StatefulWidget {
 class CustomTextFieldState extends State<InputCustom> {
   bool _obscureText = true;
   String _text = '';
+
   @override
   void initState() {
     _text = widget.controller?.text ?? '';
@@ -88,8 +89,11 @@ class CustomTextFieldState extends State<InputCustom> {
 
   @override
   Widget build(BuildContext context) {
-    final style = (widget.hintStyle ?? context.subtitle1).copyWith(
-      color: Colors.black,
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final textStyle = (widget.hintStyle ?? context.subtitle1).copyWith(
+      color: theme.textTheme.bodyLarge?.color ?? (isDark ? Colors.white : Colors.black),
       fontSize: widget.hintSize,
       fontWeight: FontWeight.normal,
     );
@@ -101,7 +105,7 @@ class CustomTextFieldState extends State<InputCustom> {
       maxLines: widget.maxLines,
       controller: widget.controller,
       focusNode: widget.focusNode,
-      style: style,
+      style: textStyle,
       keyboardType: widget.inputType,
       cursorColor: AppTheme.appBarTintColor,
       textCapitalization: widget.capitalization,
@@ -111,33 +115,32 @@ class CustomTextFieldState extends State<InputCustom> {
       obscureText: widget.isPassword ? _obscureText : false,
       inputFormatters: widget.inputFormatters,
       decoration: InputDecoration(
-        enabledBorder: const OutlineInputBorder(
-            borderSide:
-                BorderSide(width: 1, color: AppTheme.inputBoxBorderColor)),
+        enabledBorder: OutlineInputBorder(
+          borderSide: widget.borderSide ??
+              BorderSide(width: 1, color: isDark ? Colors.grey.shade700 : AppTheme.inputBoxBorderColor),
+        ),
         border: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(Radius.circular(5))),
-        fillColor: widget.fillColor,
-        filled: widget.fillColor != null,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+        ),
+        fillColor: widget.fillColor ?? (isDark ? Colors.grey.shade800 : Colors.white),
+        filled: true,
         labelText: widget.labelText ?? widget.hintText,
         counterText: '',
         contentPadding: widget.contentPadding,
-
         isDense: true,
         hintText: widget.hintText,
         hintStyle: widget.hintStyle ??
             context.headline2.copyWith(
               fontSize: widget.hintSize,
-              color: const Color(0xff9B9B9B),
+              color: isDark ? Colors.grey.shade400 : const Color(0xff9B9B9B),
               fontWeight: FontWeight.normal,
             ),
-        prefixIconConstraints:
-            const BoxConstraints(minWidth: 23, maxHeight: 20),
-        // filled: true,
+        prefixIconConstraints: const BoxConstraints(minWidth: 23, maxHeight: 20),
         prefixIcon: widget.isShowPrefixIcon
             ? Padding(
-                padding: const EdgeInsets.only(right: 10, left: 10),
-                child: widget.prefixIcon,
-              )
+          padding: const EdgeInsets.only(right: 10, left: 10),
+          child: widget.prefixIcon,
+        )
             : null,
         suffixIcon: widget.isShowSuffixIcon
             ? widget.isPassword

@@ -29,22 +29,25 @@ class AlbumNow extends GetView<AlbumNowController> {
         }
 
         return Scaffold(
-          // appBar: AppBar(
-          //   title: Text(album['name'] ?? 'Album'),
-          // ),
           appBar: AppBar(
-            elevation: .1,
+            elevation: 0.1,
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black,),
+              icon: Icon(
+                Icons.arrow_back_ios_new_outlined,
+                color: Theme.of(context).iconTheme.color,
+              ),
               onPressed: () {
                 Get.back();
               },
             ),
             title: Text(
               album['name'] ?? 'Album',
-              style: const TextStyle(color: AppTheme.labelColor, fontSize: 20),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.titleLarge?.color,
+                fontSize: 20,
+              ),
             ),
           ),
           body: SingleChildScrollView(
@@ -119,7 +122,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       onTap: () {
-                        Get.toNamed(Routes.songs_view);
+                        // Get.toNamed(Routes.songs_view);
                       },
                     );
                   },

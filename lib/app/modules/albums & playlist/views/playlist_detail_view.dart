@@ -61,8 +61,6 @@ class _PlayListNowState extends State<PlayListNow> {
             "Error",
             "Could not load playlist details.",
             snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.redAccent,
-            colorText: Colors.white,
           );
         }
       });
@@ -110,23 +108,32 @@ class _PlayListNowState extends State<PlayListNow> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+    final appBarColor = isDarkMode ? theme.appBarTheme.backgroundColor : Colors.white;
+    final textColor = isDarkMode ? Colors.white : Colors.black;
+    final iconColor = isDarkMode ? Colors.white : Colors.black;
+    final backgroundColor = isDarkMode ? theme.scaffoldBackgroundColor : Colors.white;
+    final cardColor = isDarkMode ? theme.cardColor : Colors.white;
 
     if (_playlistData == null) {
       return Scaffold(
         appBar: AppBar(
           title: const Text("Error"),
           leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new), onPressed: Get.back),
-          backgroundColor: Colors.white,
-          foregroundColor: Colors.black,
+          backgroundColor: appBarColor,
+          foregroundColor: textColor,
           elevation: 0,
         ),
-        body: const Center(child: Text("Playlist details not available.")),
+        body: Center(child: Text("Playlist details not available.", style: TextStyle(color: textColor))),
       );
     }
 
     final playlist = _playlistData!;
 
     return Scaffold(
+      backgroundColor: backgroundColor,
       body: Stack(
         children: [
           CustomScrollView(
@@ -135,16 +142,16 @@ class _PlayListNowState extends State<PlayListNow> {
               SliverAppBar(
                 pinned: true,
                 expandedHeight: 300,
-                backgroundColor: Colors.white,
+                backgroundColor: appBarColor,
                 elevation: 0,
                 leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios_new_outlined, color: Colors.black),
+                  icon: Icon(Icons.arrow_back_ios_new_outlined, color: iconColor),
                   onPressed: () => Get.back(),
                 ),
                 title: showTitle
                     ? Text(
                   playlist.name,
-                  style: const TextStyle(color: Colors.black),
+                  style: TextStyle(color: textColor),
                 )
                     : null,
                 centerTitle: true,
@@ -155,16 +162,18 @@ class _PlayListNowState extends State<PlayListNow> {
                     _controller.songsInCurrentPlaylist.isNotEmpty
                         ? _controller.songsInCurrentPlaylist.first.image
                         : null,
+                    isDarkMode: isDarkMode,
+                    textColor: textColor,
                   )),
                   collapseMode: CollapseMode.parallax,
                 ),
                 actions: [
                   Obx(() => _controller.isSongListLoading.value
-                      ? const Padding(
-                      padding: EdgeInsets.only(right: 16.0),
+                      ? Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
                       child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2.0))))
                       : IconButton(
-                    icon: const Icon(Icons.refresh, color: Colors.black),
+                    icon: Icon(Icons.refresh, color: iconColor),
                     tooltip: 'Refresh Songs',
                     onPressed: () => _controller.fetchSongsForPlaylist(playlist),
                   ),
@@ -182,12 +191,12 @@ class _PlayListNowState extends State<PlayListNow> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.download_for_offline_outlined, size: 30, color: Colors.black),
+                                icon: Icon(Icons.download_for_offline_outlined, size: 30, color: iconColor),
                                 onPressed: () {},
                               ),
                               const SizedBox(width: 10),
                               IconButton(
-                                icon: const Icon(Icons.more_horiz_outlined, size: 30, color: Colors.black),
+                                icon: Icon(Icons.more_horiz_outlined, size: 30, color: iconColor),
                                 onPressed: () {
                                   _controller.showPlaylistOptionsBottomSheet(context, playlist: playlist);
                                 },
@@ -202,14 +211,10 @@ class _PlayListNowState extends State<PlayListNow> {
                                 builder: (context, snapshot) {
                                   final isShuffle = snapshot.data ?? false;
                                   return IconButton(
-                                    icon: SvgPicture.asset(
-                                      'assets/vectors/shuffle.svg',
-                                      width: 28,
-                                      height: 28,
-                                      colorFilter: ColorFilter.mode(
-                                        isShuffle ? AppTheme.primary : AppTheme.labelColor,
-                                        BlendMode.srcIn
-                                      ),
+                                    icon: Icon(
+                                      Icons.shuffle,
+                                      size: 30,
+                                      color: isShuffle ? AppTheme.primary : iconColor,
                                     ),
                                     onPressed: () {
                                       _audioService.setShuffle(!_audioService.isShuffle);
@@ -227,7 +232,7 @@ class _PlayListNowState extends State<PlayListNow> {
                                     icon: Icon(
                                       isPlaying ? Icons.pause_circle_outline : Icons.play_circle_outline,
                                       size: 60,
-                                        color: isPlaying ? Colors.orange : Colors.black,
+                                      color: isPlaying ? Colors.orange : iconColor,
                                     ),
                                     onPressed: () => _audioService.togglePlayPause(),
                                   );
@@ -243,18 +248,18 @@ class _PlayListNowState extends State<PlayListNow> {
               ),
               Obx(() {
                 if (_controller.isSongListLoading.value) {
-                  return const SliverFillRemaining(
-                    child: Center(child: CircularProgressIndicator()),
+                  return SliverFillRemaining(
+                    child: Center(child: CircularProgressIndicator(color: iconColor)),
                   );
                 }
                 else if (_controller.songsInCurrentPlaylist.isEmpty) {
                   if (playlist.trackIds.isEmpty) {
-                    return const SliverFillRemaining(
-                      child: Center(child: Text("This playlist is empty.")),
+                    return SliverFillRemaining(
+                      child: Center(child: Text("This playlist is empty.", style: TextStyle(color: textColor))),
                     );
                   } else {
-                    return const SliverFillRemaining(
-                      child: Center(child: Text("Couldn't load songs for this playlist.")),
+                    return SliverFillRemaining(
+                      child: Center(child: Text("Couldn't load songs for this playlist.", style: TextStyle(color: textColor))),
                     );
                   }
                 }
@@ -274,7 +279,7 @@ class _PlayListNowState extends State<PlayListNow> {
                                     _controller.addSongToPlaylist();
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.black,
+                                    backgroundColor: isDarkMode ? theme.primaryColor : Colors.black,
                                     foregroundColor: Colors.white,
                                     padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
                                     elevation: 2,
@@ -296,40 +301,44 @@ class _PlayListNowState extends State<PlayListNow> {
                           );
                         }
                         final Song song = _controller.songsInCurrentPlaylist[index - 1];
-                        return ListTile(
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(4),
-                            child: Image.network(
-                              song.image,
-                              width: 50, height: 50, fit: BoxFit.cover,
-                              errorBuilder: (c, e, s) => Container(
-                                width: 50, height: 50,
-                                color: Colors.grey[200],
-                                child: const Icon(Icons.music_note, color: Colors.grey),
-                              ),
-                              loadingBuilder: (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Container(
+                        return Container(
+                          color: isDarkMode ? theme.cardColor : Colors.white,
+                          child: ListTile(
+                            leading: ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: Image.network(
+                                song.image,
+                                width: 50, height: 50, fit: BoxFit.cover,
+                                errorBuilder: (c, e, s) => Container(
                                   width: 50, height: 50,
-                                  color: Colors.grey[200],
-                                  child: Center(child: CircularProgressIndicator(
-                                      strokeWidth: 2.0,
-                                      value: loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                          : null)),
-                                );
+                                  color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                                  child: Icon(Icons.music_note, color: isDarkMode ? Colors.grey[400] : Colors.grey),
+                                ),
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Container(
+                                    width: 50, height: 50,
+                                    color: isDarkMode ? Colors.grey[800] : Colors.grey[200],
+                                    child: Center(child: CircularProgressIndicator(
+                                        strokeWidth: 2.0,
+                                        color: iconColor,
+                                        value: loadingProgress.expectedTotalBytes != null
+                                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                            : null)),
+                                  );
+                                },
+                              ),
+                            ),
+                            title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: textColor)),
+                            subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: isDarkMode ? Colors.grey[400] : Colors.grey[600])),
+                            onTap: () => _navigateToMiniPlayer(song, _controller.songsInCurrentPlaylist),
+                            trailing: IconButton(
+                              icon: Icon(Icons.more_vert, color: iconColor),
+                              tooltip: 'Song options',
+                              onPressed: () {
+                                _controller.showSongOptionsBottomSheet(context, songData: song);
                               },
                             ),
-                          ),
-                          title: Text(song.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          subtitle: Text(song.artist, maxLines: 1, overflow: TextOverflow.ellipsis),
-                          onTap: () => _navigateToMiniPlayer(song, _controller.songsInCurrentPlaylist),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.more_vert),
-                            tooltip: 'Song options',
-                            onPressed: () {
-                              _controller.showSongOptionsBottomSheet(context, songData: song);
-                            },
                           ),
                         );
                       },
@@ -395,69 +404,73 @@ class _PlayListNowState extends State<PlayListNow> {
   }
 
   // Widget _buildHeader được cập nhật để nhận imageUrl tùy chọn
-  Widget _buildHeader(BuildContext context, Playlist playlist, String? imageUrl) {
+  Widget _buildHeader(BuildContext context, Playlist playlist, String? imageUrl, {
+    required bool isDarkMode,
+    required Color textColor,
+  }) {
     // Lấy URL ảnh (từ bài hát đầu tiên hoặc null)
     final String? displayImageUrl = imageUrl;
 
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 0), // Giữ padding gốc
-      decoration: const BoxDecoration( // Thêm decoration để có thể làm gradient nếu muốn
-         color: Colors.white, // Màu nền gốc
+      decoration: BoxDecoration( // Thêm decoration để có thể làm gradient nếu muốn
+        color: isDarkMode ? Theme.of(context).scaffoldBackgroundColor : Colors.white, // Màu nền gốc
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.end, // Căn dưới cùng cho dễ nhìn khi collapse
         crossAxisAlignment: CrossAxisAlignment.start, // Căn giữa các thành phần con
         children: [
           Center(
-          child: SizedBox(
-            width: 180, // Điều chỉnh kích thước nếu cần
-            height: 180,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8), // Bo tròn nhiều hơn một chút
-              child: displayImageUrl != null && displayImageUrl.isNotEmpty
-                  ? Image.network(
-                      displayImageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(),
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container( // Placeholder khi đang loading ảnh
-                          color: Colors.grey[300],
-                           child: Center(
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2.0,
-                                value: loadingProgress.expectedTotalBytes != null
-                                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                    : null,
-                              ),
-                           ),
-                        );
-                      },
-                    )
-                  : _buildImagePlaceholder(), // Hiển thị placeholder nếu không có ảnh
+            child: SizedBox(
+              width: 180, // Điều chỉnh kích thước nếu cần
+              height: 180,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8), // Bo tròn nhiều hơn một chút
+                child: displayImageUrl != null && displayImageUrl.isNotEmpty
+                    ? Image.network(
+                  displayImageUrl,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => _buildImagePlaceholder(isDarkMode: isDarkMode),
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container( // Placeholder khi đang loading ảnh
+                      color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.0,
+                          color: textColor,
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  },
+                )
+                    : _buildImagePlaceholder(isDarkMode: isDarkMode), // Hiển thị placeholder nếu không có ảnh
+              ),
             ),
-          ),
           ),
           const SizedBox(height: 15), // Khoảng cách
           // Tên playlist
           Text(
             playlist.name, // Sử dụng tên động từ playlist
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22, // Tăng cỡ chữ một chút
               fontWeight: FontWeight.bold,
-              color: Colors.black87, // Màu chữ đậm hơn
+              color: textColor, // Màu chữ đậm hơn
             ),
             textAlign: TextAlign.left, // Căn giữa text
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           // Có thể thêm thông tin khác nếu cần (ví dụ: số lượng bài hát)
-           Obx(() => Text(
-                '${_controller.songsInCurrentPlaylist.length} songs', // Hiển thị số lượng bài hát (cập nhật động)
-                 style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                 maxLines: 1,
-              ),
-            ),
+          Obx(() => Text(
+            '${_controller.songsInCurrentPlaylist.length} songs', // Hiển thị số lượng bài hát (cập nhật động)
+            style: TextStyle(fontSize: 14, color: isDarkMode ? Colors.grey[400] : Colors.grey[600]),
+            maxLines: 1,
+          ),
+          ),
           const SizedBox(height: 10), // Khoảng cách dưới cùng trong header
         ],
       ),
@@ -465,16 +478,16 @@ class _PlayListNowState extends State<PlayListNow> {
   }
 
   // Widget con để tạo placeholder cho ảnh
-  Widget _buildImagePlaceholder() {
+  Widget _buildImagePlaceholder({required bool isDarkMode}) {
     return Container(
       width: double.infinity, // Chiếm hết không gian cha
       height: double.infinity,
-      color: Colors.grey[300], // Màu nền placeholder
-      child: const Icon(
+      color: isDarkMode ? Colors.grey[800] : Colors.grey[300], // Màu nền placeholder
+      child: Icon(
         Icons.music_note, // Icon nhạc
         size: 80, // Kích thước icon
-        color: Colors.grey, // Màu icon
+        color: isDarkMode ? Colors.grey[400] : Colors.grey, // Màu icon
       ),
     );
   }
-}
+} 

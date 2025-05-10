@@ -22,7 +22,7 @@ class _AllSongsViewState extends State<AllSongsView> {
   int _currentPage = 1;
   final int _perPage = 20;
 
-  final AudioService _audioService = AudioService();     // quản lý logic phát nhạc
+  final AudioService _audioService = Get.find<AudioService>();    // quản lý logic phát nhạc
   late final AudioPlayer _player;               // Đối tượng từ thư viện phát nhạc, như just_audio
   Song? _currentlyPlaying;                      // Lưu bài hát hiện đang phát. null nếu chưa phát bài nào.
   final ScrollController _scrollController = ScrollController();      // Điều khiển scroll của ListView, dùng để detect người dùng cuộn đến cuối danh sách để tải thêm bài mới.
@@ -205,35 +205,47 @@ class _AllSongsViewState extends State<AllSongsView> {
             ),
           ),
 
-          StreamBuilder<Song>(
-            stream: AudioService().currentSongStream,
+          StreamBuilder<Song?>(
+            stream: _audioService.currentSongStream,
             builder: (context, snapshot) {
-              final current = snapshot.data ?? AudioService().currentSong;
-              if (current == null) return const SizedBox.shrink();
+              final currentSong = snapshot.data ?? _audioService.currentSong;
+              if (currentSong == null) return const SizedBox.shrink();
+
               return Positioned(
                 left: 8,
                 right: 8,
                 bottom: 8,
-                child: MiniPlayer(
-                  key: ValueKey(current.id),
-                  song: current,
-                  songs: _songs,
-                  onTap: () async {
-                    final returnedSong = await Get.toNamed(
-                      Routes.songs_view,
-                      arguments: {
-                        'playingSong': current,
-                        'songs': _songs,
-                      },
-                    );
-                    setState(() {
-                      _currentlyPlaying = returnedSong ?? AudioService().currentSong;     // cập nhật lại bài hát hiện tại đang phát
-                    });
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    try {
+                      await _audioService.stop();
+                      _audioService.clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('Error stopping audio: $e');
+                    }
                   },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: _audioService.currentPlaylist,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {
+                          'playingSong': currentSong,
+                          'songs': _audioService.currentPlaylist
+                        },
+                      );
+                      if (returnedSong != null) {
+                        _audioService.currentSong = returnedSong;
+                      }
+                    },
+                  ),
                 ),
               );
             },
-          ),
+          )
         ],
       ),
     );

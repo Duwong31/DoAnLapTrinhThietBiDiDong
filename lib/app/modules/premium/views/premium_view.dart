@@ -26,11 +26,10 @@ class _PremiumViewState extends State<PremiumView> {
   final HomeController homeController = Get.find<HomeController>();
   late List<Song> _songs;
 
-
   @override
   void initState() {
     super.initState();
-    _songs = homeController.songs.toList();
+    _songs = _audioService.currentPlaylist.toList();
     Get.put(FavoriteController());
   }
 
@@ -44,7 +43,7 @@ class _PremiumViewState extends State<PremiumView> {
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(20.0).copyWith(bottom: 80), // Thêm padding bottom để tránh MiniPlayer
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -70,7 +69,7 @@ class _PremiumViewState extends State<PremiumView> {
                 ),
                 Dimes.height15,
                 Text(
-                  'elevate_music'.tr, // <-- Dùng GetX tr
+                  'elevate_music'.tr,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 32,
@@ -127,63 +126,65 @@ class _PremiumViewState extends State<PremiumView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    TextButton(onPressed: () {}, child: Text('restore'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
-                    TextButton(onPressed: () {}, child: Text('terms'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
-                    TextButton(onPressed: () {}, child: Text('privacy'.tr, style: const TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(
+                        onPressed: () {},
+                        child: Text('restore'.tr,
+                            style: const TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(
+                        onPressed: () {},
+                        child: Text('terms'.tr,
+                            style: const TextStyle(color: mediumTextColor, fontSize: 12))),
+                    TextButton(
+                        onPressed: () {},
+                        child: Text('privacy'.tr,
+                            style: const TextStyle(color: mediumTextColor, fontSize: 12))),
                   ],
                 ),
                 Dimes.height30,
               ],
             ),
           ),
-          Obx(() {
-            // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
-            _songs = homeController.songs.toList();
-            return StreamBuilder<Song?>(
-              stream: AudioService().currentSongStream,
-              builder: (context, snapshot) {
-                // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
-                Song? currentSong = snapshot.hasData && snapshot.data != null
-                    ? snapshot.data
-                    : _audioService.currentSong;
+          StreamBuilder<Song?>(
+            stream: _audioService.currentSongStream,
+            builder: (context, snapshot) {
+              final currentSong = snapshot.data ?? _audioService.currentSong;
+              if (currentSong == null) return const SizedBox.shrink();
 
-                if (currentSong == null) {
-                  return const SizedBox.shrink();
-                }
-
-                return Positioned(
-                  left: 8,
-                  right: 8,
-                  bottom: 8,
-                  child: Dismissible(
-                    key: Key('miniplayer_${currentSong.id}'),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (_) async {
-                      try {
-                        await _audioService.stop();
-                        _audioService.clearCurrentSong();
-                      } catch (e) {
-                        debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
+              return Positioned(
+                left: 8,
+                right: 8,
+                bottom: 8, // Thay đổi từ 8 thành 16 để tạo khoảng cách với bottom
+                child: Dismissible(
+                  key: Key('miniplayer_${currentSong.id}'),
+                  direction: DismissDirection.endToStart,
+                  onDismissed: (_) async {
+                    try {
+                      await _audioService.stop();
+                      _audioService.clearCurrentSong();
+                    } catch (e) {
+                      debugPrint('Error stopping audio: $e');
+                    }
+                  },
+                  child: MiniPlayer(
+                    song: currentSong,
+                    songs: _audioService.currentPlaylist,
+                    onTap: () async {
+                      final returnedSong = await Get.toNamed(
+                        Routes.songs_view,
+                        arguments: {
+                          'playingSong': currentSong,
+                          'songs': _audioService.currentPlaylist
+                        },
+                      );
+                      if (returnedSong != null) {
+                        _audioService.currentSong = returnedSong;
                       }
                     },
-                    child: MiniPlayer(
-                      song: currentSong,
-                      songs: _songs, // Sử dụng danh sách _songs đã cập nhật
-                      onTap: () async {
-                        final returnedSong = await Get.toNamed(
-                          Routes.songs_view,
-                          arguments: {'playingSong': currentSong, 'songs': _songs},
-                        );
-                        if (returnedSong != null) {
-                          _audioService.currentSong = returnedSong;
-                        }
-                      },
-                    ),
                   ),
-                );
-              },
-            );
-          }),
+                ),
+              );
+            },
+          )
         ],
       ),
     );

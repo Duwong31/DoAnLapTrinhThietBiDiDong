@@ -2,6 +2,7 @@ class SongCollection {
   final String id;
   final String title;
   final String album;
+  final String genre;
   final String artist;
   final String source;
   final String image;
@@ -12,6 +13,7 @@ class SongCollection {
     required this.id,
     required this.title,
     required this.album,
+    required this.genre,
     required this.artist,
     required this.source,
     required this.image,
@@ -28,6 +30,7 @@ class SongCollection {
       id: json['id'],
       title: json['title'],
       album: json['album'],
+      genre: json['genre'],
       artist: json['artist'],
       source: json['source'],
       image: json['image'],
@@ -41,6 +44,7 @@ class Song {
   final String id;
   final String title;
   final String album;     // Tên album chứa bài hát này
+  final String genre;
   final String artist;    // Nghệ sĩ/ca sĩ thể hiện bài hát
   final String source;
   final String image;
@@ -51,6 +55,7 @@ class Song {
     required this.id,
     required this.title,
     required this.album,
+    required this.genre,
     required this.artist,
     required this.source,
     required this.image,
@@ -63,6 +68,7 @@ class Song {
       id: json['id'].toString(),
       title: json['title'],
       album: json['album'],
+      genre: json['genre'],
       artist: json['artist'],
       source: json['source'],
       image: json['image'],
@@ -76,6 +82,7 @@ class Song {
       id: id,
       title: title,
       album: album,
+      genre: genre,
       artist: artist,
       source: source,
       image: image,
@@ -86,7 +93,7 @@ class Song {
 
   @override
   String toString() {
-    return 'Song{id: $id, title: $title, album: $album, artist: $artist, duration: $duration, isFavorite: $isFavorite}';
+    return 'Song{id: $id, title: $title, album: $album,genre: $genre, artist: $artist, duration: $duration, isFavorite: $isFavorite}';
   }
 }
 

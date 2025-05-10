@@ -5,6 +5,11 @@ class Messages extends Translations {
   Map<String, Map<String, String>> get keys => {
     // English
     'en_US': {
+      // dashboard
+      'home': 'Home',
+      'search': 'Search',
+      'library': 'Library',
+
       // home
       'we_think_you_like': "We think you'll like",
       'music_genre': "Music genre",
@@ -31,7 +36,10 @@ class Messages extends Translations {
       'best_song_of_jack': 'Best song of Jack - J97',
       'your_uploads': 'Your Uploads',
 
-      'no_liked_song': 'No liked songs',
+      'favorite_tracks': 'Favorite tracks',
+      'search_tracks': 'Search Tracks',
+      'no_liked_tracks': 'No liked tracks',
+      'no_results_found_for ': 'No results found for ',
 
       // premium
       'elevate_music': 'Elevate Your Music Experience',
@@ -107,6 +115,11 @@ class Messages extends Translations {
 
     // Tiếng Việt
     'vi_VN': {
+      // dashboard
+      'home': 'Trang chủ',
+      'search': 'Tìm kiếm',
+      'library': 'Thư viện',
+
       // home
       'we_think_you_like': "Chúng tôi nghĩ bạn sẽ thích",
       'music_genre': "Thể loại nhạc",
@@ -123,6 +136,7 @@ class Messages extends Translations {
       'enter_keyword_to_show_suggestions': "Nhập từ khóa để hiển thị gọi ý",
 
       // library
+      'favorite_songs': 'Bài hát yêu thích',
       'playlists': 'Danh sách phát',
       'following': 'Đang theo dõi',
       'stations': 'Đài phát',
@@ -132,7 +146,10 @@ class Messages extends Translations {
       'best_song_of_jack': 'Những bài hát hay nhất của Jack - J97',
       'your_uploads': 'Tải lên của bạn',
 
-      'no_liked_song': 'Không có bài hát nào được thích',
+      "favorite_tracks": "Bài hát yêu thích",
+      "search_tracks": "Tìm kiếm bài hát",
+      "no_liked_tracks": "Không có bài hát nào được yêu thích",
+      "no_results_found_for": "Không tìm thấy kết quả cho",
 
       // premium
       'elevate_music': 'Nâng tầm trải nghiệm âm nhạc',

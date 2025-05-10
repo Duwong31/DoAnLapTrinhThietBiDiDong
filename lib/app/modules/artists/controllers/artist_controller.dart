@@ -58,7 +58,7 @@ class ArtistController extends GetxController {
     );
 
     final headers = {
-      'X-RapidAPI-Key': '5abe5894c0mshc6c4628d8b42b9bp1b44ecjsnd3f322d3da57',
+      'X-RapidAPI-Key': '94b88f124fmshce6a37630b75745p1b6b7djsn0b7dbb28dd4d',
       'X-RapidAPI-Host': 'spotify23.p.rapidapi.com',
     };
 

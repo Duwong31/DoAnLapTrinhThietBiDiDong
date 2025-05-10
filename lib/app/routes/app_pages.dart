@@ -22,6 +22,7 @@ import '../modules/favorite/views/favorite_view.dart';
 import '../modules/forgot-password/bindings/forgot_password_binding.dart';
 import '../modules/forgot-password/views/forgot_password_view.dart';
 import '../modules/genre/bindings/genre_binding.dart';
+import '../modules/genre/views/genre_now_view.dart';
 import '../modules/genre/views/genre_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
@@ -186,8 +187,13 @@ class AppPages {
         page: () => const GenreView(),
         binding: GenreBinding()),
     GetPage(
+        name: _Paths.genrenow,
+        page: () => const GenreNowView(),
+        binding: GenreBinding()),
+    GetPage(
         name: _Paths.favorite,
         page: () => FavoriteView(),
         binding: FavoriteBinding()),
+
   ];
 }

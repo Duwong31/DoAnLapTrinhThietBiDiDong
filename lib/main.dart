@@ -68,7 +68,6 @@ void main() async {
 
   Get.lazyPut<RemoteDataSource>(() => RemoteDataSource(), fenix: true);
   // Get.lazyPut<UserRepository>(() => UserRepository(), fenix: true);
-  Get.put(AudioService(), permanent: true);
   Get.put(ApiClient(), permanent: true);
   Get.lazyPut(() => SongService(ApiClient()), fenix: true);
 
