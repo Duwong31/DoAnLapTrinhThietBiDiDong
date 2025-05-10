@@ -27,7 +27,7 @@ class AudioService extends GetxService {
   // Cung cấp danh sách songs
   List<Song> get currentPlaylist => songs;                                    //  Dùng để phát ra danh sách playlist mới mỗi khi có sự thay đổi.
 
-  Stream<bool> get shuffleStream => _shuffleSubject.stream;                   // Stream dùng để lắng nghe trạng thái bật/tắt shuffle( trộn bài ).
+  Stream<bool> get shuffleStream => _shuffleSubject.stream;                   // Stream dùng để lắng nghe trạng thái bật/tắt shuffle ( trộn bài ).
   Stream<Song> get currentSongStream => _currentSongController.stream;        // Stream cung cấp bài hát đang phát hiện tại (Dùng trong MiniPlayer để hiển thị bài hát hiện tại theo thời gian thực (StreamBuilder))
   Stream<PlayerState> get playerStateStream => player.playerStateStream;      // Stream trạng thái trình phát (playing, paused, completed, buffering, v.v.)
   bool get isPlaying => player.playing;                                       // Trả về true nếu trình phát đang phát nhạc.

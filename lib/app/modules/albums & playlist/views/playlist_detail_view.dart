@@ -223,21 +223,40 @@ class _PlayListNowState extends State<PlayListNow> {
                                 },
                               ),
                               const SizedBox(width: 10),
-                              StreamBuilder<bool>(
-                                stream: _audioService.playerStateStream
-                                    .map((state) => state.playing),
-                                builder: (context, snapshot) {
-                                  final isPlaying = snapshot.data ?? false;
-                                  return IconButton(
-                                    icon: Icon(
-                                      isPlaying ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                                      size: 60,
-                                      color: isPlaying ? Colors.orange : iconColor,
-                                    ),
-                                    onPressed: () => _audioService.togglePlayPause(),
+                              Obx(() {
+                                // Kiểm tra nếu playlist có bài hát thì hiển thị nút play/pause
+                                if (_controller.songsInCurrentPlaylist.isNotEmpty) {
+                                  return StreamBuilder<bool>(
+                                    stream: _audioService.playerStateStream.map((state) => state.playing),
+                                    builder: (context, snapshot) {
+                                      final isPlaying = snapshot.data ?? false;
+                                      return IconButton(
+                                        icon: Icon(
+                                          isPlaying ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                                          size: 60,
+                                          color: isPlaying ? Colors.orange : Colors.black,
+                                        ),
+                                        onPressed: () async {
+                                          if (!isPlaying && _audioService.currentSong == null) {
+                                            // Nếu không có bài hát đang phát, phát bài hát đầu tiên trong playlist
+                                            await _audioService.setPlaylist(
+                                              _controller.songsInCurrentPlaylist,
+                                              startIndex: 0,
+                                            );
+                                            await _audioService.player.play();
+                                          } else {
+                                            // Nếu đang phát hoặc có bài hát, toggle play/pause
+                                            await _audioService.togglePlayPause();
+                                          }
+                                        },
+                                      );
+                                    },
                                   );
-                                },
-                              ),
+                                } else {
+                                  // Nếu không có bài hát, không hiển thị nút play/pause
+                                  return const SizedBox.shrink();
+                                }
+                              }),
                             ],
                           ),
                         ],

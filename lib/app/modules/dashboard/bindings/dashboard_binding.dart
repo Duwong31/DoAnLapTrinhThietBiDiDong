@@ -29,11 +29,11 @@ class DashboardBinding extends Bindings {
     Get.lazyPut<UserRepository>(() => UserRepository(ApiClient()), fenix: true);
     Get.lazyPut(() => FavoriteController());
     Get.lazyPut(() => SongService(ApiClient()), fenix: true);
-
+    Get.put(AudioService(), permanent: true);
+    
     // Đăng ký HistoryRepository trước
     Get.lazyPut<HistoryRepository>(() => HistoryRepository(), fenix: true);
     // Sau đó mới đăng ký HistoryController
     Get.lazyPut<HistoryController>(() => HistoryController(), fenix: true);
-    Get.put(AudioService(), permanent: true);
   }
 }
