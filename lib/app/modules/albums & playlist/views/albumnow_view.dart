@@ -123,7 +123,7 @@ class AlbumNow extends GetView<AlbumNowController> {
                         style: const TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                       onTap: () {
-                        Get.toNamed(Routes.songs_view);
+                        // Get.toNamed(Routes.songs_view);
                       },
                     );
                   },

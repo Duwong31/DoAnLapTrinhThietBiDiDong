@@ -18,7 +18,7 @@ class SearchView extends StatefulWidget {
 class _SearchViewState extends State<SearchView> {
   final SearchPageController controller = Get.put(SearchPageController());
   final AudioService _audioService = Get.find<AudioService>();
-  final HomeController homeController = Get.find<HomeController>(); // Lưu dưới dạng biến instance
+  final HomeController homeController = Get.find<HomeController>();
   late List<Song> _songs;
 
   @override
@@ -31,69 +31,73 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
+    FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Obx(
-                        () => Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).inputDecorationTheme.fillColor ??
-                            Theme.of(context).colorScheme.surfaceVariant,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Row(
-                        children: [
-                          IconButton(
-                            icon: Icon(
-                              controller.isSearching.value ? Icons.arrow_back : Icons.search,
-                              color: Theme.of(context).iconTheme.color,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(), // 👈 Ẩn bàn phím khi tap ngoài
+      child: Scaffold(
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Obx(
+                          () => Container(
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).inputDecorationTheme.fillColor ??
+                              Theme.of(context).colorScheme.surfaceVariant,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                controller.isSearching.value ? Icons.arrow_back : Icons.search,
+                                color: Theme.of(context).iconTheme.color,
+                              ),
+                              onPressed: () {
+                                controller.isSearching.value
+                                    ? controller.stopSearch()
+                                    : controller.startSearch();
+                              },
                             ),
-                            onPressed: () {
-                              controller.isSearching.value
-                                  ? controller.stopSearch()
-                                  : controller.startSearch();
-                            },
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: controller.searchTextController,
-                              autofocus: controller.isSearching.value,
-                              onTap: controller.startSearch,
-                              onChanged: controller.onSearchChanged,
-                              decoration: InputDecoration(
-                                hintText: "search_hint".tr,
-                                hintStyle: TextStyle(color: Theme.of(context).hintColor),
-                                border: InputBorder.none,
+                            Expanded(
+                              child: TextField(
+                                controller: controller.searchTextController,
+                                autofocus: controller.isSearching.value,
+                                onTap: controller.startSearch,
+                                onChanged: controller.onSearchChanged,
+                                decoration: InputDecoration(
+                                  hintText: "search_hint".tr,
+                                  hintStyle: TextStyle(color: Theme.of(context).hintColor),
+                                  border: InputBorder.none,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  Dimes.height20,
-                  Obx(() => Expanded(
-                    child: controller.isSearching.value
-                        ? _buildSearchResultView()
-                        : _buildDefaultView(),
-                  )),
-                ],
+                    Dimes.height20,
+                    Obx(() => Expanded(
+                      child: controller.isSearching.value
+                          ? _buildSearchResultView()
+                          : _buildDefaultView(),
+                    )),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -134,6 +138,7 @@ class _SearchViewState extends State<SearchView> {
                     onPressed: () => controller.removeSearch(index),
                   ),
                   onTap: () {
+                    FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
                     controller.searchTextController.text = searchItem;
                     controller.onSearchChanged(searchItem);
                     controller.startSearch();
@@ -171,12 +176,11 @@ class _SearchViewState extends State<SearchView> {
             title: Text(song.title),
             subtitle: Text(song.artist),
             onTap: () {
-              // FocusManager.instance.primaryFocus?.unfocus();
-
+              FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();
-              _songs = results; // Cập nhật _songs với kết quả tìm kiếm
+              _songs = results;
               _navigateToMiniPlayer(song, results);
             },
           );
