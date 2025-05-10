@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'dart:io';
 
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
@@ -43,7 +41,7 @@ class EditProfilePage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: ctr.saveProfile, // Call the save method on the controller
-            child: Text('save'.tr, style: TextStyle(color: Colors.orange)),
+            child: Text('save'.tr, style: const TextStyle(color: Colors.orange)),
           ),
         ],
       ),
@@ -97,7 +95,7 @@ class EditProfilePage extends StatelessWidget {
               children: [
                 Text(
                   'name'.tr,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 Dimes.width12, // Khoảng cách giữa nhãn và ô nhập
                 Expanded( // Giúp TextField chiếm hết phần còn lại của hàng

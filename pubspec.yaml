@@ -80,7 +80,7 @@ flutter:
     - assets/drawer/
     - assets/navigator/
     - assets/animations/
-
+    - assets/vectors/
 analyzer:
   enable-experiment:
     - class-modifiers

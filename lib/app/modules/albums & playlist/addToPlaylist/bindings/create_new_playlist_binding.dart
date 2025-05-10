@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 // Import controller và repository cần thiết
 import '../controllers/create_new_playlist_controller.dart';
-import '../../../../data/repositories/repositories.dart'; // Đảm bảo đường dẫn đúng
+// Đảm bảo đường dẫn đúng
 
 class CreateNewPlaylistBinding extends Bindings {
   @override

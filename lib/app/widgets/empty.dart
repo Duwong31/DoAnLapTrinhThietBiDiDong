@@ -15,7 +15,7 @@ class EmptyWidget extends StatelessWidget {
   final Widget? icon;
   @override
   Widget build(BuildContext context) {
-    Color primary = Theme.of(context).primaryColor.withOpacity(.8);
+    Color primary = Theme.of(context).primaryColor;
     return LayoutBuilder(
       builder: (_, BoxConstraints constraints) {
         final height = constraints.maxHeight;

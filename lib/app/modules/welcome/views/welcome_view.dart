@@ -2,8 +2,6 @@ import 'package:get/get.dart' hide ContextExtensionss;
 
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
-import '../../../widgets/app_button.dart';
-import '../../../widgets/page_indicators.dart';
 import '../controllers/welcome_controller.dart';
 
 class WelcomeView extends GetView<WelcomeController> {

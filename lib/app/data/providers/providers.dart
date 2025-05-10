@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart' hide FormData, MultipartFile, Response;
 import 'package:get_storage/get_storage.dart';
-import '../models/favorite_model.dart';
 import '../../core/styles/style.dart';
 import '../../core/utilities/utilities.dart';
 import '../../routes/app_pages.dart';
@@ -151,6 +150,20 @@ class HistoryApiService extends BaseApiService {
       final response = await get(ApiUrl.listeningHistory);
       debugPrint('Raw getListeningHistory response: ${response.data}');
       return response.data;
+    });
+  }
+
+  Future<List<String>> getRecentHistory() async {
+    return handleApiError(() async {
+      final response = await get(ApiUrl.listeningHistory);
+      
+      if (response.data['status'] == 1 && 
+          response.data['data'] != null && 
+          response.data['data']['track_ids'] != null) {
+        final List<dynamic> trackIds = response.data['data']['track_ids'];
+        return trackIds.map((id) => id.toString()).toList();
+      }
+      return [];
     });
   }
 
@@ -834,10 +847,6 @@ class UserApiService extends BaseApiService {
     AppUtils.log('API Request to ${ApiUrl.getPlaylists}');
     // Gọi API GET, không cần data body
     final response = await get(ApiUrl.getPlaylists /* options: getOptions() đã bao gồm */);
-    print("<<<--- API GetPlaylists Response ---");
-    print("Status Code: ${response.statusCode}");
-    print("Response Data: ${response.data}"); // In toàn bộ data
-    print("--- API GetPlaylists Response --->>>");
 
     // Kiểm tra cấu trúc response chuẩn từ backend của bạn
     if (response.statusCode == 200 && response.data['status'] == 1 && response.data['data'] is List) {
@@ -1206,9 +1215,6 @@ class ApiProvider {
   // static final MessageApiService _messageService = MessageApiService();
   static final CarApiService _carService = CarApiService();
   // static final LifestyleApiService _lifestyleService = LifestyleApiService();
-  static final VoucherApiService _voucherService = VoucherApiService();
-  // static final AddressApiService _addressService = AddressApiService();
-  static final BookingApiService _bookingService = BookingApiService();
   // static final FeedbackApiService _feedbackService = FeedbackApiService();
   static final HistoryApiService _historyService = HistoryApiService();
   // User API methods
@@ -1409,6 +1415,7 @@ class ApiProvider {
 
   // Listening History API methods
   static Future<Map<String, dynamic>> getListeningHistory() =>_historyService.getListeningHistory();
+  static Future<List<String>> getRecentHistory() => _historyService.getRecentHistory();
   static Future<bool> addTrackToHistory(String trackId) =>_historyService.addTrackToHistory(trackId);
   static Future<bool> removeTrackFromHistory(String trackId) => _historyService.removeTrackFromHistory(trackId);
   static Future<bool> clearHistory() => _historyService.clearHistory();

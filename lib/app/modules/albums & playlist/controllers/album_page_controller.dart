@@ -45,7 +45,7 @@ class AlbumController extends GetxController {
         playlists.value =
             data.map((e) => AlbumModel.fromSpotifyJson(e)).toList();
       } else {
-        print("Failed to fetch albums: ${res.statusCode}");
+        
       }
     } catch (e) {
       print("Error fetching albums: $e");

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
-import '../../../core/utilities/utilities.dart';
 import '../../../routes/app_pages.dart';
 
 class WelcomeController extends GetxController {
@@ -28,10 +27,10 @@ class WelcomeController extends GetxController {
   }
 
   void toLoginPage() {
-    Get.offNamed(Routes.login);
+    Get.toNamed(Routes.login);
   }
   void toSignUpPage() {
-    Get.offNamed(Routes.register);
+    Get.toNamed(Routes.register);
   }
 
   @override

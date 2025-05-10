@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class PlaylistCoverWidget extends StatelessWidget {
   final String? firstTrackId;
 
-  const PlaylistCoverWidget({Key? key, required this.firstTrackId}) : super(key: key);
+  const PlaylistCoverWidget({super.key, required this.firstTrackId});
 
   // Widget helper để hiển thị icon mặc định
   Widget _buildDefaultIcon() {
@@ -43,7 +43,7 @@ class PlaylistCoverWidget extends StatelessWidget {
         );
       },
       errorBuilder: (context, error, stackTrace) {
-        print("PlaylistCoverWidget: Error loading image $imageUrl: $error");
+       
         return _buildDefaultIcon(); // Lỗi load ảnh -> Hiển thị icon mặc định
       },
     );

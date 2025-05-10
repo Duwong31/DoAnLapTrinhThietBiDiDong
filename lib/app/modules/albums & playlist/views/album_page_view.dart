@@ -1,5 +1,4 @@
-import 'package:dartz/dartz.dart' as album;
-import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';

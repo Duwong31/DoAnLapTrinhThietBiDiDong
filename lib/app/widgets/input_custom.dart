@@ -144,27 +144,26 @@ class CustomTextFieldState extends State<InputCustom> {
             : null,
         suffixIcon: widget.isShowSuffixIcon
             ? widget.isPassword
-            ? IconButton(
-          icon: Icon(
-            _obscureText ? Icons.visibility_off : Icons.visibility,
-            color: AppTheme.passVisibility.withOpacity(0.6),
-          ),
-          onPressed: _toggle,
-        )
-            : widget.isSearch && _text.isNotEmpty
-            ? IconButton(
-          onPressed: _clear,
-          icon: Image.asset(
-            AppImage.close,
-            width: 20,
-          ),
-        )
-            : widget.isIcon
-            ? IconButton(
-          onPressed: widget.onSuffixTap,
-          icon: widget.suffixIcon ?? Dimes.empty,
-        )
-            : null
+                ? IconButton(
+                    icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: AppTheme.passVisibility),
+                    onPressed: _toggle,
+                  )
+                : widget.isSearch && _text.isNotEmpty
+                    ? IconButton(
+                        onPressed: _clear,
+                        icon: Image.asset(
+                          AppImage.close,
+                          width: 20,
+                        ),
+                      )
+                    : widget.isIcon
+                        ? IconButton(
+                            onPressed: widget.onSuffixTap,
+                            icon: widget.suffixIcon ?? Dimes.empty,
+                          )
+                        : null
             : null,
       ),
       onChanged: (val) {

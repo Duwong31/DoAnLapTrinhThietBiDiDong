@@ -11,6 +11,7 @@ class ContainerButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unused_local_variable
     Gradient gradient;
     switch (type) {
       case Type.primary:
@@ -24,15 +25,15 @@ class ContainerButton extends StatelessWidget {
       height: Dimes.buttonBoxHeight,
       decoration: BoxDecoration(
         border: Border.all(width: 0),
-        gradient: gradient,
+        gradient: AppGradient.yellowOrange,
         borderRadius: const BorderRadius.all(Radius.circular(30)),
-        boxShadow: const [
-          BoxShadow(
-              color: AppTheme.shadowBoxColor,
-              blurRadius: 10,
-              spreadRadius: 0,
-              offset: Offset(3, 3))
-        ],
+        // boxShadow: const [
+        //   BoxShadow(
+        //       color: AppTheme.shadowBoxColor,
+        //       blurRadius: 10,
+        //       spreadRadius: 0,
+        //       offset: Offset(3, 3))
+        // ],
       ),
       child: child,
     );

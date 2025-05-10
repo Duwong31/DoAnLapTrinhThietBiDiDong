@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
 import '../../../core/utilities/image.dart';
-import '../../../routes/app_pages.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/container_button.dart';
 import '../../../widgets/input_custom.dart';
@@ -23,6 +21,15 @@ class RegisterView extends GetView<RegisterController> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),  
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -121,8 +128,8 @@ class RegisterView extends GetView<RegisterController> {
                         ),
                         Dimes.height15,
 
-                        _continueWithPhone(onPressed: () {}),
-                        Dimes.height5,
+                        // _continueWithPhone(onPressed: () {}),
+                        // Dimes.height5,
                         _continueWithGoogle(),
                         Dimes.height15,
 

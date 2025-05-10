@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
@@ -13,7 +12,6 @@ import '../../favorite/views/favorite_view.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/library_controller.dart';
 import '../../albums & playlist/controllers/playlist_page_controller.dart';
-import '../../../data/models/playlist.dart';
 import '../../../widgets/playlist_cover_widget.dart';
 
 class LibraryView extends StatefulWidget {
@@ -35,13 +33,14 @@ class _LibraryViewState extends State<LibraryView> {
     super.initState();
     _songs = homeController.songs.toList();
     Get.put(FavoriteController());
-    playlistController.fetchPlaylists(); // Fetch playlists when view initializes
+    playlistController
+        .fetchPlaylists(); // Fetch playlists when view initializes
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
+      body: Stack(
         children: [
           Padding(
             padding: const EdgeInsets.all(5),
@@ -51,12 +50,17 @@ class _LibraryViewState extends State<LibraryView> {
                 children: [
                   Column(
                     children: [
-                      _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
-                      _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
+                      _buildMenuItem(
+                          context, 'favorite_songs'.tr, FavoriteView()),
+                      _buildMenuItem(
+                          context, 'playlists'.tr, const PlayListView()),
                       _buildMenuItem(context, 'Albums', const AlbumView()),
-                      _buildMenuItem(context, 'following'.tr, const FollowView()),
-                      _buildMenuItem(context, 'stations'.tr, const StationView()),
-                      _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
+                      _buildMenuItem(
+                          context, 'following'.tr, const FollowView()),
+                      _buildMenuItem(
+                          context, 'stations'.tr, const StationView()),
+                      _buildMenuItem(
+                          context, 'your_uploads'.tr, const UploadView()),
                     ],
                   ),
                   Divider(
@@ -95,7 +99,8 @@ class _LibraryViewState extends State<LibraryView> {
                                 ),
                                 child: Center(
                                   child: Text('see_all'.tr,
-                                      style: const TextStyle(color: AppTheme.labelColor)),
+                                      style: const TextStyle(
+                                          color: AppTheme.labelColor)),
                                 ),
                               ),
                             ),
@@ -105,46 +110,53 @@ class _LibraryViewState extends State<LibraryView> {
                       Dimes.height10,
                       Obx(() {
                         if (playlistController.isLoadingPlaylists.value) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
 
-                        final playlists = playlistController.playlists.take(3).toList();
+                        final playlists =
+                            playlistController.playlists.take(3).toList();
 
                         return Column(
-                          children: playlists.map((playlist) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                            child: GestureDetector(
-                              onTap: () {
-                                Get.toNamed(Routes.playlistnow, arguments: playlist);
-                              },
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: SizedBox(
-                                      width: 60,
-                                      height: 60,
-                                      child: PlaylistCoverWidget(
-                                        firstTrackId: playlist.firstTrackId,
+                          children: playlists
+                              .map((playlist) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.toNamed(Routes.playlistnow,
+                                            arguments: playlist);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            child: SizedBox(
+                                              width: 60,
+                                              height: 60,
+                                              child: PlaylistCoverWidget(
+                                                firstTrackId:
+                                                    playlist.firstTrackId,
+                                              ),
+                                            ),
+                                          ),
+                                          Dimes.width10,
+                                          Expanded(
+                                            child: Text(
+                                              playlist.name,
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  Dimes.width10,
-                                  Expanded(
-                                    child: Text(
-                                      playlist.name,
-                                      style: const TextStyle(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )).toList(),
+                                  ))
+                              .toList(),
                         );
                       }),
                       const SizedBox(height: 180),
@@ -154,67 +166,20 @@ class _LibraryViewState extends State<LibraryView> {
               ),
             ),
           ),
-          // Obx(() {
-          //   // Cập nhật _songs một cách phản ứng khi HomeController.songs thay đổi
-          //   _songs = homeController.songs.toList();
-          //   return StreamBuilder<Song?>(
-          //     stream: _audioService.currentSongStream,
-          //     builder: (context, snapshot) {
-          //       // Cơ chế dự phòng: Nếu StreamBuilder không có dữ liệu, kiểm tra trực tiếp AudioService.currentSong
-          //       Song? currentSong = snapshot.hasData && snapshot.data != null
-          //           ? snapshot.data
-          //           : _audioService.currentSong;
-          //
-          //       if (currentSong == null) {
-          //         return const SizedBox.shrink();
-          //       }
-          //
-          //       return Positioned(
-          //         left: 8,
-          //         right: 8,
-          //         bottom: 8,
-          //         child: Dismissible(
-          //           key: Key('miniplayer_${currentSong.id}'),
-          //           direction: DismissDirection.endToStart,
-          //           onDismissed: (_) async {
-          //             try {
-          //               await _audioService.stop();
-          //               _audioService.clearCurrentSong();
-          //             } catch (e) {
-          //               debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
-          //             }
-          //           },
-          //           child: MiniPlayer(
-          //             song: currentSong,
-          //             songs: _songs, // Sử dụng danh sách _songs đã cập nhật
-          //             onTap: () async {
-          //               final returnedSong = await Get.toNamed(
-          //                 Routes.songs_view,
-          //                 arguments: {'playingSong': currentSong, 'songs': _songs},
-          //               );
-          //               if (returnedSong != null) {
-          //                 _audioService.currentSong = returnedSong;
-          //               }
-          //             },
-          //           ),
-          //         ),
-          //       );
-          //     },
-          //   );
-          // }),
         ],
       ),
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, String title, Widget destination) {
+  Widget _buildMenuItem(
+      BuildContext context, String title, Widget destination) {
     return ListTile(
       title: Text(title),
       trailing: const Icon(Icons.arrow_forward_ios, size: 14),
       onTap: () {
         if (destination is FavoriteView) {
           Get.to(
-                () => FavoriteView(),
+            () => FavoriteView(),
             binding: FavoriteBinding(),
           );
         } else if (destination is PlayListView) {

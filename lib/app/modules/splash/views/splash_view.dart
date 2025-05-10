@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
@@ -19,7 +18,7 @@ class SplashView extends GetView<SplashController> {
             colors: [
               Colors.white,
               Colors.yellow,
-              Colors.orange,
+              Colors.white,
             ],
           ),
         ),

@@ -7,7 +7,7 @@ import '../controllers/create_new_playlist_controller.dart';
 
 // *** CHUYỂN THÀNH GetView ***
 class CreateNewPlaylist extends GetView<CreateNewPlaylistController> {
-  const CreateNewPlaylist({Key? key}) : super(key: key);
+  const CreateNewPlaylist({super.key});
 
   // Không cần State nữa, xóa class _CreateNewPlaylistState
 
@@ -74,7 +74,7 @@ class CreateNewPlaylist extends GetView<CreateNewPlaylistController> {
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
                           // Thay đổi style khi đang loading
-                          disabledBackgroundColor: AppTheme.primary.withOpacity(0.5)
+                          disabledBackgroundColor: AppTheme.primary
                         ),
                         child: controller.isLoading.value
                             ? const SizedBox( // Hiển thị loading indicator

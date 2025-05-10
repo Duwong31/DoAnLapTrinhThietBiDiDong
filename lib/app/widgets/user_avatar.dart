@@ -1,7 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:get/get.dart';
-import 'package:flutter/material.dart';
-import 'package:velocity_x/velocity_x.dart';
 
 import '../core/styles/style.dart';
 import '../modules/profile/controllers/profile_controller.dart';
@@ -55,8 +53,8 @@ class AvatarCustom extends StatelessWidget {
         color: bg ?? AppTheme.primary, // luôn là trắng
         boxShadow: isShadow
             ? [
-          BoxShadow(
-            color: Colors.black.withOpacity(.3),
+          const BoxShadow(
+            color: Colors.black,
             blurRadius: 4,
           )
         ]

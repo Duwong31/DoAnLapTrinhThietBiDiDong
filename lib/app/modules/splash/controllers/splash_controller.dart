@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 
 import '../../../core/utilities/utilities.dart';
 import '../../../routes/app_pages.dart';
-import '../../../data/providers/providers.dart';
 
 class SplashController extends GetxController {
   @override

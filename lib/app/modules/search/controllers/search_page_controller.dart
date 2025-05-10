@@ -64,7 +64,7 @@ class SearchPageController extends GetxController {
 
         suggestions.value = filtered;
       } else {
-        print('Lỗi API: ${response.statusCode}');
+        
       }
     } catch (e) {
       print('Lỗi kết nối hoặc phân tích: $e');

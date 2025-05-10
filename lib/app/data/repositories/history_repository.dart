@@ -1,4 +1,3 @@
-import 'package:get/get.dart';
 import '../models/listening_history.dart';
 import '../providers/providers.dart';
 import 'repositories.dart';

@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import '../../../models/song.dart';
-import '../repositories/repositories.dart';
-import 'package:get/get.dart';
 
 abstract interface class DataSource{
   Future<List<Song>?> loadData({
@@ -52,7 +50,7 @@ class RemoteDataSource implements DataSource{
         throw Exception("API returned ${response.statusCode}");
       }
     } catch (e) {
-      print('Error loading remote data: $e');
+    
       return [];
     }
   }
@@ -60,22 +58,19 @@ class RemoteDataSource implements DataSource{
 
   Future<List<dynamic>> fetchAllSongsData() async {
     try {
-      print("RemoteDataSource: Fetching all songs from $_allSongsUrl");
+     
       final response = await _dio.get(_allSongsUrl);
 
       if (response.statusCode == 200 && response.data is Map) {
         final Map<String, dynamic> data = response.data as Map<String, dynamic>;
         // Kiểm tra xem có key 'songs' và giá trị là List không
         if (data.containsKey('songs') && data['songs'] is List) {
-           print("RemoteDataSource: Successfully fetched all songs data.");
            // Trả về list các map bài hát dưới key 'songs'
            return data['songs'] as List<dynamic>;
         } else {
-           print("RemoteDataSource: Response OK but 'songs' key not found or not a List.");
            throw Exception("Invalid song data format in response.");
         }
       } else {
-        print("RemoteDataSource: Failed to fetch all songs. Status: ${response.statusCode}");
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
@@ -84,12 +79,8 @@ class RemoteDataSource implements DataSource{
         );
       }
     } on DioException catch (e) {
-      // Log lỗi chi tiết hơn từ Dio
-      print("RemoteDataSource: DioException fetching all songs: ${e.message}");
-      print("RemoteDataSource: DioException response: ${e.response?.data}"); // In response nếu có
       rethrow; // Ném lại lỗi để Repository xử lý
     } catch (e) {
-      print("RemoteDataSource: Unexpected error fetching all songs: $e");
       rethrow;
     }
   }
@@ -97,8 +88,8 @@ class RemoteDataSource implements DataSource{
   
   final Dio _externalApiDio = Dio(BaseOptions(
       baseUrl: 'https://thantrieu.com/resources/braniumapis/songs.json.', // <-- THAY THẾ BASE URL
-      connectTimeout: Duration(seconds: 5),
-      receiveTimeout: Duration(seconds: 5),
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 5),
       // Thêm headers nếu API nguồn nhạc yêu cầu (ví dụ: API Key)
       // headers: {
       //   'Authorization': 'Bearer YOUR_EXTERNAL_API_KEY',
@@ -110,34 +101,25 @@ class RemoteDataSource implements DataSource{
     // *** THAY THẾ '/songs/$songId' BẰNG ENDPOINT THỰC TẾ ***
     final String endpoint = '/songs/$songId'; // Ví dụ endpoint
 
-    print("RemoteDataSource: Fetching details for song $songId from $endpoint");
-
     try {
       // Thực hiện cuộc gọi GET (hoặc phương thức khác nếu API yêu cầu)
       final response = await _externalApiDio.get(endpoint);
 
       // Kiểm tra response thành công
       if (response.statusCode == 200 && response.data != null) {
-        print("RemoteDataSource: Received details for song $songId");
         // Parse dữ liệu JSON thành đối tượng Song
         // Đảm bảo Song.fromMap hoạt động đúng với cấu trúc response.data này
         return Song.fromJson(response.data as Map<String, dynamic>);
       } else {
         // Log lỗi nếu status code không phải 200
-        print("RemoteDataSource: Error fetching song $songId. Status: ${response.statusCode}, Data: ${response.data}");
         return null;
       }
     } on DioException catch (e) {
-      // Log lỗi Dio (lỗi mạng, timeout, v.v.)
-      print("RemoteDataSource: DioException fetching song $songId: ${e.message}");
       if (e.response != null) {
-        print("RemoteDataSource: DioException response data: ${e.response?.data}");
       }
       return null;
     } catch (e, stackTrace) {
       // Log các lỗi khác (ví dụ: lỗi parsing)
-      print("RemoteDataSource: Unexpected error fetching song $songId: $e");
-      print(stackTrace);
       return null;
     }
   }
@@ -155,8 +137,3 @@ class LocalDataSource implements DataSource{
     return songs;
   }
 }
-
-
-
-// phân trang (pagination) => (page và perPage) – thường dùng khi bạn có nhiều dữ liệu (ví dụ: danh sách bài hát, bài viết, sản phẩm,...)
-// không muốn tải hết tất cả dữ liệu

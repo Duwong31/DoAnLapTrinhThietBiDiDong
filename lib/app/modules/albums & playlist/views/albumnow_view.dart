@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
 import '../controllers/albumnow_controller.dart';
 
 class AlbumNow extends GetView<AlbumNowController> {
-  const AlbumNow({Key? key}) : super(key: key);
+  const AlbumNow({super.key});
 
   @override
   Widget build(BuildContext context) {

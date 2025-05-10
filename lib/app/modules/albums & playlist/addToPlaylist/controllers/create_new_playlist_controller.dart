@@ -45,10 +45,7 @@ class CreateNewPlaylistController extends GetxController {
           final playListController = Get.find<PlayListController>();
           // Gọi hàm fetch lại dữ liệu
           playListController.fetchPlaylists();
-          print("Refreshed playlists in PlayListController.");
       } catch (e) {
-          // Có thể PlayListController chưa được khởi tạo nếu user vào thẳng đây
-          print("Could not find PlayListController to refresh: $e");
           // Bạn có thể xử lý bằng cách khác, ví dụ: set một flag để trang kia tự refresh khi onInit
       }
 
@@ -64,7 +61,6 @@ class CreateNewPlaylistController extends GetxController {
 
     } catch (e) {
       isLoading(false); // Kết thúc loading khi có lỗi
-      print("Create Playlist Error: $e");
       Get.snackbar(
         "Error",
         "Failed to create playlist. Please try again. (${e.toString()})", // Hiển thị lỗi rõ hơn
