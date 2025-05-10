@@ -108,7 +108,7 @@ class AlbumView extends GetView<AlbumController> {
               child: Text(
                 item.title,
                 textAlign: TextAlign.center,
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),

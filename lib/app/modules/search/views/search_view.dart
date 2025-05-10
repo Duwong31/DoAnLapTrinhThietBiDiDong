@@ -214,6 +214,8 @@ class _SearchViewState extends State<SearchView> {
             title: Text(song.title),
             subtitle: Text(song.artist),
             onTap: () {
+              FocusManager.instance.primaryFocus?.unfocus();
+
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();
