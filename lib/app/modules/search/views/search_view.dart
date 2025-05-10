@@ -26,12 +26,23 @@ class _SearchViewState extends State<SearchView> {
     super.initState();
     _songs = homeController.songs.toList();
     if (_audioService.currentSong != null) {
-      _navigateToMiniPlayer(_audioService.currentSong!, _audioService.currentPlaylist);
+      // Không tự động phát ở đây, để MiniPlayer xử lý trạng thái hiện tại
     }
   }
 
+  // Phát bài hát và hiển thị MiniPlayer
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-    FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
+    FocusManager.instance.primaryFocus?.unfocus(); // Ẩn bàn phím
+
+    // Kiểm tra xem bài hát đã đang phát hay chưa
+    if (_audioService.currentSong?.id == song.id) {
+      if (!_audioService.isPlaying) {
+        await _audioService.player.play();
+      }
+      return;
+    }
+
+    // Nếu là bài hát mới, thiết lập playlist và phát
     await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
   }
@@ -39,7 +50,7 @@ class _SearchViewState extends State<SearchView> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(), // 👈 Ẩn bàn phím khi tap ngoài
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(), // Ẩn bàn phím khi tap ngoài
       child: Scaffold(
         body: Stack(
           children: [
@@ -96,6 +107,49 @@ class _SearchViewState extends State<SearchView> {
                 ),
               ),
             ),
+            // Hiển thị MiniPlayer khi có bài hát đang phát
+            StreamBuilder<Song>(
+              stream: _audioService.currentSongStream,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.hasError) {
+                  return const SizedBox.shrink();
+                }
+                final currentSong = snapshot.data!;
+                return Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Dismissible(
+                    key: Key('miniplayer_${currentSong.id}'),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (_) async {
+                      try {
+                        await _audioService.stop();
+                        _audioService.clearCurrentSong();
+                      } catch (e) {
+                        debugPrint('Error stopping audio: $e');
+                      }
+                    },
+                    child: MiniPlayer(
+                      song: currentSong,
+                      songs: _audioService.currentPlaylist,
+                      onTap: () async {
+                        final returnedSong = await Get.toNamed(
+                          Routes.songs_view,
+                          arguments: {
+                            'playingSong': currentSong,
+                            'songs': _audioService.currentPlaylist
+                          },
+                        );
+                        if (returnedSong != null) {
+                          _audioService.currentSong = returnedSong;
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -138,7 +192,7 @@ class _SearchViewState extends State<SearchView> {
                     onPressed: () => controller.removeSearch(index),
                   ),
                   onTap: () {
-                    FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
+                    FocusManager.instance.primaryFocus?.unfocus(); // Ẩn bàn phím
                     controller.searchTextController.text = searchItem;
                     controller.onSearchChanged(searchItem);
                     controller.startSearch();
@@ -176,7 +230,7 @@ class _SearchViewState extends State<SearchView> {
             title: Text(song.title),
             subtitle: Text(song.artist),
             onTap: () {
-              FocusManager.instance.primaryFocus?.unfocus(); // 👈 Ẩn bàn phím
+              FocusManager.instance.primaryFocus?.unfocus(); // Ẩn bàn phím
               controller.searchTextController.text = song.title;
               controller.saveSearch(song.title);
               controller.startSearch();

@@ -86,7 +86,7 @@ class LoginController extends GetxController {
 
   // --- Check Login Status ---
   // Future<void> _checkLoginStatus() async { // <-- XÓA HOẶC BỎ TRỐNG HÀM NÀY
-     // Không cần làm gì ở đây nữa, root.dart đã kiểm tra Preferences.isAuth()
+  // Không cần làm gì ở đây nữa, root.dart đã kiểm tra Preferences.isAuth()
   // }
 
   // --- Updated State Saving (Loại bỏ Remember Me) ---
@@ -129,8 +129,8 @@ class LoginController extends GetxController {
   // --- Updated Login Logic --- (Giữ nguyên phần còn lại)
   Future<void> login() async {
     if (!isReadyForInput.value) {
-       debugPrint("Login attempt before input is ready.");
-       return;
+      debugPrint("Login attempt before input is ready.");
+      return;
     }
 
     final email = emailController.text;
@@ -172,7 +172,7 @@ class LoginController extends GetxController {
       debugPrint('Lỗi đăng nhập Exception: $e');
       Get.snackbar('Lỗi Hệ Thống', 'Đã xảy ra sự cố. Vui lòng thử lại.\nError: ${e.toString()}', snackPosition: SnackPosition.TOP, backgroundColor: Colors.red[100], colorText: Colors.red[800]);
     } finally {
-       isLoading.value = false;
+      isLoading.value = false;
     }
   }
 

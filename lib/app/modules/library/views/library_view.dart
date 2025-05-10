@@ -42,119 +42,128 @@ class _LibraryViewState extends State<LibraryView> {
     return Scaffold(
       body: Stack(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+          Padding(
+            padding: const EdgeInsets.all(5),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Column(
                     children: [
-                      Column(
-                        children: [
-                          _buildMenuItem(context, 'favorite_songs'.tr, FavoriteView()),
-                          _buildMenuItem(context, 'playlists'.tr, const PlayListView()),
-                          _buildMenuItem(context, 'Albums', const AlbumView()),
-                          _buildMenuItem(context, 'following'.tr, const FollowView()),
-                          _buildMenuItem(context, 'stations'.tr, const StationView()),
-                          _buildMenuItem(context, 'your_uploads'.tr, const UploadView()),
-                        ],
-                      ),
-                      Divider(
-                        color: Theme.of(context).dividerColor,
-                        height: 1,
-                        thickness: 0.5,
-                        indent: 15,
-                        endIndent: 15,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 18),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  "my_playlist".tr,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppTheme.primary,
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Get.toNamed(Routes.playlist);
-                                  },
-                                  child: Container(
-                                    width: 60,
-                                    height: 30,
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFE8E8E8),
-                                      borderRadius: BorderRadius.circular(50),
-                                    ),
-                                    child: Center(
-                                      child: Text('see_all'.tr,
-                                          style: const TextStyle(color: AppTheme.labelColor)),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Dimes.height10,
-                          Obx(() {
-                            if (playlistController.isLoadingPlaylists.value) {
-                              return const Center(child: CircularProgressIndicator());
-                            }
-
-                            final playlists = playlistController.playlists.take(3).toList();
-
-                            return Column(
-                              children: playlists.map((playlist) => Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Get.toNamed(Routes.playlistnow, arguments: playlist);
-                                  },
-                                  child: Row(
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: SizedBox(
-                                          width: 60,
-                                          height: 60,
-                                          child: PlaylistCoverWidget(
-                                            firstTrackId: playlist.firstTrackId,
-                                          ),
-                                        ),
-                                      ),
-                                      Dimes.width10,
-                                      Expanded(
-                                        child: Text(
-                                          playlist.name,
-                                          style: const TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )).toList(),
-                            );
-                          }),
-                          const SizedBox(height: 80), // Giảm height để dành chỗ cho MiniPlayer
-                        ],
-                      ),
+                      _buildMenuItem(
+                          context, 'favorite_songs'.tr, FavoriteView()),
+                      _buildMenuItem(
+                          context, 'playlists'.tr, const PlayListView()),
+                      _buildMenuItem(context, 'Albums', const AlbumView()),
+                      _buildMenuItem(
+                          context, 'following'.tr, const FollowView()),
+                      _buildMenuItem(
+                          context, 'stations'.tr, const StationView()),
+                      _buildMenuItem(
+                          context, 'your_uploads'.tr, const UploadView()),
                     ],
                   ),
-                ),
-              ],
+                  Divider(
+                    color: Theme.of(context).dividerColor,
+                    height: 1,
+                    thickness: 0.5,
+                    indent: 15,
+                    endIndent: 15,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "my_playlist".tr,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primary,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Get.toNamed(Routes.playlist);
+                              },
+                              child: Container(
+                                width: 60,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE8E8E8),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Center(
+                                  child: Text('see_all'.tr,
+                                      style: const TextStyle(
+                                          color: AppTheme.labelColor)),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Dimes.height10,
+                      Obx(() {
+                        if (playlistController.isLoadingPlaylists.value) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+
+                        final playlists =
+                            playlistController.playlists.take(3).toList();
+
+                        return Column(
+                          children: playlists
+                              .map((playlist) => Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 5),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Get.toNamed(Routes.playlistnow,
+                                            arguments: playlist);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(12),
+                                            child: SizedBox(
+                                              width: 60,
+                                              height: 60,
+                                              child: PlaylistCoverWidget(
+                                                firstTrackId:
+                                                    playlist.firstTrackId,
+                                              ),
+                                            ),
+                                          ),
+                                          Dimes.width10,
+                                          Expanded(
+                                            child: Text(
+                                              playlist.name,
+                                              style: const TextStyle(
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ))
+                              .toList(),
+                        );
+                      }),
+                      const SizedBox(height: 180),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ],
