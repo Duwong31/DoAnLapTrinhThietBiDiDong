@@ -22,6 +22,7 @@ class _HomeViewState extends State<HomeView>
     with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
+  final GenreController genreController = Get.put(GenreController());
   final AudioService _audioService = Get.find<AudioService>();
 
   @override
