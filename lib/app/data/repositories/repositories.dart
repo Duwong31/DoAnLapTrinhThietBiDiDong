@@ -7,20 +7,20 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:extended_image/extended_image.dart' as _apiClient;
+import 'package:get/get.dart';
 
 import '../models/favorite_model.dart';
-import '../../modules/favorite/controller/favorite_controller.dart';
 import '../http_client/http_client.dart';
 import '../models/dashboard_model.dart';
 import '../models/models.dart';
 import '../models/playlist.dart';
 import '../providers/providers.dart';
+import 'history_repository.dart';
 import 'song_repository.dart';
 
 part 'auth_repository.dart';
 part 'user_repository.dart';
 part 'notification_repository.dart';
-
 
 abstract class BaseRepository {
   Future<T> handleCall<T>(Future<T> Function() call) async {
@@ -47,6 +47,7 @@ class Repo {
   // static final _booking = BookingRepository();
   // static final _feedback = FeedbackRepository();
    static final _song = DefaultRepository();
+   static final _history = HistoryRepository();
 
   // Getters
   static AuthRepository get auth => _auth;
@@ -59,4 +60,5 @@ class Repo {
   // static BookingRepository get booking => _booking;
   // static FeedbackRepository get feedback => _feedback;
   static DefaultRepository get song => _song;
+  static HistoryRepository get history => _history;
 }

@@ -144,6 +144,49 @@ abstract class BaseApiService {
   }
 }
 
+// History API Service
+class HistoryApiService extends BaseApiService {
+  Future<Map<String, dynamic>> getListeningHistory() async {
+    return handleApiError(() async {
+      final response = await get(ApiUrl.listeningHistory);
+      debugPrint('Raw getListeningHistory response: ${response.data}');
+      return response.data;
+    });
+  }
+
+  Future<bool> addTrackToHistory(String trackId) async {
+    return handleApiError(() async {
+      final response = await post(ApiUrl.addToHistory, data: {'track_id': trackId});
+      debugPrint('API Response (addTrackToHistory): status=${response.statusCode}, data=${response.data}');
+      if (response.statusCode == 201 && response.data['success'] == true) {
+        return true;
+      }
+      throw Exception(response.data['message'] ?? 'Failed to add to history');
+    });
+  }
+
+  Future<bool> removeTrackFromHistory(String trackId) async {
+    return handleApiError(() async {
+      final response = await delete(ApiUrl.removeFromHistory, data: {'track_id': trackId});
+      debugPrint('API Response (removeTrackFromHistory): status=${response.statusCode}, data=${response.data}');
+      if (response.statusCode == 200) {
+        return true;
+      }
+      throw Exception(response.data['message'] ?? 'Failed to remove from history');
+    });
+  }
+
+  Future<bool> clearHistory() async {
+    return handleApiError(() async {
+      final response = await delete(ApiUrl.clearHistory);
+      debugPrint('API Response (clearHistory): status=${response.statusCode}, data=${response.data}');
+      if (response.statusCode == 200) {
+        return true;
+      }
+      throw Exception(response.data['message'] ?? 'Failed to clear history');
+    });
+  }
+}
 
 // UserApiService handles all user-related API operations
 class UserApiService extends BaseApiService {
@@ -904,6 +947,41 @@ class UserApiService extends BaseApiService {
       }
     });
   }
+
+  // Listening History API
+  Future<Map<String, dynamic>> getListeningHistory() async {
+    return handleApiError(() async {
+      final response = await get(ApiUrl.listeningHistory);
+      return response.data;
+    });
+  }
+
+  Future<bool> addTrackToHistory(String trackId) async {
+    return handleApiError(() async {
+      final response = await post(
+        ApiUrl.addToHistory,
+        data: {'track_id': trackId},
+      );
+      return response.statusCode == 200;
+    });
+  }
+
+  Future<bool> removeTrackFromHistory(String trackId) async {
+    return handleApiError(() async {
+      final response = await delete(
+        ApiUrl.removeFromHistory,
+        query: {'track_id': trackId},
+      );
+      return response.statusCode == 200;
+    });
+  }
+
+  Future<bool> clearHistory() async {
+    return handleApiError(() async {
+      final response = await delete(ApiUrl.clearHistory);
+      return response.statusCode == 200;
+    });
+  }
 }
 
 
@@ -1132,7 +1210,7 @@ class ApiProvider {
   // static final AddressApiService _addressService = AddressApiService();
   static final BookingApiService _bookingService = BookingApiService();
   // static final FeedbackApiService _feedbackService = FeedbackApiService();
-
+  static final HistoryApiService _historyService = HistoryApiService();
   // User API methods
   static Future<bool> sendOtp(String phone, String countryCode) =>
       _userService.sendOtp(phone, countryCode);
@@ -1328,4 +1406,10 @@ class ApiProvider {
 
   static Future<Map<String, dynamic>> updatePlaylist(int playlistId, String newName) =>
       _userService.updatePlaylist(playlistId, newName);
+
+  // Listening History API methods
+  static Future<Map<String, dynamic>> getListeningHistory() =>_historyService.getListeningHistory();
+  static Future<bool> addTrackToHistory(String trackId) =>_historyService.addTrackToHistory(trackId);
+  static Future<bool> removeTrackFromHistory(String trackId) => _historyService.removeTrackFromHistory(trackId);
+  static Future<bool> clearHistory() => _historyService.clearHistory();
 }

@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import '../../../../models/song.dart';
+import '../../../data/repositories/history_repository.dart';
+import '../../history/controllers/history_controller.dart';
 import '../controllers/songs_controller.dart';
 
 class AudioService extends GetxService {
@@ -32,10 +34,39 @@ class AudioService extends GetxService {
   bool get isShuffle => _isShuffle;                                           // Getter cho trạng thái shuffle hiện tại (đang bật hay tắt)
   LoopMode get loopMode => _loopMode;                                         // Trả về trạng thái vòng lặp hiện tại: không lặp, lặp một bài, hoặc lặp danh sách
 
+  //history
+  Timer? _playbackTimer;
+  bool _isTrackAddedToHistory = false;
+  late final HistoryController _historyController;
+
   AudioService._internal() : player = AudioPlayer() {
+    // Khởi tạo HistoryRepository nếu chưa tồn tại
+    if (!Get.isRegistered<HistoryRepository>()) {
+      Get.put(HistoryRepository(), permanent: true);
+    }
+    
+    // Khởi tạo HistoryController nếu chưa tồn tại
+    if (!Get.isRegistered<HistoryController>()) {
+      Get.put(HistoryController(), permanent: true);
+    }
+    _historyController = Get.find<HistoryController>();
+    
     Get.put<AudioPlayer>(player, permanent: true);
     player.positionStream.listen((position) {
       currentPosition = position;
+
+      if (position.inSeconds >= 30 && !_isTrackAddedToHistory && currentSong != null) {
+        _addToHistory(); 
+      }
+    });
+
+    // Reset khi chuyển bài
+    player.currentIndexStream.listen((index) {
+      if (index != null && index < songs.length) {
+        currentSong = songs[index];
+        _currentSongController.add(currentSong!); // Cập nhật stream bài hát hiện tại
+        _isTrackAddedToHistory = false; // QUAN TRỌNG: Reset cờ khi chuyển bài
+      }
     });
 
     // Xử lý sự kiện khi bài hát kết thúc
@@ -60,6 +91,19 @@ class AudioService extends GetxService {
         _currentSongBehavior.add(currentSong); // Cập nhật BehaviorSubject
       }
     });
+  }
+
+  Future<void> _addToHistory() async {
+    if (currentSong == null) return;
+    
+    try {
+      _isTrackAddedToHistory = true; // Đặt cờ để tránh gọi lại cho cùng một lần phát
+      await _historyController.addTrackToHistory(currentSong!.id);
+      print('[AudioService] Added track ${currentSong!.id} to history after 30s playback');
+    } catch (e) {
+      print('[AudioService] Error adding track to history: $e');
+      _isTrackAddedToHistory = false; // Reset cờ nếu có lỗi để có thể thử lại (cân nhắc)
+    }
   }
 
   factory AudioService() => _instance;
@@ -187,5 +231,6 @@ class AudioService extends GetxService {
     await _shuffleSubject.close(); // Đóng stream khi dispose
     await _playlistController.close();
     await player.dispose();
+    _playbackTimer?.cancel();
   }
 }

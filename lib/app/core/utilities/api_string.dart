@@ -109,4 +109,10 @@ class ApiUrl {
     static const String favorites = '$receipt/favorites';                               // GET - lấy danh sách bài hát yêu thích
     static const String addToFavorite = '$receipt/favorites';                           // POST - thêm bài hát vào yêu thích
     static String removeFavorite(String songId) => '$receipt/favorites/$songId';        // DELETE - xóa bài hát khỏi yêu thích
+
+    // Listening History
+    static const String listeningHistory = '$receipt/listening-history';
+    static const String addToHistory = '$receipt/listening-history';
+    static const String removeFromHistory = '$receipt/listening-history/track';
+    static const String clearHistory = '$receipt/listening-history';
 }
