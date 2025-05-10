@@ -27,6 +27,8 @@ abstract class UserBase {
   Future<FavoriteResponse> getFavorites();
   Future<bool> addToFavorite(String trackId);
   Future<bool> removeFavorite(String trackId);
+
+  Future<List<String>> getRecentHistory();
 }
 
 class UserRepository extends BaseRepository implements UserBase {
@@ -95,20 +97,17 @@ class UserRepository extends BaseRepository implements UserBase {
   @override
   Future<List<Playlist>> getPlaylists() { 
     return handleCall(() async {
-      print("UserRepository: Calling ApiProvider.getPlaylists...");
+    
       // Gọi provider (không cần tham số name)
       final responseData = await ApiProvider.getPlaylists();
 
       // Lấy danh sách data (an toàn)
       final List<dynamic> playlistData = responseData['data'] as List<dynamic>? ?? [];
-      print("UserRepository: Received ${playlistData.length} playlist items from API.");
 
       // Parse thành List<Playlist>
       final playlists = playlistData
           .map((map) => Playlist.fromMap(map as Map<String, dynamic>)) // Hoặc fromJson
           .toList();
-
-      print("UserRepository: Parsed ${playlists.length} playlists successfully.");
       return playlists;
     });
   }
@@ -133,6 +132,12 @@ class UserRepository extends BaseRepository implements UserBase {
     return handleCall(() => ApiProvider.updatePlaylist(playlistId, newName));
   }
 
+  @override
+  Future<List<String>> getRecentHistory() async {
+    return handleCall(() => ApiProvider.getRecentHistory());
+  }
+
+  @override
   Future<FavoriteResponse> getFavorites() async {
     return handleCall(() async {
       final responseData = await ApiProvider.getFavorites();

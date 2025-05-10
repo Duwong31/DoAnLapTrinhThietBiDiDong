@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../core/styles/style.dart';
@@ -19,11 +18,10 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        // Bỏ comment nếu bạn muốn nút back mặc định
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back, color: Colors.black),
-        //   onPressed: () => Get.back(),
-        // ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -101,9 +99,9 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
                         ),
-                        prefixIcon: Icon(
+                        prefixIcon: const Icon(
                           Icons.person_outline,
-                          color: AppTheme.primary.withOpacity(0.7),
+                          color: AppTheme.primary,
                         ),
                         contentPadding: EdgeInsets.symmetric(
                           horizontal: screenWidth * 0.04,
@@ -126,7 +124,7 @@ class ForgotPasswordView extends GetView<ForgotPasswordController> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.primary,
                           disabledBackgroundColor:
-                              AppTheme.primary.withOpacity(0.5),
+                              AppTheme.primary,
                           minimumSize: Size(
                             screenWidth * 0.8,
                             screenHeight * 0.06,

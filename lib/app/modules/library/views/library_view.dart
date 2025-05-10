@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../ songs/bindings/audio_service.dart';
 import '../../ songs/view/MiniPlayer.dart';
@@ -13,7 +12,6 @@ import '../../favorite/views/favorite_view.dart';
 import '../../home/controllers/home_controller.dart';
 import '../controllers/library_controller.dart';
 import '../../albums & playlist/controllers/playlist_page_controller.dart';
-import '../../../data/models/playlist.dart';
 import '../../../widgets/playlist_cover_widget.dart';
 
 class LibraryView extends StatefulWidget {

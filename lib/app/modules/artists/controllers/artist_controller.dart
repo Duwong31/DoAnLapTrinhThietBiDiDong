@@ -41,15 +41,12 @@ class ArtistController extends GetxController {
           i,
           i + 5 > artistIds.length ? artistIds.length : i + 5,
         );
-
-        print('📦 Fetching chunk: $chunk');
         await _fetchArtistChunk(chunk);
       }
 
-      print('✅ Total artists fetched: ${artistList.length}');
     } catch (e) {
       errorMessage.value = 'Error: ${e.toString()}';
-      print('❌ Error fetching artists: $e');
+  
     } finally {
       isLoading.value = false;
     }
@@ -80,13 +77,13 @@ class ArtistController extends GetxController {
         artistList.addAll(newArtists);
 
         for (var artist in newArtists) {
-          print('🎤 Fetched: ${artist.name}');
+          
         }
       } else {
-        print('⚠️ Unexpected response format for chunk: $ids');
+        
       }
     } else {
-      print('❌ API error: ${response.statusCode} - IDs: $ids');
+      
     }
   }
 }

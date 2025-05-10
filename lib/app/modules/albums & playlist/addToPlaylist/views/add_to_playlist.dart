@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 // Import các thành phần cần thiết
 import '../../../../core/styles/style.dart'; // AppTheme
-import '../../../../routes/app_pages.dart';
 import '../controllers/add_to_playlist_controller.dart'; // Controller
 import '../../../../data/models/playlist.dart';      // Model
 import '../../../../widgets/playlist_cover_widget.dart'; // Widget ảnh bìa
@@ -15,7 +14,7 @@ class AddToPlaylistPage extends GetView<AddToPlaylistController> { // Sử dụn
   @override
   Widget build(BuildContext context) {
     // Lấy màu cam từ AppTheme hoặc định nghĩa trực tiếp
-    final Color highlightColor = AppTheme.primary; // Hoặc Colors.orange
+    const Color highlightColor = AppTheme.primary; // Hoặc Colors.orange
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -167,7 +166,7 @@ class AddToPlaylistPage extends GetView<AddToPlaylistController> { // Sử dụn
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppTheme.primary, // Màu nền chính
                       foregroundColor: Colors.white, // Màu chữ
-                      disabledBackgroundColor: AppTheme.primary.withOpacity(0.5), // Màu khi vô hiệu hóa
+                      disabledBackgroundColor: AppTheme.primary, // Màu khi vô hiệu hóa
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30)), // Bo tròn mạnh
                        padding: const EdgeInsets.symmetric(vertical: 14) // Điều chỉnh padding nếu cần

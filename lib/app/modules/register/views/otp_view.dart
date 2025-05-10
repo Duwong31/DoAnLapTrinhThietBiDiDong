@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
@@ -84,7 +83,7 @@ class OtpLoginView extends GetView<OtpLoginController> {
                   style: TextStyle(
                     fontFamily: 'Noto Sans',
                     fontSize: screenWidth * 0.038,
-                    color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                    color: theme.textTheme.bodyMedium?.color,
                     height: 1.4,
                   ),
                 ),
@@ -129,7 +128,7 @@ class OtpLoginView extends GetView<OtpLoginController> {
                       onPressed: controller.isLoading.value ? null : controller.verifyOTP,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.primary,
-                        disabledBackgroundColor: AppTheme.primary.withOpacity(0.5),
+                        disabledBackgroundColor: AppTheme.primary,
                         minimumSize: Size(
                           screenWidth * 0.8,
                           screenHeight * 0.06,
@@ -188,7 +187,7 @@ class OtpLoginView extends GetView<OtpLoginController> {
                         style: TextStyle(
                           fontFamily: 'Noto Sans',
                           fontSize: screenWidth * 0.038,
-                          color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+                          color: theme.textTheme.bodyMedium?.color,
                         ),
                       ),
                     );

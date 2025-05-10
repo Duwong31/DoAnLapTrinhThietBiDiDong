@@ -73,7 +73,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
               borderRadius: BorderRadius.circular(2),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
+                  color: Colors.grey,
                   spreadRadius: isSmallScreen ? 5 : 10,
                   blurRadius: isSmallScreen ? 5 : 17,
                 ),

@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'app/core/styles/style.dart';
-import 'app/core/utilities/preferences.dart';
 import 'app/data/services/firebase_analytics_service.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
 import 'app/routes/app_pages.dart';

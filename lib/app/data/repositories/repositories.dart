@@ -1,13 +1,8 @@
 library repositories;
 
-import 'dart:collection';
+
 import 'dart:io';
 import 'dart:typed_data';
-
-import 'package:dio/dio.dart';
-import 'package:extended_image/extended_image.dart';
-import 'package:extended_image/extended_image.dart' as _apiClient;
-import 'package:get/get.dart';
 
 import '../models/favorite_model.dart';
 import '../http_client/http_client.dart';

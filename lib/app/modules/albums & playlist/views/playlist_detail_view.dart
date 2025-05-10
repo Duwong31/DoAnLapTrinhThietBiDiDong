@@ -2,7 +2,7 @@
 // (Đổi tên file này thành playlist_now_view.dart nếu bạn muốn thay thế hoàn toàn file cũ,
 // hoặc giữ tên PlayListNow và cập nhật route tương ứng trong app_pages.dart)
 
-import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
 // Import models, controller, style và widget bottom sheet
@@ -17,7 +17,7 @@ import '../../../core/styles/style.dart'; // <-- Cho Dimes (nếu dùng)
 // import '../../../widgets/bottom_song_options.dart'; // Đảm bảo import đúng nếu dùng SongOptionsSheet
 
 class PlayListNow extends StatefulWidget {
-  const PlayListNow({Key? key}) : super(key: key);
+  const PlayListNow({super.key});
 
   @override
   State<PlayListNow> createState() => _PlayListNowState();
@@ -42,7 +42,6 @@ class _PlayListNowState extends State<PlayListNow> {
     try {
       // Lấy dữ liệu Playlist được truyền qua arguments
       _playlistData = Get.arguments as Playlist?;
-      print("PlayListNow initState: Received arguments: $_playlistData");
       if (_playlistData == null) {
         throw Exception("Playlist data is null."); // Ném lỗi nếu data null
       }
@@ -50,13 +49,11 @@ class _PlayListNowState extends State<PlayListNow> {
       // *** Gọi hàm fetch bài hát sau khi frame đầu tiên được build ***
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _playlistData != null) {
-          print("PlayListNow initState: Calling fetchSongsForPlaylist with: ${_playlistData!.name}");
           _controller.fetchSongsForPlaylist(_playlistData!);
         }
       });
 
     } catch (e) {
-      print("PlayListNow initState: Error getting arguments or calling fetch: $e");
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           Get.back(); // Quay lại màn hình trước
@@ -113,7 +110,6 @@ class _PlayListNowState extends State<PlayListNow> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     if (_playlistData == null) {
       return Scaffold(
@@ -206,10 +202,14 @@ class _PlayListNowState extends State<PlayListNow> {
                                 builder: (context, snapshot) {
                                   final isShuffle = snapshot.data ?? false;
                                   return IconButton(
-                                    icon: Icon(
-                                      Icons.shuffle,
-                                      size: 30,
-                                      color: isShuffle ? AppTheme.primary : AppTheme.labelColor,
+                                    icon: SvgPicture.asset(
+                                      'assets/vectors/shuffle.svg',
+                                      width: 28,
+                                      height: 28,
+                                      colorFilter: ColorFilter.mode(
+                                        isShuffle ? AppTheme.primary : AppTheme.labelColor,
+                                        BlendMode.srcIn
+                                      ),
                                     ),
                                     onPressed: () {
                                       _audioService.setShuffle(!_audioService.isShuffle);

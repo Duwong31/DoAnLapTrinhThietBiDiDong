@@ -98,9 +98,7 @@ class AudioService {
     try {
       _isTrackAddedToHistory = true; // Đặt cờ để tránh gọi lại cho cùng một lần phát
       await _historyController.addTrackToHistory(currentSong!.id);
-      print('[AudioService] Added track ${currentSong!.id} to history after 30s playback');
     } catch (e) {
-      print('[AudioService] Error adding track to history: $e');
       _isTrackAddedToHistory = false; // Reset cờ nếu có lỗi để có thể thử lại (cân nhắc)
     }
   }

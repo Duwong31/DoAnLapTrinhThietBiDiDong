@@ -75,7 +75,7 @@ class ProfileController extends GetxController with ScrollMixin {
   }
 
     Future<void> logout() async {
-    Get.dialog(Center(child: CircularProgressIndicator()), barrierDismissible: false); 
+    Get.dialog(const Center(child: CircularProgressIndicator()), barrierDismissible: false); 
 
     final token = Preferences.getString(StringUtils.token);
 
@@ -87,7 +87,7 @@ class ProfileController extends GetxController with ScrollMixin {
          await dio.post(
            'https://soundflow.click/api/auth/logout', 
            options: Options(headers: {'Authorization': 'Bearer $token'}),
-         ).timeout(Duration(seconds: 10)); // Thêm timeout
+         ).timeout(const Duration(seconds: 10)); // Thêm timeout
           debugPrint(">>> [ProfileController.logout] Gọi API logout thành công (hoặc không quan trọng kết quả).");
       } else {
          debugPrint(">>> [ProfileController.logout] Không có token để gọi API logout.");

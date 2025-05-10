@@ -25,7 +25,7 @@ class AddToPlaylistController extends GetxController {
     final args = Get.arguments;
     if (args is String && args.isNotEmpty) {
       _trackIdToAdd = args;
-      print("AddToPlaylistController: Received trackId to add: $_trackIdToAdd");
+
     } else {
        
     }
@@ -42,7 +42,6 @@ class AddToPlaylistController extends GetxController {
       selectedPlaylistIds.clear(); // Reset selection khi refresh list
       final fetchedPlaylists = await _userRepository.getPlaylists();
       playlists.assignAll(fetchedPlaylists);
-      print("AddToPlaylistController: Fetched ${fetchedPlaylists.length} playlists.");
     } catch (e, stackTrace) {
       printError(info: "AddToPlaylistController: Error fetching playlists: $e\n$stackTrace");
       Get.snackbar('Error','Could not load your playlists.',snackPosition: SnackPosition.BOTTOM);
@@ -61,13 +60,11 @@ class AddToPlaylistController extends GetxController {
       selectedPlaylistIds.add(playlistId);
     }
     // selectedPlaylistIds.refresh(); // Không cần thiết cho RxSet
-    print("AddToPlaylistController: Selected IDs: ${selectedPlaylistIds.toList()}");
   }
 
   // Xóa tất cả lựa chọn
   void clearSelection() {
     selectedPlaylistIds.clear();
-    print("AddToPlaylistController: Selection cleared.");
   }
 
   Future<void> addTrackToSelectedPlaylists() async {
@@ -84,7 +81,6 @@ class AddToPlaylistController extends GetxController {
 
      // 2. Bắt đầu trạng thái loading
      isAdding(true);
-     print("AddToPlaylistController: Attempting to add track '$_trackIdToAdd' to playlists: ${selectedPlaylistIds.toList()}");
 
      List<int> successfulAdds = [];
      List<int> failedAdds = [];
@@ -117,11 +113,8 @@ class AddToPlaylistController extends GetxController {
           i++;
         }
 
-        print("AddToPlaylistController: Add results - Success: ${successfulAdds.length}, Exists: ${alreadyExists.length}, Failed: ${failedAdds.length}");
-
      } catch (e) {
         // Lỗi này không mong đợi vì handleCall đã xử lý, nhưng vẫn nên có để phòng ngừa
-        printError(info:"AddToPlaylistController: Unexpected error during Future.wait for adding tracks: $e");
         // Giả sử tất cả đều lỗi nếu có lỗi ở đây
         failedAdds.addAll(selectedPlaylistIds.where((id) => !successfulAdds.contains(id) && !alreadyExists.contains(id)));
         Get.snackbar('Error', 'An unexpected error occurred while adding tracks.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
@@ -157,11 +150,6 @@ class AddToPlaylistController extends GetxController {
        Get.snackbar('Error', 'Cannot proceed: Track information is missing.', snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.red, colorText: Colors.white);
        return;
      }
-
-    print("AddToPlaylistController: 'Done' button pressed.");
-    print("Track to add: $_trackIdToAdd");
-    print("Selected playlist IDs: ${selectedPlaylistIds.toList()}");
-
     // *** TẠM THỜI CHƯA GỌI API ***
     // isAdding(true);
     // try {
@@ -172,14 +160,12 @@ class AddToPlaylistController extends GetxController {
     //   isAdding(false);
     // }
      Get.snackbar('Action', 'Proceeding to add track $_trackIdToAdd to ${selectedPlaylistIds.length} playlist(s)... (API call pending)', snackPosition: SnackPosition.BOTTOM);
-     // TODO: Gọi hàm addTrackToSelectedPlaylists() thực sự khi sẵn sàng
   }
 
   // Hàm điều hướng tới trang tạo playlist
   void goToCreatePlaylist() {
     Get.toNamed(Routes.createNewPlaylist)?.then((didCreate) {
       if (didCreate == true) {
-        print("AddToPlaylistController: New playlist created, refreshing list.");
         fetchPlaylists(); // Refresh lại danh sách
       }
     });

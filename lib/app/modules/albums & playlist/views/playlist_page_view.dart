@@ -13,7 +13,7 @@ import '../controllers/playlist_page_controller.dart';
 import '../../../data/models/playlist.dart';
 
 class PlayListView extends StatefulWidget {
-  const PlayListView({Key? key}) : super(key: key);
+  const PlayListView({super.key});
 
   @override
   State<PlayListView> createState() => _PlayListViewState();
@@ -149,14 +149,14 @@ class _PlayListViewState extends State<PlayListView> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.surfaceVariant,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
+                  color: Colors.grey,
                   spreadRadius: 1,
                   blurRadius: 4,
-                  offset: const Offset(0, 2),
+                  offset: Offset(0, 2),
                 )
               ],
             ),

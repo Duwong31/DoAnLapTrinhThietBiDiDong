@@ -1,5 +1,4 @@
-import 'package:dartz/dartz.dart' as album;
-import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
 import '../../../routes/app_pages.dart';
@@ -7,7 +6,7 @@ import '../controllers/album_page_controller.dart';
 import '../../../../models/album.dart';
 
 class AlbumView extends GetView<AlbumController> {
-  const AlbumView({Key? key}) : super(key: key);
+  const AlbumView({super.key});
 
   @override
   Widget build(BuildContext context) {

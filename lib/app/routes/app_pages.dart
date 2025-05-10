@@ -15,8 +15,6 @@ import '../modules/albums & playlist/views/playlist_detail_view.dart';
 import '../modules/albums & playlist/views/playlist_page_view.dart';
 import '../modules/artists/bindings/artist_binding.dart';
 import '../modules/artists/views/artist_view.dart';
-import '../modules/change-password/bindings/change_password_binding.dart';
-import '../modules/change-password/views/change_password_view.dart';
 import '../modules/dashboard/bindings/dashboard_binding.dart';
 import '../modules/dashboard/views/dashboard_view.dart';
 import '../modules/favorite/bindings/favorite_bindings.dart';
@@ -31,10 +29,8 @@ import '../modules/library/bindings/library_binding.dart';
 import '../modules/library/views/library_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
-import '../modules/notifications/views/notifications_view.dart';
 import '../modules/premium/views/premium_view.dart';
 import '../modules/profile/bindings/edit_profile_binding.dart';
-import '../modules/profile/bindings/profile_binding.dart';
 import '../modules/profile/views/profile_view.dart';
 import '../modules/profile/views/edit_profile.dart';
 import '../modules/register/bindings/otp_binding.dart';
@@ -106,7 +102,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.search,
-      page: () => SearchView(),
+      page: () => const SearchView(),
       binding: SearchBinding(),
     ),
     GetPage(
@@ -162,7 +158,7 @@ class AppPages {
         binding: NowPlayingBinding()),
     GetPage(
         name: _Paths.artist,
-        page: () => ArtistView(),
+        page: () => const ArtistView(),
         binding: ArtistBinding()),
     GetPage(
         name: _Paths.editProfile,

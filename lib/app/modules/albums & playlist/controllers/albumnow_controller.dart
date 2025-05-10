@@ -18,7 +18,7 @@ class AlbumNowController extends GetxController {
     if (albumId != null && albumId.isNotEmpty) {
       fetchAlbum(albumId);
     } else {
-      print("⚠️ Không có albumId được truyền!");
+      
       isLoading(false);
     }
   }
@@ -39,7 +39,7 @@ class AlbumNowController extends GetxController {
         final albums = data['albums'];
 
         if (albums == null || albums.isEmpty) {
-          print("⚠️ Không có dữ liệu album từ API");
+          
           return;
         }
 
@@ -67,7 +67,7 @@ class AlbumNowController extends GetxController {
           );
         }).whereType<SongModel>().toList();
       } else {
-        print('Failed to fetch album: ${res.statusCode}');
+        
       }
     } catch (e) {
       print('Error fetching album: $e');

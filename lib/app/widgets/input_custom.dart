@@ -144,7 +144,7 @@ class CustomTextFieldState extends State<InputCustom> {
                 ? IconButton(
                     icon: Icon(
                         _obscureText ? Icons.visibility_off : Icons.visibility,
-                        color: AppTheme.passVisibility.withOpacity(0.6)),
+                        color: AppTheme.passVisibility),
                     onPressed: _toggle,
                   )
                 : widget.isSearch && _text.isNotEmpty

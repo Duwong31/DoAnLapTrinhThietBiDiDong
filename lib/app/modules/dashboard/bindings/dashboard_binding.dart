@@ -5,7 +5,6 @@ import '../../../data/repositories/song_repository.dart';
 import '../../../data/services/song_service.dart';
 import '../../../data/repositories/history_repository.dart';
 import '../../albums & playlist/controllers/album_page_controller.dart';
-import '../../albums & playlist/controllers/playlist_page_controller.dart';
 import '../../favorite/controller/favorite_controller.dart';
 import '../../history/controllers/history_controller.dart';
 import '../../home/controllers/home_controller.dart';

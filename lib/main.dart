@@ -14,7 +14,6 @@ import 'app/data/providers/notification_provider.dart';
 import 'app/data/services/song_service.dart';
 import 'app/data/sources/source_songs.dart';
 import 'app/modules/ songs/bindings/audio_service.dart';
-import 'app/modules/favorite/controller/favorite_controller.dart';
 import 'app/modules/profile/controllers/profile_controller.dart';
 import 'app/modules/setting/controllers/setting_controller.dart';
 import 'root.dart';

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/playlist.dart';
 import '../../../data/repositories/repositories.dart';
@@ -7,7 +6,7 @@ import '../../../core/styles/style.dart';
 class PlaylistEditView extends StatefulWidget {
   final Playlist playlist;
   
-  const PlaylistEditView({Key? key, required this.playlist}) : super(key: key);
+  const PlaylistEditView({super.key, required this.playlist});
 
   @override
   State<PlaylistEditView> createState() => _PlaylistEditViewState();

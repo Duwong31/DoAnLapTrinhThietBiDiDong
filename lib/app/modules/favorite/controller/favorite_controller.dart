@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:get/get.dart';
-import 'package:rxdart/rxdart.dart';
 import '../../../../models/song.dart';
 import '../../../core/styles/style.dart';
 import '../../../data/repositories/repositories.dart';

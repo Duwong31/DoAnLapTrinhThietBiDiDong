@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
-import '../../../core/utilities/image.dart';
 import '../../../core/utilities/utilities.dart';
 import '../../../data/services/firebase_analytics_service.dart';
 import '../../../routes/app_pages.dart';
@@ -121,26 +119,22 @@ class _ProfileViewState extends State<ProfileView>
                         icon: const Icon(Icons.share),
                         onPressed: () {
                           try {
-                            print('ProfileView: Share button pressed');
+                         
                             if (ctr.user.value == null) {
-                              print('ProfileView: User is null');
+                        
                               AppUtils.toast('User information not available');
                               return;
                             }
                             
-                            print('ProfileView: User ID: ${ctr.user.value?.id}');
-                            print('ProfileView: User Name: ${ctr.user.value?.fullName}');
-                            
+                
                             if (ctr.user.value?.id == null || ctr.user.value?.id?.isEmpty == true) {
-                              print('ProfileView: User ID is null or empty');
+                          
                               AppUtils.toast('User ID not available');
                               return;
                             }
                             
                             // ctr.shareProfile();
-                          } catch (e, stack) {
-                            print('ProfileView: Error in share button: $e');
-                            print('ProfileView: Stack trace: $stack');
+                          } catch (e) {
                             AppUtils.toast('Failed to share: ${e.toString()}');
                           }
                         },

@@ -3,8 +3,6 @@ import 'package:get/get.dart';
 import '../../../core/styles/style.dart';
 import '../../../core/styles/text_style.dart' as custom_text_style;
 import '../../../core/utilities/utilities.dart';
-import '../../../core/widgets/background_widget.dart';
-import '../../../routes/app_pages.dart';
 import '../../../widgets/app_button.dart';
 import '../../../widgets/container_button.dart';
 import '../../../widgets/input_custom.dart';
@@ -24,7 +22,16 @@ class LoginView extends GetView<LoginController> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).textTheme.titleLarge?.color),
+          onPressed: () => Get.back(),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -119,14 +126,10 @@ class LoginView extends GetView<LoginController> {
                             onPressed: () {
                               final isValid = keyform.currentState?.validate() ?? false;
 
-                              // 2. If the form is valid, call the controller's login method
                               if (isValid) {
-                                controller.login(); // <-- Call the actual login logic
+                                controller.login(); 
                               } else {
-                                // Optional: You could show a generic snackbar here
-                                // if validation fails, but individual field errors
-                                // are usually sufficient.
-                                print("form_validation_failed".tr);
+        
                               }
                               // Get.toNamed(Routes.dashboard);
                             },
@@ -143,7 +146,7 @@ class LoginView extends GetView<LoginController> {
                             const Expanded(child: Divider(color: Colors.grey)),
                           ],
                         ),
-                        _continueWithPhone(context, onPressed: () {}),
+                        // _continueWithPhone(context, onPressed: () {}),
                         _continueWithGoogle(context),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -178,37 +181,37 @@ class LoginView extends GetView<LoginController> {
     );
   }
 
-  Widget _continueWithPhone(BuildContext context, {required VoidCallback onPressed}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return TextButton(
-      onPressed: onPressed,
-      child: Container(
-        height: 48,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: isDark ? Colors.grey[800] : Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              AppImage.phone,
-              width: 24,
-            ),
-            Dimes.width8,
-            Text(
-              "continue_with_phone".tr,
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? Colors.white70 : Colors.black87,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Widget _continueWithPhone(BuildContext context, {required VoidCallback onPressed}) {
+  //   final isDark = Theme.of(context).brightness == Brightness.dark;
+  //   return TextButton(
+  //     onPressed: onPressed,
+  //     child: Container(
+  //       height: 48,
+  //       padding: const EdgeInsets.symmetric(horizontal: 16),
+  //       decoration: BoxDecoration(
+  //         color: isDark ? Colors.grey[800] : Colors.grey[200],
+  //         borderRadius: BorderRadius.circular(8),
+  //       ),
+  //       child: Row(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Image.asset(
+  //             AppImage.phone,
+  //             width: 24,
+  //           ),
+  //           Dimes.width8,
+  //           Text(
+  //             "continue_with_phone".tr,
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               color: isDark ? Colors.white70 : Colors.black87,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _continueWithGoogle(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;

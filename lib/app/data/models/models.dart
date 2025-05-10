@@ -5,8 +5,6 @@ import 'package:intl/intl.dart';
 
 import '../../core/styles/style.dart';
 import '../../core/utilities/app_utils.dart';
-import '../../core/utilities/db_keys.dart';
-import '../../core/utilities/encry_data.dart';
 part 'in_chat.dart';
 part 'notification_model.dart';
 part 'notification_type.dart';

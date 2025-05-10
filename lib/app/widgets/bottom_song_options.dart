@@ -5,7 +5,6 @@ import '../core/styles/style.dart';
 import '../core/utilities/image.dart';
 import '../routes/app_pages.dart';
 // import '../modules/albums & playlist/controllers/playlist_page_controller.dart'; // Không cần trực tiếp ở đây nữa nếu onRemoveFromPlaylist đã đủ
-import 'package:flutter/material.dart';
 
 class SongOptionsSheet extends StatelessWidget {
   final Song song;
@@ -51,7 +50,7 @@ class SongOptionsSheet extends StatelessWidget {
           title: const Text('View artists'),
           onTap: () {
             Navigator.pop(context);
-            // TODO: Xử lý xem nghệ sĩ
+          
           },
         ),
         if (onRemoveFromPlaylist != null) // Chỉ hiển thị nếu callback được cung cấp

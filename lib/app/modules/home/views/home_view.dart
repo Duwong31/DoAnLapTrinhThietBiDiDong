@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../ songs/bindings/audio_service.dart';
@@ -97,7 +97,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
         subtitle: Text(
           song.artist,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: textColor?.withOpacity(0.7),
+            color: textColor,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -263,6 +263,88 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg', 'Addictive Lofi Vibes', Routes.playlistnow),
                   ]),
                 ),
+
+                Dimes.height10,
+                // Thêm section Recents
+                Obx(() {    
+                  if (controller.isLoadingRecents.value) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  
+                  if (controller.recentSongs.isEmpty) {
+                    return const SizedBox.shrink(); // Ẩn section nếu không có bài hát gần đây
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 18),
+                        child: Text(
+                          "Recents",
+                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            color: AppTheme.primary,
+                          ),
+                        ),
+                      ),
+                      Dimes.height10,
+                      SizedBox(
+                        height: 122,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: controller.recentSongs.length,
+                          itemBuilder: (context, index) {
+                            final song = controller.recentSongs[index];
+                            return GestureDetector(
+                              onTap: () {
+                                if (controller.recentSongs.isNotEmpty) {
+                                  _navigateToMiniPlayer(song, controller.recentSongs);
+                                } else {
+                                  Get.snackbar('Error', 'No songs available to play');
+                                }
+                              },
+                              child: Container(
+                                width: 100,
+                                margin: const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.network(
+                                        song.image.isNotEmpty ? song.image : 'https://i1.sndcdn.com/artworks-000252256061-v177r7-t500x500.jpg',
+                                        width: 100,
+                                        height: 100,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Dimes.height5,
+                                    SizedBox(
+                                      width: 85,
+                                      child: Text(
+                                        song.title,
+                                        style: TextStyle(fontSize: 12, color: textColor),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                }),
 
                 Dimes.height10,
               ],
