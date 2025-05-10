@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import '../../ songs/bindings/audio_service.dart';
 import '../../../data/http_client/http_client.dart';
 import '../../../data/repositories/repositories.dart';
 import '../../../data/repositories/song_repository.dart';
@@ -29,10 +30,11 @@ class DashboardBinding extends Bindings {
     Get.lazyPut<UserRepository>(() => UserRepository(ApiClient()), fenix: true);
     Get.lazyPut(() => FavoriteController());
     Get.lazyPut(() => SongService(ApiClient()), fenix: true);
-    
+
     // Đăng ký HistoryRepository trước
     Get.lazyPut<HistoryRepository>(() => HistoryRepository(), fenix: true);
     // Sau đó mới đăng ký HistoryController
     Get.lazyPut<HistoryController>(() => HistoryController(), fenix: true);
+    Get.put(AudioService(), permanent: true);
   }
 }

@@ -25,8 +25,8 @@ class _SearchViewState extends State<SearchView> {
   void initState() {
     super.initState();
     _songs = homeController.songs.toList();
-    if (AudioService().currentSong != null) {
-      _navigateToMiniPlayer(AudioService().currentSong!, AudioService().currentPlaylist);
+    if (_audioService.currentSong != null) {
+      _navigateToMiniPlayer(_audioService.currentSong!, _audioService.currentPlaylist);
     }
   }
 
@@ -95,47 +95,45 @@ class _SearchViewState extends State<SearchView> {
           ),
 
           // MiniPlayer với chức năng xóa
-          StreamBuilder<Song?>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              Song? currentSong = snapshot.data ?? AudioService().currentSong;
-
-              if (currentSong == null) {
-                return const SizedBox.shrink();
-              }
-
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: Dismissible(
-                  key: Key('miniplayer_${currentSong.id}'),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) async {
-                    try {
-                      await AudioService().stop();
-                      AudioService().clearCurrentSong();
-                    } catch (e) {
-                      debugPrint('SearchView: Lỗi khi dừng âm thanh: $e');
-                    }
-                  },
-                  child: MiniPlayer(
-                    song: currentSong,
-                    songs: AudioService().currentPlaylist,
-                    onTap: () async {
-                      final returnedSong = await Get.toNamed(
-                        Routes.songs_view,
-                        arguments: {'playingSong': currentSong, 'songs': AudioService().currentPlaylist},
-                      );
-                      if (returnedSong != null) {
-                        AudioService().currentSong = returnedSong;
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-          )
+          // StreamBuilder<Song?>(
+          //   stream: _audioService.currentSongStream,
+          //   builder: (context, snapshot) {
+          //     if (!snapshot.hasData || snapshot.data == null) {
+          //       return const SizedBox.shrink();
+          //     }
+          //     final currentSong = snapshot.data!;
+          //     return Positioned(
+          //       left: 8,
+          //       right: 8,
+          //       bottom: 8,
+          //       child: Dismissible(
+          //         key: Key('miniplayer_${currentSong.id}'),
+          //         direction: DismissDirection.endToStart,
+          //         onDismissed: (_) async {
+          //           try {
+          //             await _audioService.stop();
+          //             _audioService.clearCurrentSong();
+          //           } catch (e) {
+          //             debugPrint('Error stopping audio: $e');
+          //           }
+          //         },
+          //         child: MiniPlayer(
+          //           song: currentSong,
+          //           songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
+          //           onTap: () async {
+          //             final returnedSong = await Get.toNamed(
+          //               Routes.songs_view,
+          //               arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
+          //             );
+          //             if (returnedSong != null) {
+          //               _audioService.currentSong = returnedSong;
+          //             }
+          //           },
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
         ],
       ),
     );

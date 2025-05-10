@@ -18,11 +18,11 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
+class _HomeViewState extends State<HomeView>
+    with AutomaticKeepAliveClientMixin {
   final HomeController controller = Get.put(HomeController());
   final ArtistController artistController = Get.put(ArtistController());
-  final GenreController genreController = Get.put(GenreController());
-  final AudioService _audioService = AudioService();
+  final AudioService _audioService = Get.find<AudioService>();
 
   @override
   bool get wantKeepAlive => true;
@@ -37,7 +37,8 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   }
 
   Future<void> _navigateToMiniPlayer(Song song, List<Song> allSongs) async {
-    await _audioService.setPlaylist(allSongs, startIndex: allSongs.indexOf(song));
+    await _audioService.setPlaylist(allSongs,
+        startIndex: allSongs.indexOf(song));
     await _audioService.player.play();
   }
 
@@ -45,24 +46,26 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
     return SizedBox(
       height: 120,
       child: Obx(() => GridView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          childAspectRatio: 0.3,
-          mainAxisSpacing: 30,
-        ),
-        itemCount: controller.songs.length > 6 ? 6 : controller.songs.length,
-        itemBuilder: (context, index) {
-          return _buildSongCard(context, controller.songs[index]);
-        },
-      )),
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.3,
+              mainAxisSpacing: 30,
+            ),
+            itemCount:
+                controller.songs.length > 6 ? 6 : controller.songs.length,
+            itemBuilder: (context, index) {
+              return _buildSongCard(context, controller.songs[index]);
+            },
+          )),
     );
   }
 
   Widget _buildSongCard(BuildContext context, Song song) {
-    final backgroundColor = Theme.of(context).appBarTheme.backgroundColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final backgroundColor = Theme.of(context).appBarTheme.backgroundColor ??
+        Theme.of(context).scaffoldBackgroundColor;
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -81,27 +84,30 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             color: Colors.grey[200],
             child: song.image.isNotEmpty
                 ? Image.network(
-              song.image,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.music_note, size: 24, color: Colors.grey),
-            )
+                    song.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.music_note,
+                        size: 24,
+                        color: Colors.grey),
+                  )
                 : const Icon(Icons.music_note, size: 24, color: Colors.grey),
           ),
         ),
         title: Text(
           song.title,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: textColor,
-          ),
+                fontWeight: FontWeight.w600,
+                color: textColor,
+              ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
           song.artist,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: textColor?.withOpacity(0.7),
-          ),
+                color: textColor?.withOpacity(0.7),
+              ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -117,12 +123,12 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
   }
 
   Widget _buildCategoryItem(
-      BuildContext context,
-      String imageUrl,
-      String label,
-      String routeName, {
-        String? genreArgument,
-      }) {
+    BuildContext context,
+    String imageUrl,
+    String label,
+    String routeName, {
+    String? genreArgument,
+  }) {
     final textColor = Theme.of(context).textTheme.bodyMedium?.color;
 
     return Container(
@@ -161,7 +167,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                 height: 100,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) =>
-                const Icon(Icons.music_note, size: 50, color: Colors.grey),
+                    const Icon(Icons.music_note, size: 50, color: Colors.grey),
               ),
             ),
             const SizedBox(height: 5),
@@ -193,12 +199,18 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SectionHeader(title: "we_think_you_like".tr, textColor: textColor, route: Routes.all_song_view),
-                SizedBox(height: 225, child: _buildSongGrid(context, controller.songs)),
-
+                SectionHeader(
+                    title: "we_think_you_like".tr,
+                    textColor: textColor,
+                    route: Routes.all_song_view),
+                SizedBox(
+                    height: 225,
+                    child: _buildSongGrid(context, controller.songs)),
                 Dimes.height10,
-
-                SectionHeader(title: "music_genre".tr, textColor: textColor, route: Routes.genre),
+                SectionHeader(
+                    title: "music_genre".tr,
+                    textColor: textColor,
+                    route: Routes.genre),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -209,12 +221,15 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                       return const Center(child: Text('No genres found'));
                     }
 
-                    final displayGenres = genreController.genreList.take(4).toList();
+                    final displayGenres =
+                        genreController.genreList.take(4).toList();
 
                     return ListView(
                       scrollDirection: Axis.horizontal,
                       children: displayGenres.map((genre) {
-                        final imageIndex = genreController.genreList.indexOf(genre) % GenreView.genreImages.length;
+                        final imageIndex =
+                            genreController.genreList.indexOf(genre) %
+                                GenreView.genreImages.length;
                         final imageUrl = GenreView.genreImages[imageIndex];
 
                         return _buildCategoryItem(
@@ -229,8 +244,10 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                   }),
                 ),
                 Dimes.height10,
-
-                SectionHeader(title: "artists".tr, textColor: textColor, route: Routes.artist),
+                SectionHeader(
+                    title: "artists".tr,
+                    textColor: textColor,
+                    route: Routes.artist),
                 SizedBox(
                   height: 122,
                   child: Obx(() {
@@ -241,7 +258,9 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     }
                     return ListView.builder(
                       scrollDirection: Axis.horizontal,
-                      itemCount: artistController.artistList.length >= 4 ? 4 : artistController.artistList.length,
+                      itemCount: artistController.artistList.length >= 4
+                          ? 4
+                          : artistController.artistList.length,
                       itemBuilder: (context, index) {
                         final artist = artistController.artistList[index];
                         return _buildCategoryItem(
@@ -253,74 +272,101 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
                     );
                   }),
                 ),
-
                 Dimes.height10,
-                SectionHeader(title: "you_might_want_to_hear".tr, textColor: textColor, route: Routes.playlist),
+                SectionHeader(
+                    title: "you_might_want_to_hear".tr,
+                    textColor: textColor,
+                    route: Routes.playlist),
                 SizedBox(
                   height: 122,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg', 'For the Brokenhearted', Routes.playlistnow),
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg', 'The Other One', Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/9/0/a/a/90aaf76ec66bed90edc006c899415054.jpg',
+                        'For the Brokenhearted',
+                        Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/f/a/f/8/faf8935387e4d248e287ba7a21c8eb01.jpg',
+                        'The Other One',
+                        Routes.playlistnow),
                   ]),
                 ),
-
                 Dimes.height10,
-                SectionHeader(title: "chill".tr, textColor: textColor, route: Routes.playlist),
+                SectionHeader(
+                    title: "chill".tr,
+                    textColor: textColor,
+                    route: Routes.playlist),
                 SizedBox(
                   height: 122,
                   child: ListView(scrollDirection: Axis.horizontal, children: [
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg', 'Mood Healer', Routes.playlistnow),
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg', 'Top Chill Vibes', Routes.playlistnow),
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg', 'Modern Chill', Routes.playlistnow),
-                    _buildCategoryItem(context, 'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg', 'Addictive Lofi Vibes', Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/a/e/d/5/aed50a8e8fd269117c126d8471bf9319.jpg',
+                        'Mood Healer',
+                        Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/4/d/8/d/4d8d4608e336c270994d31c59ee68179.jpg',
+                        'Top Chill Vibes',
+                        Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/e/2/3/f/e23f4479037d8d9d30e83691a9bf7376.jpg',
+                        'Modern Chill',
+                        Routes.playlistnow),
+                    _buildCategoryItem(
+                        context,
+                        'https://photo-resize-zmp3.zadn.vn/w600_r1x1_jpeg/cover/4/5/4/9/45493e859cde749c75fb4377c14d0db3.jpg',
+                        'Addictive Lofi Vibes',
+                        Routes.playlistnow),
                   ]),
                 ),
-
-                Dimes.height10,
+                Dimes.height120,
               ],
             ),
           ),
 
           // MiniPlayer
-          StreamBuilder<Song?>(
-            stream: AudioService().currentSongStream,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data == null) {
-                return const SizedBox.shrink();
-              }
-              final currentSong = snapshot.data!;
-              return Positioned(
-                left: 8,
-                right: 8,
-                bottom: 8,
-                child: Dismissible(
-                  key: Key('miniplayer_${currentSong.id}'),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (_) async {
-                    try {
-                      await _audioService.stop();
-                      _audioService.clearCurrentSong();
-                    } catch (e) {
-                      debugPrint('Error stopping audio: $e');
-                    }
-                  },
-                  child: MiniPlayer(
-                    song: currentSong,
-                    songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
-                    onTap: () async {
-                      final returnedSong = await Get.toNamed(
-                        Routes.songs_view,
-                        arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
-                      );
-                      if (returnedSong != null) {
-                        _audioService.currentSong = returnedSong;
-                      }
-                    },
-                  ),
-                ),
-              );
-            },
-          ),
+          // StreamBuilder<Song?>(
+          //   stream: _audioService.currentSongStream,
+          //   builder: (context, snapshot) {
+          //     if (!snapshot.hasData || snapshot.data == null) {
+          //       return const SizedBox.shrink();
+          //     }
+          //     final currentSong = snapshot.data!;
+          //     return Positioned(
+          //       left: 8,
+          //       right: 8,
+          //       bottom: 8,
+          //       child: Dismissible(
+          //         key: Key('miniplayer_${currentSong.id}'),
+          //         direction: DismissDirection.endToStart,
+          //         onDismissed: (_) async {
+          //           try {
+          //             await _audioService.stop();
+          //             _audioService.clearCurrentSong();
+          //           } catch (e) {
+          //             debugPrint('Error stopping audio: $e');
+          //           }
+          //         },
+          //         child: MiniPlayer(
+          //           song: currentSong,
+          //           songs: _audioService.currentPlaylist, // Sử dụng danh sách phát của AudioService
+          //           onTap: () async {
+          //             final returnedSong = await Get.toNamed(
+          //               Routes.songs_view,
+          //               arguments: {'playingSong': currentSong, 'songs': _audioService.currentPlaylist},
+          //             );
+          //             if (returnedSong != null) {
+          //               _audioService.currentSong = returnedSong;
+          //             }
+          //           },
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // ),
         ],
       ),
     );
@@ -341,7 +387,8 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTextColor = textColor ?? Theme.of(context).textTheme.titleMedium?.color;
+    final effectiveTextColor =
+        textColor ?? Theme.of(context).textTheme.titleMedium?.color;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
@@ -350,10 +397,10 @@ class SectionHeader extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: AppTheme.primary,
-            ),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  color: AppTheme.primary,
+                ),
           ),
           TextButton(
             onPressed: () => Get.toNamed(route),

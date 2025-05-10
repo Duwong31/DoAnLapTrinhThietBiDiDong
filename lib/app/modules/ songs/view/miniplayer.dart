@@ -27,14 +27,13 @@ class MiniPlayer extends StatefulWidget {
 }
 
 class _MiniPlayerState extends State<MiniPlayer> {
-  late final AudioService _audioService;
+  final AudioService _audioService = Get.find<AudioService>();
   late final FavoriteController _favoriteController = Get.put(FavoriteController());
   late Song _currentSong;
 
   @override
   void initState() {
     super.initState();
-    _audioService = AudioService();
     _currentSong = widget.song;
   }
 
@@ -137,22 +136,23 @@ class _MiniPlayerState extends State<MiniPlayer> {
                   return IconButton(
                     icon: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : AppTheme.labelColor ?? Colors.white,
+                      color: isFavorite ? Colors.red : AppTheme.labelColor ?? Colors.black,
                       size: 26,
                     ),
                     onPressed: () async {
                       HapticFeedback.lightImpact();
                       try {
                         await _favoriteController.toggleFavorite(_currentSong.id);
-                        Get.snackbar(
-                          isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
-                          '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
-                          snackPosition: SnackPosition.TOP,
-                          backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
-                          colorText: Colors.white,
-                          margin: const EdgeInsets.all(10),
-                          icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
-                        );
+                        // Thông báo khi thay đổi trạng thái
+                        // Get.snackbar(
+                        //   isFavorite ? 'Đã xóa khỏi yêu thích' : 'Đã thêm vào yêu thích',
+                        //   '${_currentSong.title} ${isFavorite ? 'đã được xóa' : 'đã được thêm'}',
+                        //   snackPosition: SnackPosition.TOP,
+                        //   backgroundColor: isFavorite ? Colors.red[800] : Colors.green[800],
+                        //   colorText: Colors.white,
+                        //   margin: const EdgeInsets.all(10),
+                        //   icon: Icon(isFavorite ? Icons.favorite_border : Icons.favorite, color: Colors.white),
+                        // );
                       } catch (e) {
                         Get.snackbar(
                           'Lỗi',
