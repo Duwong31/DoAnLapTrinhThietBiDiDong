@@ -207,7 +207,7 @@ class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin 
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SectionHeader(
-                    title: "we_think you_like".tr,
+                    title: "we_think_you_like".tr,
                     textColor: textColor,
                     route: Routes.all_song_view),
                 SizedBox(height: 225, child: _buildSongGrid(context, controller.songs)),
