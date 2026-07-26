@@ -3,6 +3,8 @@
 
 SoundFlow is a modern music app that delivers a fantastic listening experience for users. With its user-friendly interface and ease of use, SoundFlow allows you to explore, listen to, and manage your music effortlessly.
 
+<img src="https://github.com/Duwong31/DoAnLapTrinhThietBiDiDong/blob/main/SoundFlow.png" alt="project-screenshot" width="800" height="400/">
+
 ## Screenshots
 
 <img src="https://github.com/Duwong31/DoAnLapTrinhThietBiDiDong/blob/main/assets/images/Screenshot%202026-07-26%20210913.png" alt="project-screenshot" width="600" height="400/">
