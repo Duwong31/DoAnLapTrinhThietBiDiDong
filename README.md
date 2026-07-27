@@ -77,7 +77,7 @@ flutter build apk --split-per-abi
 open  build/app/outputs/flutter-apk/
 ```
 
-You can learn more about SoundFlow's user interface and user experience through the following links:https://www.figma.com/design/djq89XkXyIXXfsrNDxXKaK/Project-App-SoundFlow?node-id=0-1&p=f&t=7MPXtoUQIuVJ48MM-0
+You can learn more about SoundFlow's user interface and user experience through the following links:https://www.figma.com/design/djq89XkXyIXXfsrNDxXKaK/Project-App-SoundFlow?node-id=0-1&t=WiOyseFi5gbHqsyd-1
 
 Give SoundFlow a try and enjoy your music in a whole new way! 🎶
 
